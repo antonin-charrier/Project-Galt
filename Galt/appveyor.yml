@@ -44,7 +44,6 @@ platform: Any CPU
 
 build:
   parallel: true                  # enable MSBuild parallel builds
-  project: ./Galt/Galt.sln      # path to Visual Studio solution or project
 
 # scripts to run before build
 before_build: 
