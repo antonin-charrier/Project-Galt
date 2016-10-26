@@ -47,4 +47,5 @@ build:
   project: Galt.sln      # path to Visual Studio solution or project
 
 # scripts to run before build
-before_build: dotnet restore
+before_build: 
+  - dotnet restore
