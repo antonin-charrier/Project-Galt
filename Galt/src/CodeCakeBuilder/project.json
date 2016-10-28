@@ -1,0 +1,19 @@
+﻿{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "Code.Cake": "0.14.0",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0"
+  },
+
+  "commands": {
+    "CodeCakeBuilder": "CodeCakeBuilder"
+  },
+
+  "frameworks": {
+    "net451": {}
+  }
+}
