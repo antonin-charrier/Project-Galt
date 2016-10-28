@@ -20,6 +20,7 @@
 /// <reference path="../galt/test/unit/index.js" />
 /// <reference path="../galt/test/unit/karma.conf.js" />
 /// <reference path="../galt/test/unit/specs/Hello.spec.js" />
+/// <reference path="js/app.js" />
 /// <reference path="js/site.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />
 /// <reference path="lib/jquery/dist/jquery.js" />
