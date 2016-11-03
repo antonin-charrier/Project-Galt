@@ -13,6 +13,7 @@
 /// <reference path="../Galt-Project/config/prod.env.js" />
 /// <reference path="../Galt-Project/config/test.env.js" />
 /// <reference path="../Galt-Project/src/main.js" />
+/// <reference path="../galt-project/src/routes.js" />
 /// <reference path="../Galt-Project/test/e2e/custom-assertions/elementCount.js" />
 /// <reference path="../Galt-Project/test/e2e/nightwatch.conf.js" />
 /// <reference path="../Galt-Project/test/e2e/runner.js" />
