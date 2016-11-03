@@ -27,11 +27,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Galt</a>
+                <!--<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><svg height="32" width="22"><image xlink:href="~/images/Galt.logo_name.svg" height="32" width="22" /></svg></a>-->
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
+                    <img height="40" src="~/images/Galt.logo_noname.450.png" />
+                </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index"><img height="20" src="~/images/Galt.name.450.png" /></a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                 </ul>
@@ -41,7 +44,7 @@
     <div class="container body-content">
         @RenderBody()
 
-        <hr />
+        <hr style="border-color:#000"/>
         <footer>
             <p>&copy; 2016 - Galt</p>
         </footer>

@@ -1,7 +1,7 @@
 {
-  "name": "galt",
+  "name": "galt-project",
   "version": "1.0.0",
-  "description": "Vue.JS for galt project",
+  "description": "A Vue.js project",
   "author": "acharrier",
   "private": true,
   "scripts": {

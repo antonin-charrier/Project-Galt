@@ -1,6 +1,6 @@
-# galt
+# galt-project
 
-> Vue.JS for galt project
+> A Vue.js project
 
 ## Build Setup
 
