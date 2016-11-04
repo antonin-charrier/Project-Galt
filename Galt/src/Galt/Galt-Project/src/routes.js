@@ -1,5 +1,6 @@
 export default {
   '/': 'Home',
   '/about': 'About',
-  '/mypackages': 'MyPackages'
+  '/mypackages': 'MyPackages',
+  '/package': 'Package'
 }
