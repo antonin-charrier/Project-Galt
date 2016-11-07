@@ -37,6 +37,6 @@
 
 <style scoped>
   .active {
-    background-color: lightgrey;
+    color: #3a3a3a;
   }
 </style>
