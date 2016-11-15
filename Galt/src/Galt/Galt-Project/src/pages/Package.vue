@@ -1,7 +1,7 @@
 <template>
   <main-layout>
     
-    <h1>Package 1</h1>
+    <h1 class="package-name">Package 1</h1>
     <div class="package-info">
       <h2>
           <ul>
@@ -20,21 +20,6 @@
     </div>
     <div class="new-versions">
         <h3>New versions</h3>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
-        <p>Lorem ipsum</p>
         <p>Lorem ipsum</p>
     </div>
   </main-layout>
@@ -62,3 +47,4 @@
   }
   
 </script>
+
