@@ -2,26 +2,27 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
 import Home from './pages/Home.vue'
-import About from './pages/About.vue'
+import Package from './pages/Package.vue'
+import MyPackages from './pages/MyPackages.vue'
 
-Vue.use(VueRouter)
-
-const Foo = { template: '<div>foo</div>' }
-const Bar = { template: '<div>bar</div>' }
+Vue.use(VueRouter);
 
 const routes = [
   { path: '/', component: Home},
-  { path: '/foo', component: Foo },
-  { path: '/bar', component: Bar },
-  { path: '/about', component: About}
-]
+  { path: '/mypackages', component: MyPackages},
+  { path: '/package', component: Package}
+];
 
 const router = new VueRouter({
   routes
 })
 
+Vue.component('disconnect-button', {
+  template: '<li class="w3-right"><router-link to="/disconnect" class="w3-padding-16 w3-hover-gray w3-hover-text-white"><span id="icon-package"><i class="fa fa-sign-out"></i></span><span>Disconnect from GitHub</span></router-link></li>'
+})
+
 const app = new Vue({
   el: '#app',
   router,
-  render: h => h(App)
+  render: h => h(App),
 });
