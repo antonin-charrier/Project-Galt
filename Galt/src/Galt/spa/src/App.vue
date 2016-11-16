@@ -14,16 +14,35 @@
         </svg>
       </router-link></li>
       <li><input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt"></li>
-      <disconnect-button></disconnect-button>
-      <li class="w3-right"><router-link to="/mypackages" class="w3-padding-16 w3-hover-gray w3-hover-text-white">
-        <span id="icon-package"><i class="fa fa-cube"></i></span><span>My Packages</span></router-link></li>
+      <connected v-if="isConnected"></connected>
+      <disconnected v-if="!isConnected"></disconnected>
     </ul>
     <div style="height:60px"></div>
     <router-view></router-view>
   </div>
-</template>
+</template> 
 
 <script>
+  import Connected from './components/Connected.vue'
+  import Disconnected from './components/Disconnected.vue'
+
+  export default {
+    //state
+    data: function() {
+      return {
+        isConnected: true
+      }
+    },
+    //view
+    components:{
+      'connected': Connected,
+      'disconnected': Disconnected
+    },
+    //actions
+    methods:{
+
+    }
+  }
 </script>
 
 <style>
