@@ -90,7 +90,7 @@
         flex-direction: column;
         border-style: solid;
         width: 100%;
-        min-height: 500px;
+        min-height: 450px;
         margin-left: 50px;
     }
     .flex-issues-versions{

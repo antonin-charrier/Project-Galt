@@ -17,21 +17,38 @@ const routes = [
 
 const router = new VueRouter({
   routes
-})
+});
 
-/*const store = new Vuex.store({
+const store = new Vuex.Store({
   state:{
-    count: 0
+    isConnected: false
   },
   mutations:{
-    increment(state){
-      state.count++
+    connect(state){
+      state.isConnected = !state.isConnected
+    }
+  },
+  actions: {
+    connect (context) {
+      context.commit('connect')
     }
   }
-})*/
+});
+
+const Connecter = {
+  computed:{
+    isConnected () {
+      return this.$store.state.isConnected
+    }
+  }
+};
+
+store.dispatch('connect')
 
 const app = new Vue({
   el: '#app',
   router,
+  store,
+  components: { Connecter },
   render: h => h(App),
 });

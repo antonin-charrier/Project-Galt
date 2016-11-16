@@ -30,7 +30,12 @@
     //state
     data: function() {
       return {
-        isConnected: true
+        
+      }
+    },
+    computed:{
+      isConnected () {
+        return this.$store.state.isConnected
       }
     },
     //view
