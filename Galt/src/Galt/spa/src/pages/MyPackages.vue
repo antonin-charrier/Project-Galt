@@ -132,17 +132,39 @@ export default {
     color: white;
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale
+    -moz-osx-font-smoothing: grayscale;
+    z-index: 1;
 }
 .tooltip .tooltiptext {
+    display: -webkit-flex;
+    display: flex;
+    position: relative;
     visibility: hidden;
-    z-index: 100;
+    width: 120px;
+    text-align: center;
+    background-color: black;
+    color: white;
+    border-radius: 6px;
+    padding: 5px 0;
+    top: 150%;
+    left: 50%;
+    margin-left: -60px;
+    font-size: 12px;
+    z-index: 2;
 }
 .tooltip .tooltiptext::after {
-    z-index: 100;
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    z-index: 2;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
 }
 .tooltip:hover .tooltiptext {
     visibility: visible;
-    z-index: 100;
+    z-index: 2;
 }
 </style>

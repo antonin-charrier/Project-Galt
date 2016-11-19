@@ -17,7 +17,7 @@ var data = [
 	{"id":15, "name": "System.Xml.ReaderWriter", "parent":"18", "version":">= 4.0.11"},
 	{"id":16, "name": "System.ComponentModel.TypeConverter", "parent":"18", "version":">= 4.1.0"},
 	{"id":17, "name": ".NETFramework", "parent":"2", "version": "4.5", "entity":"platform"},
-	{"id":18, "name": ".NETStandard", "parent":"2", "version": "1.6", "entity":"platform"},
+	{"id":18, "name": ".NETStandard", "parent":"2", "version": "1.6", "entity":"platform"}
 ];
 
 // Traitement of the data to change its format

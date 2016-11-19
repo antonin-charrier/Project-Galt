@@ -14,8 +14,8 @@
             <p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat. Sed tempor odio a porta sollicitudin. Sed mattis placerat augue nec cursus. Praesent ac odio quis libero gravida dictum. Curabitur pretium mattis elit, at convallis est pharetra quis. In convallis risus eros, non porta massa tristique vel. Donec non iaculis dui, eget rutrum libero.</p>
             </div>
             <div class="flex-bloc">
-                <div id="flex-graph">
-                </div>
+                <graph>
+                </graph>
                 <div class="flex-issues-versions">
                     <div class="issues">
                         <h3>Issues</h3>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+    import Graph from "../components/Graph.vue"
+
     export default {
         data: function () {
             return {
@@ -42,6 +44,9 @@
             addFav: function () {
                 this.fav = !this.fav
             }
+        },
+        components: {
+            'graph': Graph
         }
     }
 </script>
@@ -83,7 +88,7 @@
         margin-left: 50px;
         margin-right: 50px;
     }
-    #flex-graph{
+    #graph{
         display: -webkit-flex;
         display: flex;
         -webkit-flex-direction: column;
