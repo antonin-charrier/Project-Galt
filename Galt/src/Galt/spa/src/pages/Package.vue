@@ -11,7 +11,8 @@
                 <i class="fa fa-star fa-star-grey" v-if="fav" v-on:click="addFav"></i>
                 <i class="fa fa-star fa-star-orange" v-if="!fav" v-on:click="addFav"></i>
             </div>
-            <p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat. Sed tempor odio a porta sollicitudin. Sed mattis placerat augue nec cursus. Praesent ac odio quis libero gravida dictum. Curabitur pretium mattis elit, at convallis est pharetra quis. In convallis risus eros, non porta massa tristique vel. Donec non iaculis dui, eget rutrum libero.</p>
+            <p id="description">
+                Code.Cake library contains Code.Cake.dll (0.14.0) that CodeCakeBuilder applications uses.
             </div>
             <div class="flex-bloc">
                 <graph></graph>
@@ -58,6 +59,7 @@ export default {
     .flex-bloc{
         display: -webkit-flex;
         display: flex;
+        margin-bottom: 30px;
     }
     .flex-info-text{
         display: -webkit-flex;
@@ -87,16 +89,6 @@ export default {
         margin-left: 50px;
         margin-right: 50px;
     }
-    #graph{
-        display: -webkit-flex;
-        display: flex;
-        -webkit-flex-direction: column;
-        flex-direction: column;
-        border-style: solid;
-        width: 100%;
-        min-height: 450px;
-        margin-left: 50px;
-    }
     .flex-issues-versions{
         text-align: justify;
         display: -webkit-flex;
@@ -104,6 +96,7 @@ export default {
         -webkit-flex-direction: column;
         flex-direction: column;
         width: 300px;
+        min-height: 600px;
         padding-left: 10px;
         padding-right: 10px;
         margin-left: 20px;

@@ -127,13 +127,16 @@ export default {
     margin: 10px;
     font-size: 13px;
     border-radius: 3px;
-    border: none;
+    border: 1px solid black;
     background-color: lightslategray;
-    color: white;
+    color: black;
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     z-index: 1;
+}
+.view-button:hover{
+    background-color: slategray;
 }
 .tooltip .tooltiptext {
     display: -webkit-flex;
