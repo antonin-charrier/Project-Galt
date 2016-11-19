@@ -1,12 +1,12 @@
 <template>
     <div id="package">
-            <h1 class="package-name">d3</h1>
+            <h1 class="package-name">Code.Cake</h1>
             <div class="package-info">
             <div class="flex-bloc">
                 <h3 class="flex-info-text">
-                    <span class="">Version 4.3.0</span>
-                    <span class="flex-info-item">By mbostock</span>
-                    <span class="flex-info-item">Published on 05/11/2016</span>
+                    <span class="">Version 0.14.0</span>
+                    <span class="flex-info-item">By olivier-spinelli</span>
+                    <span class="flex-info-item">Published on 10/19/2016</span>
                 </h3>
                 <i class="fa fa-star fa-star-grey" v-if="fav" v-on:click="addFav"></i>
                 <i class="fa fa-star fa-star-orange" v-if="!fav" v-on:click="addFav"></i>
@@ -14,8 +14,7 @@
             <p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat. Sed tempor odio a porta sollicitudin. Sed mattis placerat augue nec cursus. Praesent ac odio quis libero gravida dictum. Curabitur pretium mattis elit, at convallis est pharetra quis. In convallis risus eros, non porta massa tristique vel. Donec non iaculis dui, eget rutrum libero.</p>
             </div>
             <div class="flex-bloc">
-                <graph>
-                </graph>
+                <graph></graph>
                 <div class="flex-issues-versions">
                     <div class="issues">
                         <h3>Issues</h3>
@@ -32,23 +31,23 @@
 </template>
 
 <script>
-    import Graph from "../components/Graph.vue"
+import Graph from "../components/Graph.vue"
 
-    export default {
-        data: function () {
-            return {
-                fav: false
-            }
-        },
-        methods: {
-            addFav: function () {
-                this.fav = !this.fav
-            }
-        },
-        components: {
-            'graph': Graph
+export default {
+    data: function () {
+        return {
+            fav: false
         }
+    },
+    methods: {
+        addFav: function () {
+            this.fav = !this.fav
+        }
+    },
+    components: {
+        'graph' : Graph
     }
+}
 </script>
 
 <style>
@@ -104,7 +103,7 @@
         display: flex;
         -webkit-flex-direction: column;
         flex-direction: column;
-        width: 400px;
+        width: 300px;
         padding-left: 10px;
         padding-right: 10px;
         margin-left: 20px;
