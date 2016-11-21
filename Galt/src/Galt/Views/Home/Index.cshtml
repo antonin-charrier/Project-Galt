@@ -1,24 +1,14 @@
-﻿@{
-    @*ViewData["Title"] = "Home";
-}
-
-<div id="app">
-    <a :href="link">{{ message }}</a>
-</div>
-<script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
-<script src="~/js/app.js"></script>*@
-
-<html>
+﻿<html>
 <head>
 
 </head>
 <body>
     <environment names="Development">
-        <script src="http://localhost:8080/dist/spa.js"></script>
+        <script src="http://localhost:8080/dist/build.js"></script>
     </environment>
     
     <environment names="Production">
-        <script src="~/dist/spa.js"></script>
+        <script src="~/dist/build.js"></script>
     </environment>
 </body>
 </html>
