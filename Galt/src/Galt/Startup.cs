@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Galt.Authentication;
+using Galt.Services;
 
 namespace Galt
 {
@@ -36,7 +36,25 @@ namespace Galt
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            // NetCoreSample copypaste
+            services.AddOptions();
+
+            string secretKey = Configuration[ "JwtBearer:SigningKey" ];
+            SymmetricSecurityKey signingKey = new SymmetricSecurityKey( Encoding.ASCII.GetBytes( secretKey ) );
+
+            services.Configure<TokenProviderOptions>( o =>
+            {
+                o.Audience = Configuration[ "JwtBearer:Audience" ];
+                o.Issuer = Configuration[ "JwtBearer:Issuer" ];
+                o.SigningCredentials = new SigningCredentials( signingKey, SecurityAlgorithms.HmacSha256 );
+            } );
+
             services.AddMvc();
+            services.AddSingleton<PasswordHasher>();
+            services.AddSingleton<UserService>();
+            services.AddSingleton<TokenService>();
+            services.AddSingleton<GitHubService>();
+            services.AddSingleton<GitHubClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
