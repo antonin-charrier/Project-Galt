@@ -26,7 +26,9 @@
     "System.Text.Encoding": "4.0.11",
     "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.0.0",
     "System.IdentityModel.Tokens.Jwt": "5.0.0",
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.2"  },
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0"
+  },
+
 
   "tools": {
     "BundlerMinifier.Core": "2.0.238",
