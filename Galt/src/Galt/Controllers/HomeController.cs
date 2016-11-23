@@ -10,6 +10,7 @@ namespace Galt.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["NoLayout"] = true;
             return View();
         }
 
