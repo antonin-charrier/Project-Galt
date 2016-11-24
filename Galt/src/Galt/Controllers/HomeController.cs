@@ -10,19 +10,20 @@ namespace Galt.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["NoLayout"] = true;
             return View();
         }
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "Galt allows you to manage all the dependencies from your projets and be aware of every issue or new version of a package.";
 
             return View();
         }
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Team Galt";
 
             return View();
         }

@@ -30,6 +30,5 @@ $msbuildExe = join-path -path (Get-ItemProperty $regKey).$regProperty -childpath
 if (!(Test-Path $msbuildExe)) {
     Throw "Could not find msbuild.exe"
 }
-
 Invoke-Expression "dotnet restore"
 &$msbuildExe $builderProj /p:Configuration=Release
