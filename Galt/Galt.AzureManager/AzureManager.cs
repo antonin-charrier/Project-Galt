@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -23,7 +22,7 @@ namespace Galt.AzureManager
         }
 
         ////////////////////////////////////////////
-        //Requests
+        //Requests for Users
         ////////////////////////////////////////////
 
         public async Task<bool> AddIfNotExists( string email, string pseudo )
@@ -69,6 +68,12 @@ namespace Galt.AzureManager
             await _usersTable.ExecuteAsync( removeOperation );
             return true;
         }
+
+        ////////////////////////////////////////////
+        //Requests for Packages
+        ////////////////////////////////////////////
+
+
 
         ////////////////////////////////////////////
         //Entities
