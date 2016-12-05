@@ -21,18 +21,20 @@ const router = new VueRouter({
 
 const store = new Vuex.Store({
     state: {
-        isConnected: false
+        isConnected: false,
+        identity: null
     },
     mutations: {
-        connect(state) {
-            console.log("Connect mutation called");
-            state.isConnected = !state.isConnected
+        connect(state, identity) {
+            console.log("Connect mutation called")
+            state.isConnected = true
+            state.identity = identity
         }
     },
     actions: {
-        connect(context) {
-            console.log("Connect action called");
-            context.commit('connect')
+        connect(context, identity) {
+            console.log("Connect action called")
+            context.commit('connect', identity)
         }
     }
 });
@@ -44,6 +46,9 @@ const Connecter = {
         }
     }
 };
+
+if (GaltProject.Galt.getIdentity() != null)
+    store.commit('connect', GaltProject.Galt.getIdentity())
 
 const app = new Vue({
     el: '#app',
