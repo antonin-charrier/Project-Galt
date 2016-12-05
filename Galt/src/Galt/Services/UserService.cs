@@ -11,7 +11,7 @@ namespace Galt.Services
         // readonly UserGateway _userGateway;
 
         // I'll use this till we get done with the above
-        List<User> _users;
+        List<User> _users = new List<User>();
 
         readonly PasswordHasher _passwordHasher;
 
@@ -33,7 +33,7 @@ namespace Galt.Services
         public bool CreateOrUpdateGithubUser( string email, string accessToken )
         {
             // User user = _userGateway.FindByEmail( email );
-            User user = _users.First( u => u.Email == email );
+            User user = _users.Find( u => u.Email == email );
 
             if ( user == null )
             {
@@ -84,6 +84,8 @@ namespace Galt.Services
         // Bootleg User class to simulate user storage
         public class User
         {
+            public int UserId { get; set; }
+
             public string Email { get; set; }
 
             public string GithubAccessToken { get; set; }

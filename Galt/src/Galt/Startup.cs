@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Galt.Authentication;
 using Galt.Services;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Galt
 {
@@ -76,6 +77,22 @@ namespace Galt
             }
 
             app.UseApplicationInsightsExceptionTelemetry();
+
+            ExternalAuthenticationEvents githubAuthenticationEvents = new ExternalAuthenticationEvents(
+                new GithubExternalAuthenticationManager( app.ApplicationServices.GetRequiredService<UserService>() ) );
+
+            app.UseGitHubAuthentication( o =>
+            {
+                o.SignInScheme = CookieAuthentication.AuthenticationScheme;
+                o.ClientId = Configuration[ "Authentication:Github:ClientId" ];
+                o.ClientSecret = Configuration[ "Authentication:Github:ClientSecret" ];
+                o.Scope.Add( "user" );
+                o.Scope.Add( "user:email" );
+                o.Events = new OAuthEvents
+                {
+                    OnCreatingTicket = githubAuthenticationEvents.OnCreatingTicket
+                };
+            } );
 
             app.UseStaticFiles();
 

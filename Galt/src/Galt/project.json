@@ -4,6 +4,7 @@
       "version": "1.0.1",
       "type": "platform"
     },
+    "AspNet.Security.OAuth.GitHub": "1.0.0-beta1-final",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.1",
     "Microsoft.AspNetCore.Razor.Tools": {
@@ -26,7 +27,8 @@
     "System.Text.Encoding": "4.0.11",
     "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.0.0",
     "System.IdentityModel.Tokens.Jwt": "5.0.0",
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0"
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.OAuth": "1.0.0"
   },
 
 

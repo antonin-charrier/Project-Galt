@@ -13,6 +13,8 @@ namespace Galt
         {
             if ( context == null ) throw new ArgumentNullException( nameof( context ) );
 
+            IEnumerable<AuthenticationDescription> schemes = context.Authentication.GetAuthenticationSchemes();
+
             return from description in context.Authentication.GetAuthenticationSchemes()
                    where !string.IsNullOrWhiteSpace( description.DisplayName )
                    select description;
