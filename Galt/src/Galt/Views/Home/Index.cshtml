@@ -1,5 +1,12 @@
-﻿@{ 
+﻿@using Galt.Services
+@{ 
     ViewData["Title"] = "Home";
+}
+@{
+    Token token = (Token)ViewData[ "Token" ];
+    string email = (string)ViewData[ "Email" ];
+    IEnumerable<string> providers = (IEnumerable<string>)ViewData[ "Providers" ];
+    string providerNames = providers == null ? string.Empty : string.Join( ",", providers.Select( p => string.Format( "'{0}'", p ) ) );
 }
 
 <html>
@@ -14,6 +21,47 @@
 </head>
 <body>
     <div id="app"></div>
+
+    <script>
+        (function () {
+            var galt = (function () {
+                var identity = null;
+
+                var getIdentity = function () {
+                    return identity;
+                };
+
+                var setIdentity = function (i) {
+                    identity = i;
+                };
+
+                return {
+                    getIdentity: getIdentity,
+                    setIdentity: setIdentity
+                };
+            })();
+
+            this.GaltProject = this.GaltProject || {};
+            this.GaltProject.Galt = galt;
+        })();
+    </script>
+
+    @if ( token != null && email != null )
+    {
+        <script>
+            (function () {
+                GaltProject.Galt.setIdentity({
+                    bearer: {
+                        access_token: '@token.AccessToken',
+                        expires_in: @token.ExpiresIn
+                    },
+                    email: '@email',
+                    boundProviders: [@Html.Raw( providerNames )]
+                });
+            })();
+        </script>
+    }
+
     <environment names="Development">
         <script src="http://localhost:8080/dist/build.js"></script>
     </environment>

@@ -78,6 +78,11 @@ namespace Galt
 
             app.UseApplicationInsightsExceptionTelemetry();
 
+            app.UseCookieAuthentication( new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = CookieAuthentication.AuthenticationScheme
+            } );
+
             ExternalAuthenticationEvents githubAuthenticationEvents = new ExternalAuthenticationEvents(
                 new GithubExternalAuthenticationManager( app.ApplicationServices.GetRequiredService<UserService>() ) );
 
