@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using NuGet;
 using NUnit.Framework;
 
@@ -34,22 +35,10 @@ namespace Galt.Crawler.Tests
         public void Test_GetDependenciesSpecificVersion()
         {
             NuGetDownloader n = new NuGetDownloader();
-            List<PackageDependency> dependencies = n.GetDependenciesSpecificVersion("Code.Cake", new SemanticVersion("0.14.0")).ToList();
+            var dicFrameDep = n.GetDependenciesSpecificVersion("Code.Cake", new SemanticVersion("0.14.0")).ToList();
 
-            Assert.IsTrue( dependencies.Exists(i => i.Id == "Cake.Core" ) );
-            Assert.IsTrue( dependencies.Exists(i => i.Id == "Cake.Common" ) );
-        }
-
-        [Test]
-        public void test_test()
-        {
-            NuGetDownloader n = new NuGetDownloader();
-            var result = n.test( "Code.Cake", new SemanticVersion( "0.14.0" ) );
-
-            foreach( var i in result )
-            {
-                Console.WriteLine( i.Id );
-            }
+            Assert.IsTrue( dicFrameDep.Exists( i => i.Value.Any(p => p.Id == "Cake.Core")));
+            Assert.IsTrue( dicFrameDep.Exists( i => i.Value.Any( p => p.Id == "Cake.Common")));
         }
     }
 }
