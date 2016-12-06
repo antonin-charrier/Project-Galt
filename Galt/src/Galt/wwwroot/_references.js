@@ -2,6 +2,7 @@
 /// <reference path="../graph/graph.js" />
 /// <reference path="../spa/src/main.js" />
 /// <reference path="../spa/src/scripts/graph.js" />
+/// <reference path="../spa/src/services/AuthService.js" />
 /// <reference path="../spa/webpack.config.js" />
 /// <reference path="js/site.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />
