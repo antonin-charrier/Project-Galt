@@ -25,28 +25,28 @@ namespace Galt.AzureManager
         //Requests for Users
         ////////////////////////////////////////////
 
-        public async Task<bool> AddIfNotExists( string email, string pseudo )
+        public async Task<bool> AddIfNotExists( string email)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, pseudo );
+            TableOperation retrieveOperation = TableOperation.Retrieve( email, null );
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result != null ) return false;
 
-            UserEntity u = new UserEntity( email, pseudo );
+            UserEntity u = new UserEntity( email );
             TableOperation insertOperation = TableOperation.Insert( u );
             await _usersTable.ExecuteAsync( insertOperation );
             return true;
         }
 
-        public async Task<UserEntity> GetUser(string email, string pseudo)
+        public async Task<UserEntity> GetUser(string email)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, pseudo );
+            TableOperation retrieveOperation = TableOperation.Retrieve( email, null );
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             return (UserEntity)retrieved.Result;
         }
 
-        public async Task<bool> AddGitHubTokenIfExists(string email, string pseudo, string token)
+        public async Task<bool> AddGitHubTokenIfExists(string email, string token)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, pseudo );
+            TableOperation retrieveOperation = TableOperation.Retrieve( email, null );
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
@@ -57,9 +57,9 @@ namespace Galt.AzureManager
             return true;
         }
 
-        public async Task<bool> DeleteIfExists( string email, string pseudo )
+        public async Task<bool> DeleteIfExists( string email)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve<UserEntity>(email, pseudo);
+            TableOperation retrieveOperation = TableOperation.Retrieve<UserEntity>(email, null);
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
@@ -81,10 +81,10 @@ namespace Galt.AzureManager
 
         public class UserEntity : TableEntity
         {
-            public UserEntity( string email, string pseudo )
+            public UserEntity( string email)
             {
                 PartitionKey = email;
-                RowKey = pseudo;
+                RowKey = null;
             }
 
             public UserEntity() { }

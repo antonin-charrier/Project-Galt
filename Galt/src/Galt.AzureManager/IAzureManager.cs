@@ -10,12 +10,12 @@ namespace Galt.AzureManager
     {
         void Initialize();
 
-        Task<bool> AddIfNotExists( string email, string pseudo );
+        Task<bool> AddIfNotExists( string email );
 
-        Task<UserEntity> GetUser( string email, string pseudo );
+        Task<UserEntity> GetUser( string email );
 
-        Task<bool> AddGitHubTokenIfExists( string email, string pseudo, string token );
+        Task<bool> AddGitHubTokenIfExists( string email, string token );
 
-        Task<bool> DeleteIfExists( string email, string pseudo );
+        Task<bool> DeleteIfExists( string email );
     }
 }

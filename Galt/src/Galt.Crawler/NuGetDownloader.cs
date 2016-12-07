@@ -45,45 +45,5 @@ namespace Galt.Crawler
             }
             return null;
         }
-
-        public Dictionary<FrameworkName, IEnumerable<PackageDependency>> test( string packageId, SemanticVersion version )
-        {
-            var initialDic = GetDependenciesSpecificVersion(packageId, version);
-
-            if( !initialDic.IsEmpty() )
-            {
-                foreach( IEnumerable<PackageDependency> listpackages in initialDic.Values )
-                {
-                    foreach( PackageDependency Initialpackage in listpackages )
-                    {
-                        var received = GetDependenciesSpecificVersion( Initialpackage.Id, Initialpackage.VersionSpec.MinVersion );
-                        foreach( FrameworkName frameW in received.Keys )
-                        {
-                            if( initialDic.Keys.Any( e => e.FullName == frameW.FullName && e.Version.ToString() == frameW.Version.ToString() ) )
-                            {
-                                var frameWinInitial = initialDic.Keys.First(e => e.FullName == frameW.FullName && e.Version.ToString() == frameW.Version.ToString() );
-                                foreach( PackageDependency package in received[frameW] )
-                                {
-                                    if(initialDic[frameWinInitial].Any(e => e.Id == package.Id && e.VersionSpec.MinVersion.Version.ToString() == package.VersionSpec.MinVersion.Version.ToString() ) )
-                                    {
-
-                                    }
-                                    else
-                                    {
-
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                initialDic.Add( frameW, received[frameW] );
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
     }
 }
