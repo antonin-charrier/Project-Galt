@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Galt.Crawler.Util
 {
-    public class PVPackage
+    public class VPackage
     {
-        public PVPackage(PPackage package, Version v)
+        public VPackage(Package package, Version v)
         {
             //v.
         }

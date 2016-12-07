@@ -5,12 +5,7 @@ using System.Threading.Tasks;
 
 namespace Galt.Crawler.Util
 {
-    public class PFrameW
+    public class Package
     {
-        public PFrameW(string frameWId, )
-        {
-        }
-
-
     }
 }
