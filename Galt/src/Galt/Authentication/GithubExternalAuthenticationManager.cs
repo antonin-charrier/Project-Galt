@@ -1,5 +1,6 @@
 ﻿using Galt.Services;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using static Galt.AzureManager.AzureManager;
 using static Galt.Services.UserService;
 
 namespace Galt.Authentication
@@ -15,10 +16,11 @@ namespace Galt.Authentication
 
         public void CreateOrUpdateUser( OAuthCreatingTicketContext context )
         {
+            var temp = context.GetEmail();
             _userService.CreateOrUpdateGithubUser( context.GetEmail(), context.AccessToken );
         }
 
-        public User FindUser( OAuthCreatingTicketContext context )
+        public UserEntity FindUser( OAuthCreatingTicketContext context )
         {
             return _userService.FindUser( context.GetEmail() );
         }

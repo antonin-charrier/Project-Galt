@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static Galt.Services.UserService;
+using static Galt.AzureManager.AzureManager;
 
 namespace Galt.Authentication
 {
@@ -21,18 +20,18 @@ namespace Galt.Authentication
         public Task OnCreatingTicket( OAuthCreatingTicketContext context )
         {
             _userManager.CreateOrUpdateUser( context );
-            User user = _userManager.FindUser( context );
+            UserEntity user = _userManager.FindUser( context );
             ClaimsPrincipal principal = CreatePrincipal( user );
             context.Ticket = new AuthenticationTicket( principal, context.Ticket.Properties, CookieAuthentication.AuthenticationScheme );
             return Task.CompletedTask;
         }
 
-        ClaimsPrincipal CreatePrincipal( User user )
+        ClaimsPrincipal CreatePrincipal( UserEntity user )
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim( ClaimTypes.NameIdentifier, user.UserId.ToString(), ClaimValueTypes.String ),
-                new Claim( ClaimTypes.Email, user.Email )
+                new Claim( ClaimTypes.NameIdentifier, user.RowKey, ClaimValueTypes.String ),
+                new Claim( ClaimTypes.Email, user.PartitionKey )
             };
             ClaimsPrincipal principal = new ClaimsPrincipal( new ClaimsIdentity( claims, "Cookies", ClaimTypes.Email, string.Empty ) );
             return principal;

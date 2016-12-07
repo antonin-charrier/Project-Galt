@@ -29,7 +29,8 @@
     "System.IdentityModel.Tokens.Jwt": "5.0.0",
     "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
     "Microsoft.AspNetCore.Authentication.OAuth": "1.0.0",
-    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0"
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
+    "Galt.AzureManager": "1.0.0-*"
   },
 
 

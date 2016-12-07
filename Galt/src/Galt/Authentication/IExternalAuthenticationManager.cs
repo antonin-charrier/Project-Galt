@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.OAuth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static Galt.Services.UserService;
+using static Galt.AzureManager.AzureManager;
 
 namespace Galt.Authentication
 {
@@ -11,6 +7,6 @@ namespace Galt.Authentication
     {
         void CreateOrUpdateUser( OAuthCreatingTicketContext context );
 
-        User FindUser( OAuthCreatingTicketContext context );
+        UserEntity FindUser( OAuthCreatingTicketContext context );
     }
 }
