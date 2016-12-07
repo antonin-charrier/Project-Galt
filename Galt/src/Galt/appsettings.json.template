@@ -1,0 +1,24 @@
+﻿{
+  "ApplicationInsights": {
+    "InstrumentationKey": ""
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information"
+    }
+  },
+  "JwtBearer": {
+    "SigningKey": "<signing key>",
+    "Audience": "<audience>",
+    "Issuer": "<issuer>"
+  },
+  "Authentication": {
+    "Github": {
+      "ClientId": "<client id>",
+      "ClientSecret": "<client secret>"
+    }
+  }
+}
