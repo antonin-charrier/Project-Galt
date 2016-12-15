@@ -28,7 +28,6 @@ namespace Galt.AzureManager
         public async Task<bool> AddIfNotExists( string email)
         {
             TableOperation retrieveOperation = TableOperation.Retrieve( email, email );
-            // TODO: Something here is slapping an exception in my face
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result != null ) return false;
 
@@ -40,14 +39,14 @@ namespace Galt.AzureManager
 
         public async Task<UserEntity> GetUser(string email)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, email );
+            TableOperation retrieveOperation = TableOperation.Retrieve<UserEntity>( email, email );
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             return (UserEntity)retrieved.Result;
         }
 
         public async Task<bool> AddGitHubTokenIfExists(string email, string token)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, email );
+            TableOperation retrieveOperation = TableOperation.Retrieve<UserEntity>( email, email );
             TableResult retrieved = await _usersTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
