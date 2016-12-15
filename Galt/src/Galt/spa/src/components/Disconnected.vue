@@ -12,9 +12,21 @@
     import AuthService from '../services/AuthService'
 
     export default {
+        created() {
+            AuthService.registerAuthenticatedCallback(this.onAuthenticated);
+        },
+
+        beforeDestroy() {
+            AuthService.removeAuthenticatedCallback(this.onAuthenticated);
+        },
+
         methods: {
             login() {
                 AuthService.login();
+            },
+
+            onAuthenticated() {
+                this.$router.replace('/');
             }
         }
     }

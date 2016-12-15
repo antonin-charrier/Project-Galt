@@ -6,6 +6,8 @@ import Home from './pages/Home.vue'
 import Package from './pages/Package.vue'
 import MyPackages from './pages/MyPackages.vue'
 
+import AuthService from './services/AuthService'
+
 Vue.use(VueRouter);
 Vue.use(Vuex);
 
@@ -46,6 +48,8 @@ const Connecter = {
         }
     }
 };
+
+AuthService.allowedOrigins = ['http://localhost:5000'];
 
 if (GaltProject.Galt.getIdentity() != null)
     store.commit('connect', GaltProject.Galt.getIdentity())
