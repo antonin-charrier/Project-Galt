@@ -15,6 +15,8 @@ namespace Galt.Services
         public UserService( PasswordHasher passwordHasher )
         {
             _azureManager = new AzureManager.AzureManager();
+            _azureManager.Initialize();
+
             _passwordHasher = passwordHasher;
         }
 
