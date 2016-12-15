@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.OAuth;
-using static Galt.AzureManager.AzureManager;
+using static Galt.AzureManager.Entities;
 
 namespace Galt.Authentication
 {

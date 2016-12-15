@@ -11,34 +11,14 @@ namespace Galt.Crawler.Tests
     public class NuGetDownloadTests
     {
         [Test]
-        public void Test_GetLatestVersionPackage()
+        public void Test_Package()
         {
             NuGetDownloader n = new NuGetDownloader();
-            var package = n.GetLatestVersionPackage("Code.Cake");
+            var p = n.FillPackage( "Code.Cake" );
 
-            Assert.AreEqual( "Code.Cake", package.Id );
-        }
-
-        [Test]
-        public void Test_GetAllVersionsPackage()
-        {
-            NuGetDownloader n = new NuGetDownloader();
-            var packages = n.GetAllVersionsPackage("Code.Cake");
-
-            foreach( IPackage p in packages )
-            {
-                Console.WriteLine( p.Version );
-            }
-        }
-
-        [Test]
-        public void Test_GetDependenciesSpecificVersion()
-        {
-            NuGetDownloader n = new NuGetDownloader();
-            var dicFrameDep = n.GetDependenciesSpecificVersion("Code.Cake", new SemanticVersion("0.14.0")).ToList();
-
-            Assert.IsTrue( dicFrameDep.Exists( i => i.Value.Any(p => p.Id == "Cake.Core")));
-            Assert.IsTrue( dicFrameDep.Exists( i => i.Value.Any( p => p.Id == "Cake.Common")));
+            Assert.AreEqual( p.PackageId, "Code.Cake" );
+            Assert.AreEqual( p.Vpackages.Last().Version.ToString(), "0.1.1" );
+            Assert.AreEqual( p.Vpackages.Last().Dependencies.DicDependencies.First().Value.Last().PackageId, "Cake.Common");
         }
     }
 }

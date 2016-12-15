@@ -1,33 +1,33 @@
-﻿using Galt.AzureManager;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static Galt.AzureManager.AzureManager;
+using Galt.AzureManager;
+using static Galt.AzureManager.Entities;
 
 namespace Galt.Services
 {
     public class UserService
     {
         // readonly UserGateway _userGateway;
-        IAzureManager _azureManager;
+        AManager _aManager;
 
         readonly PasswordHasher _passwordHasher;
 
         public UserService( PasswordHasher passwordHasher )
         {
-            _azureManager = new AzureManager.AzureManager();
+            _aManager = new AManager();
             _passwordHasher = passwordHasher;
         }
 
         public bool CreateOrUpdateGithubUser( string email, string accessToken )
         {
-            bool returnValue = _azureManager.AddIfNotExists( email ).Result;
-            _azureManager.AddGitHubTokenIfExists( email, accessToken ).Wait();
+            bool returnValue = _aManager.UsersRequests.AddIfNotExists( email ).Result;
+            _aManager.UsersRequests.AddGitHubTokenIfExists( email, accessToken ).Wait();
             return returnValue;
         }
 
         public UserEntity FindUser( string email )
         {
-            return _azureManager.GetUser(email).Result;
+            return _aManager.UsersRequests.GetUser(email).Result;
         }
 
         public IEnumerable<string> GetAuthenticationProviders( string userId )

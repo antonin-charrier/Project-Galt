@@ -1,6 +1,6 @@
 ﻿using Galt.Services;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using static Galt.AzureManager.AzureManager;
+using static Galt.AzureManager.Entities;
 using static Galt.Services.UserService;
 
 namespace Galt.Authentication

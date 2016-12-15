@@ -2,7 +2,9 @@
   "version": "1.0.0-*",
 
   "dependencies": {
+    "Galt.Crawler.Util": "1.0.0-*",
     "NETStandard.Library": "1.6.0",
+    "System.Runtime.Serialization.Json": "4.0.2",
     "WindowsAzure.Storage": "7.2.1"
   },
 
