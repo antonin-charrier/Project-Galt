@@ -16,6 +16,10 @@ namespace Galt.Crawler.Util
 
         public List<VPackage> Vpackages { get; set; }
 
+        public string Owner { get; set; }
+
+        public string Description { get; set; }
+
         public void AddVpackage(VPackage vpackage)
         {
             if( vpackage != null ) throw new ArgumentException();
@@ -27,5 +31,6 @@ namespace Galt.Crawler.Util
             if( vpackage != null ) throw new ArgumentException();
             return Vpackages.Remove( vpackage );
         }
+
     }
 }

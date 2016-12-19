@@ -33,5 +33,8 @@ namespace Galt.Crawler.Util
         public Package Package { get; }
 
         public Dependencies Dependencies { get; set; }
+
+        public string PublicationDate { get; set; }
+
     }
 }

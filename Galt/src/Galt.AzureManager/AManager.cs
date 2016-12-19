@@ -14,13 +14,20 @@ namespace Galt.AzureManager
         {
             CloudStorageAccount = CloudStorageAccount.Parse( "UseDevelopmentStorage=true" );
             CloudTableClient = CloudStorageAccount.CreateCloudTableClient();
+
             UsersTable = CloudTableClient.GetTableReference( "UsersTable" );
             UsersTable.CreateIfNotExistsAsync();
+
+            PackagesTable = CloudTableClient.GetTableReference( "PackagesTable" );
+            PackagesTable.CreateIfNotExistsAsync();
+
             UsersRequests = new UsersRequests(this);
             PackagesRequests = new PackagesRequests(this);
         }
 
         public CloudTable UsersTable { get; }
+
+        public CloudTable PackagesTable { get; }
 
         public CloudStorageAccount CloudStorageAccount { get; }
 

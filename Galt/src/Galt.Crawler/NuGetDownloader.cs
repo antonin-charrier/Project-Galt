@@ -24,15 +24,27 @@ namespace Galt.Crawler
             return packages.First();
         }
 
-        public List<VPackage> GetAllVersionsPackage( Package package )
+        public Package FillPackage( string packageId )
         {
+            Package package = new Package(packageId);
+
             List<IPackage> packages = _repo.FindPackagesById(package.PackageId).ToList();
             List<VPackage> packagesProcessed = new List<VPackage>();
             foreach( var item in packages )
             {
-                packagesProcessed.Add( new VPackage( package, item.Version.Version ) );
+                VPackage vp = new VPackage( package, item.Version.Version );
+                vp.PublicationDate = item.Published.ToString();
+                packagesProcessed.Add( vp );
             }
-            return packagesProcessed;
+
+            package.Vpackages = packagesProcessed;
+            package.Description = packages.First().Description;
+            foreach( var item in package.Vpackages )
+            {
+                item.Dependencies = new Dependencies( item );
+                item.Dependencies.DicDependencies = GetDependenciesSpecificVersion( item );
+            }
+            return package;
         }
 
         public Dictionary<Framework, IEnumerable<VPackage>> GetDependenciesSpecificVersion( VPackage vPackage )
@@ -55,18 +67,6 @@ namespace Galt.Crawler
                 return dicFrameDep;
             }
             return null;
-        }
-
-        public Package FillPackage(string packageId)
-        {
-            Package package = new Package(packageId);
-            package.Vpackages = GetAllVersionsPackage( package );
-            foreach( var item in package.Vpackages )
-            {
-                item.Dependencies = new Dependencies(item);
-                item.Dependencies.DicDependencies = GetDependenciesSpecificVersion( item );
-            }
-            return package;
         }
     }
 }

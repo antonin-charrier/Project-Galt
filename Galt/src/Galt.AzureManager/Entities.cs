@@ -16,11 +16,20 @@ namespace Galt.AzureManager
                 RowKey = email;
             }
 
-            public UserEntity() { }
-
             public string Favorite { get; set; }
 
             public string GitHubToken { get; set; }
+        }
+
+        public class VPackageEntity : TableEntity
+        {
+            public VPackageEntity( string packageId, string version )
+            {
+                PartitionKey = packageId;
+                RowKey = version;
+            }
+
+            public string JsonPackage { get; set; }
         }
     }
 }
