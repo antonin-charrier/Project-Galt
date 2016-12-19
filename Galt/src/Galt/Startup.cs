@@ -78,6 +78,25 @@ namespace Galt
 
             app.UseApplicationInsightsExceptionTelemetry();
 
+            string secretKey = Configuration[ "JwtBearer:SigningKey" ];
+            SymmetricSecurityKey signingKey = new SymmetricSecurityKey( Encoding.ASCII.GetBytes( secretKey ) );
+
+            app.UseJwtBearerAuthentication( new JwtBearerOptions
+            {
+                AuthenticationScheme = JwtBearerAuthentication.AuthenticationScheme,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
+
+                    ValidateIssuer = true,
+                    ValidIssuer = Configuration[ "JwtBearer:Issuer" ],
+
+                    ValidateAudience = true,
+                    ValidAudience = Configuration[ "JwtBearer:Audience" ]
+                }
+            } );
+
             app.UseCookieAuthentication( new CookieAuthenticationOptions
             {
                 AuthenticationScheme = CookieAuthentication.AuthenticationScheme
