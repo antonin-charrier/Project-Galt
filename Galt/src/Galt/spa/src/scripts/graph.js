@@ -1,245 +1,382 @@
 module.exports = {
-    drawGraph: function(id){
-        var data = [
-            {"id":0, "name": "Code.Cake","parent":"", "entity":"source", "version":" 0.14"},
-            {"id":1, "name": "Cake.Core", "parent":"0", "entity":"toUpdate", "version":">= 0.16.2"},
-            {"id":2, "name": "Cake.Common", "parent":"0", "version":">= 0.16.2"},
-            {"id":3, "name": ".NETFramework", "parent":"1", "version": "4.5", "entity":"platform"},
-            {"id":4, "name": ".NETStandard", "parent":"1","version": "1.6", "entity":"platform"},
-            {"id":5, "name": "NETStandard.Library", "parent":"4", "version":">= 1.6.0"},
-            {"id":6, "name": "Microsoft.Win32.Registry", "parent":"4", "version":">= 4.0.0"},
-            {"id":7, "name": "System.Diagnostics.Process", "parent":"4", "version":"4.1.0"},
-            {"id":8, "name": "System.Runtime.InteropServices.RuntimeInformation", "parent":"4", "version":">= 4.0.0"},
-            {"id":9, "name": "System.Runtime.Loader", "parent":"4", "version":"4.0.0"},
-            {"id":10, "name": "Microsoft.Etensions.DependencyModel", "parent":"4", "version":">= 1.0.0"},
-            {"id":11, "name": "System.Xml.XmlDocument", "parent":"18", "version":">= 4.0.1"},
-            {"id":12, "name": "System.Xml.XPath", "parent":"18", "version":">= 4.0.1"},
-            {"id":13, "name": "System.Xml.XPath.XmlDocument", "parent":"18", "version":">= 4.0.1"},
-            {"id":14, "name": "System.Runtime.Serialization.Json", "parent":"18", "version":">= 4.0.2"},
-            {"id":15, "name": "System.Xml.ReaderWriter", "parent":"18", "version":">= 4.0.11"},
-            {"id":16, "name": "System.ComponentModel.TypeConverter", "parent":"18", "version":">= 4.1.0"},
-            {"id":17, "name": ".NETFramework", "parent":"2", "version": "4.5", "entity":"platform"},
-            {"id":18, "name": ".NETStandard", "parent":"2", "version": "1.6", "entity":"platform"}
-        ];
+    simulation : 0,
+    
+    drawGraph: function() {
+        var div = d3.select("#graph");
+        var width = div._groups[0][0].offsetWidth;
+        var height = div._groups[0][0].offsetHeight;
 
-        // Traitement of the data to change its format
-        var stratify = d3.stratify()
-            .parentId(function(d) { return d.parent;});
-            
-        var root = stratify(data)
-            .sort(function(a, b) { return (a.height - b.height) || a.id.localeCompare(b.id); });
+        var file = "data.json";
+        var currentData;
 
-        var treeData = root;
+        //json file
+        var data = {
+            "nodes" : [
+                {"name": "Code.Cake", "entity":"source", "version":" 0.14"},
+                {"name": "Cake.Core", "entity":"toUpdate", "version":"0.16.2", "lastVersion":"0.18.3"},
+                {"name": "Cake.Common", "version":">= 0.16.2"},
+                {"name": ".NETFramework", "version": "4.5", "entity":"platform"},
+                {"name": ".NETStandard", "version": "1.6", "entity":"platform"},
+                {"name": "NETStandard.Library", "version":">= 1.6.0"},
+                {"name": "Microsoft.Win32.Registry", "version":">= 4.0.0"},
+                {"name": "System.Diagnostics.Process", "version":"4.1.0"},
+                {"name": "System.Runtime.InteropServices.RuntimeInformation", "version":">= 4.0.0"},
+                {"name": "System.Runtime.Loader", "version":"4.0.0"},
+                {"name": "Microsoft.Etensions.DependencyModel", "version":">= 1.0.0"},
+                {"name": "System.Xml.XmlDocument", "version":">= 4.0.1"},
+                {"name": "System.Xml.XPath", "version":">= 4.0.1"},
+                {"name": "System.Xml.XPath.XmlDocument", "version":">= 4.0.1"},
+                {"name": "System.Runtime.Serialization.Json", "version":">= 4.0.2"},
+                {"name": "System.Xml.ReaderWriter", "version":">= 4.0.11", "entity":"toUpdate"},
+                {"name": "System.ComponentModel.TypeConverter", "version":">= 4.1.0", "lastVersion":"4.2.0"}
+            ],
+            "links":[
+                {"source":"Code.Cake", "target":"Cake.Core"},
+                {"source":"Code.Cake", "target":"Cake.Common"},
+                {"source":"Cake.Core", "target":".NETFramework"},
+                {"source":"Cake.Core", "target":".NETStandard"},
+                {"source":".NETStandard", "target":"NETStandard.Library"},
+                {"source":".NETStandard", "target":"Microsoft.Win32.Registry"},
+                {"source":".NETStandard", "target":"System.Diagnostics.Process"},
+                {"source":".NETStandard", "target":"System.Runtime.InteropServices.RuntimeInformation"},
+                {"source":".NETStandard", "target":"System.Runtime.Loader"},
+                {"source":".NETStandard", "target":"Microsoft.Etensions.DependencyModel"},
+                //{"source":".NETFramework", "target":"Cake.Core"},
+                {"source":".NETStandard", "target":"System.Xml.XmlDocument"},
+                {"source":".NETStandard", "target":"System.Xml.XPath"},
+                {"source":".NETStandard", "target":"System.Xml.XPath.XmlDocument"},
+                {"source":".NETStandard", "target":"System.Runtime.Serialization.Json"},
+                {"source":".NETStandard", "target":"System.Xml.ReaderWriter"},
+                {"source":"System.ComponentModel.TypeConverter", "target":"System.Xml.ReaderWriter"},
+                {"source":".NETStandard", "target":"System.ComponentModel.TypeConverter"},
+                {"source":"Cake.Common", "target":".NETFramework"},
+                {"source":"Cake.Common", "target":".NETStandard"}
+            ]
+        };
 
-        // Set the dimensions and margins of the diagram
-        var margin = {top: 20, right: 90, bottom: 30, left: 90},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        var node;
+        var link;
+        var allNodeDisplayed = true;
 
-        // append the svg object to the body of the page
-        // appends a 'group' element to 'svg'
-        // moves the 'group' element to the top left margin
+        currentData =(JSON.parse(JSON.stringify(data)));
+
         var svg = d3.select("#graph").append("svg")
-            .attr("width", function(d){return d3.select("#graph")._groups[0][0].offsetWidth})
-            .attr("height", function(d){return d3.select("#graph")._groups[0][0].offsetHeight})
-        .append("g")
-            .attr("transform", "translate("
-                + margin.left + "," + margin.top + ")");
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .call(d3.zoom()
+                .scaleExtent([1 / 2, 4])
+                .on("zoom", zoomed))
+            .append("g")
+            .attr("class", "movable");
+        
+        var clearButton = d3.selectAll("svg").append("rect")
+            .attr("height", 50)
+            .attr("width", 130)
+            .attr("class", "clearButton")
+            .attr ("cx", 10)
+            .attr("cy", 10)
+            .on("click", clearButtonClick);
+            d3.selectAll("svg")
+            .append("text").text("Show Problems")
+            .attr("class", "textClearButton")
+            .attr("x", 10)
+            .attr("y", 25)
+            .on("click", clearButtonClick);
 
-        height = d3.selectAll("#graph")._groups[0][0].offsetHeight;
-        width = d3.selectAll("#graph")._groups[0][0].offsetwidth;
-        // Tooltip to display additional informations in nodes
+        svg.append("defs").append("marker")
+            .attr("id", "endMarkers")
+            .attr("markerWidth", "6")
+            .attr("markerHeight", "4")
+            .attr("refX", "12")
+            .attr("refY", "2")
+            .attr("orient", "auto")
+            .append("polyline").attr("points", "0,0 6,2 0,4");
+
+        simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.name; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            
+        //Declaration of tooltip to display informations in nodes
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             .html(function(d) { 
-                dp = d.data.data;
                 var chaine = "";
-                chaine += '<div class="title">' + dp.name + "</div>";
-                if (dp.entity == "toUpdate") chaine += '<br/><div class="red">To update</div>';
-                else if (dp.entity == null) chaine += '<br><div class = "green">Up to date</div>';
-                if (dp.version != null) chaine += "<br/>Version " + dp.version + "<br/>";
-                if (dp.lastVersion != null) chaine += "Last version " + dp.lastVersion + "<br/>";
+                chaine += '<div class="title">' + d.name + "</div>";
+                if (d.entity == "toUpdate") chaine += '<br/><div class="red">To update</div>';
+                else if (d.entity == null) chaine += '<br><div class = "green">Up to date</div>';
+                if (d.version != null) chaine += "<br/>Version " + d.version + "<br/>";
+                if (d.lastVersion != null) chaine += "Last version " + d.lastVersion + "<br/>";
                 return chaine; 
         });
 
         svg.call(tip);
 
-        var i = 0,
-            duration = 750,
-            root;
+        createNodesAndLinks();
 
-        // declares a tree layout and assigns the size
-        var treemap = d3.tree().size([height, width]);
+        
 
-        // Assigns parent, children, height, depth
-        root = d3.hierarchy(treeData, function(d) { return d.children; });
-        root.x0 = height / 2;
-        root.y0 = 0;
+        node.append("title")
+            .text(function(d) { return d.name; });
 
-        // Collapse after the second level
-        root.children.forEach(collapse);
+        simulation
+            .nodes(currentData.nodes)
+            .on("tick", ticked);
 
-        update(root);
+        simulation.force("link")
+            .links(currentData.links)
+            .distance(100);
 
-        // Collapse the node and all it's children
-        function collapse(d) {
-        if(d.children) {
-            d._children = d.children
-            d._children.forEach(collapse)
-            d.children = null
-        }
-        }
+        simulation.force('charge')
+            .strength(-400);
 
-        function update(source) {
+        function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
 
-        // Assigns the x and y position for the nodes
-        var treeData = treemap(root);
-
-        // Compute the new tree layout.
-        var nodes = treeData.descendants(),
-            links = treeData.descendants().slice(1);
-
-        // Normalize for fixed-depth.
-        nodes.forEach(function(d){ d.y = d.depth * 180});
-
-        // ****************** Nodes section ***************************
-
-        // Update the nodes...
-        var node = svg.selectAll('g.node')
-            .data(nodes, function(d) {return d.id || (d.id = ++i); });
-
-        // Enter any new modes at the parent's previous position.
-        var nodeEnter = node.enter().append('g')
-            .attr('class', 'node')
-            .attr("transform", function(d) {
-                return "translate(" + source.y0 + "," + source.x0 + ")";
-            })
-            .on('click', click);
-
-        // Add Circle for the nodes
-        nodeEnter.append('circle')
-            .attr('r', 1e-6)
-            .attr("class", function (d) {
-                if (d.data.data.entity === "node source") {
-                return "source";
-                } 
-                else if (d.data.data.entity === "toUpdate"){
-                    return "node toUpdate";
-                }
-                else if (d.data.data.entity === "platform")
-                {
-                    return "node platform";
-                }
-                else {
-                return "node default";
-            }})
-
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
-
-        // Add labels for the nodes
-        nodeEnter.append('text')
-            .attr("dy", ".35em")
-            .attr("x", function(d) {
-                return d.children || d._children ? -13 : 13;
-            })
-            .attr("text-anchor", function(d) {
-                return d.children || d._children ? "end" : "start";
-            })
-            .text(function(d) { return d.data.data.name; });
-
-        // UPDATE
-        var nodeUpdate = nodeEnter.merge(node);
-
-        // Transition to the proper position for the node
-        nodeUpdate.transition()
-            .duration(duration)
-            .attr("transform", function(d) { 
-                return "translate(" + d.y + "," + d.x+ ")";
-            });
-
-        // Update the node attributes and style
-        nodeUpdate.select('circle.node')
-            .attr('r', 10)
-            .attr('cursor', 'pointer');
-
-
-        // Remove any exiting nodes
-        var nodeExit = node.exit().transition()
-            .duration(duration)
-            .attr("transform", function(d) {
-                return "translate(" + source.y + "," + source.x + ")";
-            })
-            .remove();
-
-        // On exit reduce the node circles size to 0
-        nodeExit.select('circle')
-            .attr('r', 1e-6);
-
-        // On exit reduce the opacity of text labels
-        nodeExit.select('text')
-            .style('fill-opacity', 1e-6);
-
-        // ****************** links section ***************************
-
-        // Update the links...
-        var link = svg.selectAll('path.link')
-            .data(links, function(d) { return d.id; });
-
-        // Enter any new links at the parent's previous position.
-        var linkEnter = link.enter().insert('path', "g")
-            .attr("class", "link")
-            .attr('d', function(d){
-                var o = {x: source.x0, y: source.y0}
-                return diagonal(o, o)
-            });
-
-        // UPDATE
-        var linkUpdate = linkEnter.merge(link);
-
-        // Transition back to the parent element position
-        linkUpdate.transition()
-            .duration(duration)
-            .attr('d', function(d){ return diagonal(d, d.parent) });
-
-        // Remove any exiting links
-        var linkExit = link.exit().transition()
-            .duration(duration)
-            .attr('d', function(d) {
-                var o = {x: source.x, y: source.y}
-                return diagonal(o, o)
-            })
-            .remove();
-
-        // Store the old positions for transition.
-        nodes.forEach(function(d){
-            d.x0 = d.x;
-            d.y0 = d.y;
-        });
-
-        // Creates a curved (diagonal) path from parent to the child nodes
-        function diagonal(s, d) {
-
-            path = `M ${s.y} ${s.x}
-                    C ${(s.y + d.y) / 2} ${s.x},
-                    ${(s.y + d.y) / 2} ${d.x},
-                    ${d.y} ${d.x}`
-
-            return path
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
         }
 
-        // Toggle children on click.
-        function click(d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
+        function clearButtonClick()
+        {
+            if (allNodeDisplayed)
+            {
+                clearNodes();
             }
-            update(d);
+            else
+            {
+                currentData = (JSON.parse(JSON.stringify(data)));
+                showNodes();
+            }
+            simulation.restart();
+            allNodeDisplayed = !allNodeDisplayed;
         }
+
+        //Create all the nodes and links from the currentData array
+        function createNodesAndLinks()
+        {
+            link = svg.append("g")
+                .attr("class", "link")
+                .selectAll("line")
+                .data(currentData.links)
+                .enter()
+                .append("line")
+                .attr("class", "zoomable")
+                .attr("stroke-width", function(d) { return Math.sqrt(2); })
+                .attr("marker-end", 'url("#endMarkers")');
+
+            node = svg.append("g")
+                .selectAll("circle")
+                .attr("class", "nodes zoomable circle")
+                .data(currentData.nodes)
+                .enter()
+                .append("circle")
+                .attr("r", 10)
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended))
+                .attr("class", function (d) {
+                    return chooseClass(d);
+                })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
         }
+
+        function showNodes()
+        {
+            node
+            .exit()
+            .attr("class", chooseClass);
+
+            link
+            .exit()
+            .attr("class", chooseClass);
+
+            simulation.nodes(currentData.nodes);
+        }
+
+        // Hide all the child any problem of the given node
+        function clearNodes()
+        {
+            var removedNode = true;
+            while (removedNode)
+            {
+                console.log("NOUVEAU TOUR D'INSPECTION !!!");
+                var nodeToRemove = [];
+                var linkToRemove = [];
+                removedNode = false;
+
+                // Choose node with any problem to delete
+                for (var i = 0; i <= currentData.nodes.length-1; i++)
+                {
+                    if (currentData.nodes[i].entity != "toUpdate")
+                    {
+                        var j = 0;
+                        var isParent = false;
+                        while(j <= currentData.links.length-1 && !isParent)
+                        {
+                            isParent = false;
+                            if (currentData.links[j].source == currentData.nodes[i]) 
+                            {
+                                isParent = true
+                            }
+                            j++
+                        }
+                        if (!isParent)
+                        {
+                            removedNode = true;
+                            nodeToRemove = removeNode(currentData.nodes[i], nodeToRemove);
+                            linkToRemove = removeLink(currentData.nodes[i], linkToRemove);
+                        }
+                    }
+                }
+
+                // clear the node array 
+                if (nodeToRemove != [])
+                {
+                    console.log("Voici le tableau de NODES à nettoyer : ", currentData.nodes);
+                    console.log("Nodes à supprimer : ", nodeToRemove);
+                    for(var i = 0; i <= nodeToRemove.length-1; i++)
+                    {
+                        console.log("Node en cours de suppression : ", nodeToRemove[i]-i);
+                        currentData.nodes.splice((nodeToRemove[i]-i), 1);
+                    }
+                    nodeToRemove = [];
+                }
+
+                // clear the link array
+                if (linkToRemove != [])
+                {
+                    linkToRemove.sort(function(a, b) {
+                        return a - b;
+                    });
+                    console.log("Voici le tableau de LIENS à nettoyer : ", currentData.links);
+                    console.log("Liens à supprimer : ", linkToRemove);
+                    for(var i = 0; i <= linkToRemove.length-1; i++)
+                    {
+                        console.log("Lien en cours de suppression : ", linkToRemove[i]-i);
+                        currentData.links.splice((linkToRemove[i]-i), 1);
+                    }
+                    linkToRemove = [];
+                }
+            }
+            console.log("PLUS RIEN A SIGNALER CHEF !!! Voici le tableau nettoyé de NODES : ", currentData.nodes);
+            console.log("Voici le tableau nettoyé de LIENS : ", currentData.links);
+
+            // Clear all the nodes and links
+            svg.selectAll(".node")
+            .data(currentData.nodes)
+            .exit()
+            .attr("class", "invisible");
+
+            svg.selectAll("line")
+            .data(currentData.links)
+            .exit()
+            .attr("class", "invisible");
+
+            recolorNodes();
+        }
+
+        // Return the array of node to delete with index of the given node
+        function removeNode (node, nodeToRemove)
+        {
+            if (node != undefined)
+            {
+                //console.log("On detruit la node : ", node);
+                for (var i = 0; i <= currentData.nodes.length; i++)
+                {
+                    if (currentData.nodes[i] == node)
+                    { 
+                        nodeToRemove.push(i);
+                    }
+                    
+                }
+            }
+
+            return nodeToRemove;
+        }
+        // Return the array of links to delete with index of the links associate given node
+        function removeLink (node, linkToRemove)
+        {
+            if (node != undefined)
+            {
+                //console.log("On detruit les liens de la node : ", node);
+                for (var i = 0; i <= currentData.links.length-1; i++)
+                {
+                    if (currentData.links[i].source == node || currentData.links[i].target == node)
+                    { 
+                        linkToRemove.push(i);
+                    }
+                    
+                }
+            }
+
+            return linkToRemove;
+        }
+        
+        //Refresh the class of all nodes
+        function recolorNodes ()
+        {
+            svg.selectAll(".node")
+            .data(currentData.nodes)
+            .attr("class", function(d){return chooseClass(d)});
+        }
+
+        //Choose a class for the given node
+        function chooseClass(d)
+        {
+            switch(d.entity)
+            {
+                case "source" :
+                    return "node source";
+                case "toUpdate":
+                    return "node toUpdate";
+                case "platform" :
+                    return "node platform";
+                default :
+                    return "node default";
+            }
+        }
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        function zoomed() {
+            var transform = d3.event.transform;
+            d3.selectAll(".movable").attr("transform", function(d) {
+                return "translate(" + transform.applyX(d3.event.transform.x/6) + "," + transform.applyY(d3.event.transform.y/6) + ")";
+            });
+        }
+    },
+
+    resizeGraph: function() {
+        var div = d3.select("#graph");
+        var width = div._groups[0][0].offsetWidth;
+        var height = div._groups[0][0].offsetHeight;
+
+        simulation.force("center", d3.forceCenter(width / 2, height / 2));
+        simulation.restart();
     }
 };
+
 
