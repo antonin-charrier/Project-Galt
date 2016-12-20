@@ -1,5 +1,7 @@
+import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
 import App from './App.vue'
 import Home from './pages/Home.vue'
@@ -10,6 +12,7 @@ import AuthService from './services/AuthService'
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
+Vue.use(VueResource);
 
 const routes = [
     { path: '/', component: Home },
@@ -28,15 +31,20 @@ const store = new Vuex.Store({
     },
     mutations: {
         connect(state, identity) {
-            console.log("Connect mutation called")
             state.isConnected = true
             state.identity = identity
+        },
+        disconnect(state) {
+            state.isConnected = false
+            state.identity = null
         }
     },
     actions: {
         connect(context, identity) {
-            console.log("Connect action called")
             context.commit('connect', identity)
+        },
+        disconnect(context) {
+            context.commit('disconnect')
         }
     }
 });
@@ -50,6 +58,18 @@ const Connecter = {
 };
 
 AuthService.allowedOrigins = ['http://localhost:5000'];
+
+AuthService.logoutEndpoint = '/Account/LogOff';
+
+AuthService.registerAuthenticatedCallback(() => {
+    GaltProject.Galt.setIdentity(AuthService.identity)
+    store.commit('connect', GaltProject.Galt.getIdentity())
+})
+
+AuthService.registerSignedOutCallback(() => {
+    GaltProject.Galt.setIdentity(null);
+    store.commit('disconnect')
+})
 
 if (GaltProject.Galt.getIdentity() != null)
     store.commit('connect', GaltProject.Galt.getIdentity())

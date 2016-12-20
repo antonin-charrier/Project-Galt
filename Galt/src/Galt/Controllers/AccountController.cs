@@ -30,56 +30,12 @@ namespace Galt.Controllers
             return View();
         }
 
-        /*
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login( LoginViewModel model )
-        {
-            if ( ModelState.IsValid )
-            {
-                User user = _userService.FindUser( model.Email, model.Password );
-                if ( user == null )
-                {
-                    ModelState.AddModelError( string.Empty, "Invalid login attempt." );
-                    return View( model );
-                }
-                await SignIn( user.Email, user.UserId.ToString() );
-                return RedirectToAction( nameof( Authenticated ) );
-            }
-
-            return View( model );
-        }
-        */
-
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
-
-        /*
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register( RegisterViewModel model )
-        {
-            if ( ModelState.IsValid )
-            {
-                if ( !_userService.CreatePasswordUser( model.Email, model.Password ) )
-                {
-                    ModelState.AddModelError( string.Empty, "An account with this email already exists." );
-                    return View( model );
-                }
-                User user = _userService.FindUser( model.Email );
-                await SignIn( user.Email, user.UserId.ToString() );
-                return RedirectToAction( nameof( Authenticated ) );
-            }
-
-            return View( model );
-        }
-        */
 
         [HttpGet]
         [Authorize( ActiveAuthenticationSchemes = CookieAuthentication.AuthenticationScheme )]
