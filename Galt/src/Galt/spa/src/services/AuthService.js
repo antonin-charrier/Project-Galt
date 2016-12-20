@@ -1,10 +1,51 @@
 class AuthService {
     constructor() {
         this.allowedOrigins = [];
+        this.logoutEndpoint = null;
         this.authenticatedCallbacks = [];
         this.signedOutCallbacks = [];
 
         window.addEventListener("message", this.onMessage, false);
+    }
+
+    get identity() {
+        return GaltProject.Galt.getIdentity();
+    }
+
+    set identity(i) {
+        GaltProject.Galt.setIdentity(i);
+    }
+
+    get isConnected() {
+        return this.identity != null;
+    }
+
+    get accessToken() {
+        var identity = this.identity;
+
+        return identity ? identity.bearer.access_token : null;
+    }
+
+    get email() {
+        var identity = this.identity;
+
+        return identity ? identity.email : null;
+    }
+
+    get boundProviders() {
+        var identity = this.identity;
+
+        return identity ? identity.boundProviders : [];
+    }
+
+    isBoundToProvider = (expectedProviders) => {
+        var isBound = false;
+
+        for (var p of expectedProviders) {
+            if (this.boundProviders.indexOf(p) > -1) isBound = true;
+        }
+
+        return isBound;
     }
 
     login() {
@@ -12,8 +53,7 @@ class AuthService {
             "Connexion à Galt", "menubar=no, status=no, scrollbars=no, menubar=no, width=700, height=700");
     }
 
-    onMessage(e) {
-        console.log(this.allowedOrigins)
+    onMessage = (e) => {
         if (this.allowedOrigins.indexOf(e.origin) < 0) return;
 
         var data = typeof e.data == 'string' ? JSON.parse(e.data) : e.data;
