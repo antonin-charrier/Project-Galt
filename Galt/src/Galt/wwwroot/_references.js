@@ -1,6 +1,6 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="../graph/graph.js" />
-/// <reference path="../spa/src/helpers/apihelper.js" />
+/// <reference path="../spa/src/helpers/apiHelper.js" />
 /// <reference path="../spa/src/main.js" />
 /// <reference path="../spa/src/scripts/graph.js" />
 /// <reference path="../spa/src/services/AuthService.js" />
