@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Galt.Controllers
@@ -20,17 +21,13 @@ namespace Galt.Controllers
             _gitHubService = gitHubService;
         }
 
-        /*
-        [HttpGet( "Following" )]
-        public async Task<IActionResult> GetFollowedStudents()
+        [HttpGet( "Emails" )]
+        public async Task<ActionResult> GetUserEmails()
         {
-            int userId = int.Parse( User.FindFirst( ClaimTypes.NameIdentifier ).Value );
-            Result<IEnumerable<Student>> result = await _gitHubService.GetFollowedStudents( userId );
-            return this.CreateResult<IEnumerable<Student>, IEnumerable<FollowedStudentViewModel>>( result, o =>
-            {
-                o.ToViewModel = x => x.Select( s => s.ToFollowedStudentViewModel() );
-            } );
+            string email = User.FindFirst( ClaimTypes.Email ).Value;
+            IEnumerable<string> result = await _gitHubService.GetUserEmails( email );
+
+            return result == null ? BadRequest() as ActionResult : Ok( result ) as ActionResult;
         }
-        */
     }
 }

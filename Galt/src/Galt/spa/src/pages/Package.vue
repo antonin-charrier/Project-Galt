@@ -43,7 +43,16 @@ export default {
     methods: {
         addFav: function () {
             this.fav = !this.fav
-        }
+        },
+    },
+    created: function () {
+        console.log("foo");
+        this.$http.get('/controllers').then((response) => {
+            // success callback
+            return response.text();
+        }, (response) => {
+            // error callback
+        })
     },
     components: {
         'graph' : Graph

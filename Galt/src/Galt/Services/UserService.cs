@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Galt.AzureManager;
+using System.Collections.Generic;
 using System.Linq;
-using Galt.AzureManager;
-using static Galt.AzureManager.Entities;
+using static Galt.AzureManager.AzureManager;
+using static Galt.AzureManager.Entities
 
 namespace Galt.Services
 {

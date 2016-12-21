@@ -16,8 +16,16 @@ export default{
     methods: {
         drawGraph: function () {
             this.button = !this.button;
-            return Graph.drawGraph("graph")
+            return Graph.drawGraph()
+        },
+        resizeGraph: function () {
+            return Graph.resizeGraph()
         }
+    },
+    mounted() {
+        this.$nextTick(function () {
+            window.addEventListener('resize', this.resizeGraph);
+        })
     }
 }
 </script>
@@ -41,6 +49,19 @@ export default{
 }
 #endMarkers{
 	fill:black;
+}
+.invisible
+{
+    display:none;
+}
+.clearButton
+{
+    fill: #333;
+    cursor:pointer;
+}
+.textClearButton
+{
+    cursor:pointer;
 }
 .link{
 	fill: none;
