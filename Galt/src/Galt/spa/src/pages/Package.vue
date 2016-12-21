@@ -46,13 +46,15 @@ export default {
         },
     },
     created: function () {
+        root = "Code.Cake";
         console.log("foo");
-        this.$http.get('/controllers').then((response) => {
-            // success callback
-            return response.text();
-        }, (response) => {
-            // error callback
-        })
+        this.$http.get('/request/RootPackage/' + root)
+            .then((response) => {
+                // success callback
+                return response.text();
+            }, (response) => {
+                // error callback
+            })
     },
     components: {
         'graph' : Graph
