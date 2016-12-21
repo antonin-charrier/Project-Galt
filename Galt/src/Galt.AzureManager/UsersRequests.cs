@@ -28,14 +28,14 @@ namespace Galt.AzureManager
 
         public async Task<UserEntity> GetUser( string email )
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, email );
+            TableOperation retrieveOperation = TableOperation.Retrieve<UserEntity>( email, email );
             TableResult retrieved = await AManager.UsersTable.ExecuteAsync( retrieveOperation );
             return (UserEntity)retrieved.Result;
         }
 
         public async Task<bool> AddGitHubTokenIfExists( string email, string token )
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( email, email );
+            TableOperation retrieveOperation = TableOperation.Retrieve<UserEntity>( email, email );
             TableResult retrieved = await AManager.UsersTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
