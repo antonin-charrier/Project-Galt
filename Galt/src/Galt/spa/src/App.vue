@@ -35,10 +35,6 @@
             'connected': Connected,
             'disconnected': Disconnected,
             'logo-32x32': Logo32x32
-        },
-        //actions
-        methods: {
-
         }
     }
 </script>
