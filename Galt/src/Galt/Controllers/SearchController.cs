@@ -10,7 +10,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace Galt.Controllers
 {
-    [Route( "api /[ controller ]" )]
+    [Route( "api/[controller]" )]
     public class SearchController : Controller
     {
         readonly SearchService _searchService;
@@ -20,7 +20,7 @@ namespace Galt.Controllers
             _searchService = searchService;
         }
 
-        [HttpGet]
+        [HttpGet("Search")]
         public async Task<IActionResult> Search( [FromQuery] string searchTerm )
         {
             var results = await _searchService.Search( searchTerm );

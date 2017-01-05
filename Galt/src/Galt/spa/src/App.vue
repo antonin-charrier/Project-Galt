@@ -4,7 +4,7 @@
       <li><router-link class="w3-hover-gray" to="/">
         <logo-32x32></logo-32x32>
       </router-link></li>
-      <li><input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt"></li>
+      <li><search></search></li>
       <connected v-if="isConnected"></connected>
       <disconnected v-else></disconnected>
     </ul>
@@ -16,6 +16,7 @@
 <script>
     import Connected from './components/Connected.vue'
     import Disconnected from './components/Disconnected.vue'
+    import Search from './components/Search.vue'
     import Logo32x32 from './components/Logo-32x32.vue'
 
     export default {
@@ -34,6 +35,7 @@
         components: {
             'connected': Connected,
             'disconnected': Disconnected,
+            'search': Search,
             'logo-32x32': Logo32x32
         }
     }
