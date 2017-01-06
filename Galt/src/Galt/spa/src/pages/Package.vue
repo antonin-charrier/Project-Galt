@@ -1,6 +1,6 @@
 <template>
     <div id="package">
-            <h1 class="package-name">Code.Cake</h1>
+            <h1 class="package-name">{{ packageName }}</h1>
             <div class="package-info">
             <div class="flex-bloc">
                 <h3 class="flex-info-text">
@@ -66,7 +66,12 @@ export default {
     data: function () {
         return {
             fav: false,
-            versions: false
+            versions: false,
+            packageName : 'Code.Cake',
+            packageVersion,
+            packageOwner,
+            packagePDate,
+            packageDescription
         }
     },
     methods: {
