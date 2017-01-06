@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Galt.Services;
 using NuGet.Protocol.Core.Types;
+using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,9 +21,12 @@ namespace Galt.Controllers
             _searchService = searchService;
         }
 
-        [HttpGet("Search")]
-        public async Task<IActionResult> Search( [FromQuery] string searchTerm )
+        [HttpPost("Search")]
+        public async Task<IActionResult> Search([FromQuery] string searchTerm)
         {
+            // Temporary line to look up the request.
+            var request = Request;
+
             var results = await _searchService.Search( searchTerm );
 
             return Ok( results );

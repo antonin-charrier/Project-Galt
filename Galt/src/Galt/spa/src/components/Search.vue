@@ -4,7 +4,7 @@
 <script>
     import _ from 'lodash'
     import {
-        getAsyncWithData
+        postAsync
     } from '../helpers/apiHelper.js'
     import AuthService from '../services/AuthService.js'
 
@@ -18,19 +18,20 @@
         },
         watch: {
             query: function() {
+                var $this = this
                 this.working = true
                 this.search()
             }
         },
         methods: {
             search: _.debounce(function() {
-                var response = getAsyncWithData("api/Search", "Search", AuthService.accessToken, {
+                var response = postAsync("api/Search", "Search", AuthService.accessToken, {
                     searchTerm: this.query
                 });
                 if (response && response.constructor === Array)
                     this.results = response;
                 this.working = false;
-            }.bind(this), 500)
+            }, 500)
         }
     }
 </script>
