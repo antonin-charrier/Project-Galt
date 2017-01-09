@@ -5,14 +5,14 @@
             <div class="flex-bloc">
                 <h3 class="flex-info-text">
                     <div class="w3-dropdown-hover">
-                        <button class="w3-btn w3-white" v-on:click="displayVersions"><span class="actual-version">{{ packageCurrentVersion }}</span><div style="font-size: 30px; color: grey; padding-left: 10px" class="fa fa-sort-desc"></div></button>
+                        <button class="w3-btn w3-white" v-on:click="displayVersions"><span class="actual-version">Version {{ packageCurrentVersion }}</span><div style="font-size: 30px; color: grey; padding-left: 10px" class="fa fa-sort-desc"></div></button>
                         <div class="w3-dropdown-content w3-border version-options" v-if="versions">
                             <version-option></version-option>
 
                         </div>
                     </div>
-                    <a class="flex-info-item package-link" :href="'https://www.nuget.org/profiles/'+packageOwner" target="_blank">{{ packageOwner }}</a>
-                    <span class="flex-info-item">{{ packagePDate }}</span>
+                    <span class="flex-info-item">By</span><a class="flex-info-item-bis package-link" :href="'https://www.nuget.org/profiles/'+packageOwner" target="_blank">{{ packageOwner }}</a>
+                    <span class="flex-info-item">Published on</span><span class="flex-info-item-bis">{{ packagePDate }}</span>
                 </h3>
                 <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="addFav"></i>
                 <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
@@ -48,8 +48,9 @@ export default {
             fav: false,
             versions: false,
             packageName : 'Code.Cake',  
-            packageCurrentVersion : 'Version 0.14.0',
-            packageVersions : ['Version 0.14.0', 'Version 0.13.0', 'Version 0.12.0', 'Version 0.11.0', 'Version 0.10.0', 'Version 0.8.3', 'Version 0.8.2', 'Version 0.8.1', 'Version 0.8.0', 'Version 0.7.4', 'Version 0.7.3', 'Version 0.7.2', 'Version 0.7.1', 'Version 0.6.2', 'Version 0.6.1', 'Version 0.6.0', 'Version 0.6.0-r', 'Version 0.3.1', 'Version 0.3.0', 'Version 0.2.2', 'Version 0.2.1', 'Version 0.2.0', 'Version 0.1.0-r02', 'Version 0.1.0-beta'],             packageOwner : 'olivier-spinelli',
+            packageCurrentVersion : '0.14.0',
+            packageVersions : ['0.14.0', '0.13.0', '0.12.0', '0.11.0', '0.10.0', '0.8.3', '0.8.2', '0.8.1', '0.8.0', '0.7.4', '0.7.3', '0.7.2', '0.7.1', '0.6.2', '0.6.1', '0.6.0', '0.6.0-r', '0.3.1', '0.3.0', '0.2.2', '0.2.1', '0.2.0', '0.1.0-r02', '0.1.0-beta'],
+            packageOwner : 'olivier-spinelli',
             packagePDate : '10/19/2016',
             packageDescription : 'Code.Cake library contains Code.Cake.dll (0.14.0) that CodeCakeBuilder applications uses.'
         }
@@ -65,7 +66,7 @@ export default {
     created: function () {
         VersionsMenu.template = VersionsMenu.template + '<div>';
         for(var i=0; i<this.packageVersions.length ;i++){
-            VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">' + this.packageVersions[i] + '</router-link>'
+            VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.packageVersions[i] + '</router-link>'
             console.log('foo' + i);
         }
         VersionsMenu.template = VersionsMenu.template + '</div>';
@@ -111,6 +112,9 @@ export default {
     .flex-info-item{
         margin-left: 40px;
     }
+    .flex-info-item-bis{
+        margin-left: 10px;
+    }
     .w3-dropdown-hover{
         margin-top: -5px;
     }
@@ -118,7 +122,7 @@ export default {
         color: #2c3e50;
     }
     .version-options{
-        font-size: 14px;
+        font-size: 16px;
     }
     .w3-dropdown-content{
         height: 300px;
