@@ -61,7 +61,7 @@
         border-radius: 4px;
         font-size: 16px;
         background-color: white;
-        background-image: url('./assets/searchicon.png');
+        /*background-image: url('./assets/searchicon.png');*/
         background-size: 25px;
         background-position: 10px 10px;
         background-repeat: no-repeat;
