@@ -1,12 +1,16 @@
 <template>
-    <input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt" v-model="query"/>
+    <div style="height: 100%">
+        <input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt" v-model="query"/>
+        <search-dropdown :packages="results"></search-dropdown>
+    </div>
 </template>
 <script>
     import _ from 'lodash'
     import {
         postAsync
-    } from '../helpers/apiHelper.js'
-    import AuthService from '../services/AuthService.js'
+    } from '../../helpers/apiHelper.js'
+    import AuthService from '../../services/AuthService.js'
+    import SearchDropdown from './SearchDropdown.vue'
 
     export default {
         data: function() {
@@ -15,6 +19,9 @@
                 working: false,
                 results: []
             }
+        },
+        components: {
+            'search-dropdown': SearchDropdown
         },
         watch: {
             query: function() {
