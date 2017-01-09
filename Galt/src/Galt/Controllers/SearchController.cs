@@ -16,20 +16,25 @@ namespace Galt.Controllers
     {
         readonly SearchService _searchService;
 
-        public SearchController(SearchService searchService)
+        public SearchController( SearchService searchService )
         {
             _searchService = searchService;
         }
 
-        [HttpPost("Search")]
-        public async Task<IActionResult> Search([FromQuery] string searchTerm)
+        [HttpPost( "Search" )]
+        public async Task<IActionResult> Search( [FromBody] SearchQuery query )
         {
             // Temporary line to look up the request.
             var request = Request;
 
-            var results = await _searchService.Search( searchTerm );
+            var results = await _searchService.Search( query.searchTerm );
 
             return Ok( results );
         }
+    }
+
+    public class SearchQuery
+    {
+        public string searchTerm { get; set; }
     }
 }

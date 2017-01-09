@@ -28,8 +28,11 @@
                 var response = postAsync("api/Search", "Search", AuthService.accessToken, {
                     searchTerm: this.query
                 });
-                if (response && response.constructor === Array)
-                    this.results = response;
+
+                response.then(function(r) {
+                    this.results = r
+                }.bind(this));
+
                 this.working = false;
             }, 500)
         }
