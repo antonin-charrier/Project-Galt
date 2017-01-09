@@ -4,7 +4,7 @@
       <li><router-link class="w3-hover-gray" to="/">
         <logo-32x32></logo-32x32>
       </router-link></li>
-      <li><input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt"></li>
+      <li><input type="text" class=" w3-light-grey search" placeholder="Search on Galt"></li>
       <connected v-if="isConnected"></connected>
       <disconnected v-else></disconnected>
     </ul>
@@ -52,16 +52,16 @@
         right: 6px;
     }
     
-    input[type=text] {
+    .search{
         position: relative;
         left: 10px;
-        width: 200px;
+        width: 250px;
         box-sizing: border-box;
         border: 2px solid #ccc;
         border-radius: 4px;
         font-size: 16px;
         background-color: white;
-        /*background-image: url('./assets/searchicon.png');*/
+        background-image: url('./assets/searchicon.png');
         background-size: 25px;
         background-position: 10px 10px;
         background-repeat: no-repeat;
@@ -70,7 +70,7 @@
         transition: width 0.4s ease-in-out;
     }
     
-    input[type=text]:focus {
-        width: 500px;
+    .search:focus {
+        width: 450px;
     }
 </style>
