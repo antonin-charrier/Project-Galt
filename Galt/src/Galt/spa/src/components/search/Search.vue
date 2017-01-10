@@ -1,7 +1,7 @@
 <template>
     <div style="height: 100%">
         <input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt" v-model="query"/>
-        <search-dropdown :packages="results"></search-dropdown>
+        <search-dropdown :packages="results" :working="working" query="query"></search-dropdown>
     </div>
 </template>
 <script>
