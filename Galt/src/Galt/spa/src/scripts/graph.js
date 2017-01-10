@@ -11,7 +11,7 @@ module.exports = {
         var currentGraph;
 
         //json file
-        var data = json.parse(data);
+        var data = JSON.parse(data);
         var node;
         var link;
         var allNodeDisplayed = true;
