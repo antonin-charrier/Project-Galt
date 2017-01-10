@@ -1,7 +1,8 @@
 <template>
     <div style="height: 100%">
-        <input type="text" class="search w3-light-grey" placeholder="Search on Galt" v-model="query"/>
-        <search-dropdown :packages="results" :working="working" query="query"></search-dropdown>
+        <input type="text" id="search-bar" class="search w3-light-grey" placeholder="Search on Galt" v-model="query"
+        @focus="onFocus" @focusout="onFocusOut"/>
+        <search-dropdown v-show="showDropDown" :packages="results" :working="working" :query="query"></search-dropdown>
     </div>
 </template>
 <script>
@@ -17,7 +18,14 @@
             return {
                 query: "",
                 working: false,
-                results: []
+                focused: false,
+                results: [],
+                firstRun: true
+            }
+        },
+        computed: {
+            showDropDown: function() {
+                return this.focused && (this.working || !this.firstRun)
             }
         },
         components: {
@@ -27,6 +35,7 @@
             query: function() {
                 var $this = this
                 this.working = true
+                this.firstRun = false
                 this.search()
             }
         },
@@ -41,7 +50,13 @@
                 }.bind(this));
 
                 this.working = false;
-            }, 500)
+            }, 500),
+            onFocus: function() {
+                this.focused = true;
+            },
+            onFocusOut: function() {
+                this.focused = false;
+            }
         }
     }
 </script>
@@ -55,7 +70,7 @@
         border-radius: 4px;
         font-size: 16px;
         background-color: white;
-        background-image: url('./assets/searchicon.png');
+        background-image: url('../../assets/searchicon.png');
         background-size: 25px;
         background-position: 10px 10px;
         background-repeat: no-repeat;

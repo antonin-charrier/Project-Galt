@@ -1,5 +1,5 @@
 <template>
-    <div class="w3-hover-light-grey package-drop-div">
+    <div class="w3-hover-light-grey w3-white package-drop-div">
         <table class="package-drop-table">
             <tr>
                 <td rowspan=2 valign="top" class="package-drop-icon-frame">
