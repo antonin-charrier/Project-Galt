@@ -10,20 +10,17 @@ import Graph from "../scripts/graph.js"
 export default{
     data: function () {
         return {
-            button : true,
-            packageInfo : null
+            button : true
         }
     },
     methods: {
         drawGraph: function () {
             this.button = !this.button;
             
-            this.packageInfo = {
-                packageName : 'Code.Cake'
-            };
             //HTTP request to get package info <--
+            var packageInfo = '{"nodes" : [{"id":0,"name": "Code.Cake", "entity":"source", "version":" 0.14"},{"id":1,"name": "Cake.Core", "warning":"toUpdate", "version":"0.16.2", "lastVersion":"0.18.3"},{"id":2,"name": "Cake.Common", "version":">= 0.16.2"},{"id":3,"name": ".NETFramework", "version": "4.5", "entity":"platform"},{"id":4,"name": ".NETStandard", "version": "1.6", "entity":"platform"},{"id":5,"name": "NETStandard.Library", "version":">= 1.6.0"},{"id":6,"name": "Microsoft.Win32.Registry", "version":">= 4.0.0"},{"id":7,"name": "System.Diagnostics.Process", "version":"4.1.0"},{"id":8,"name": "System.Runtime.InteropServices.RuntimeInformation", "version":">= 4.0.0","warning":"versionConflict"},{"id":9,"name": "System.Runtime.Loader", "version":"4.0.0"},{"id":10,"name": "Microsoft.Etensions.DependencyModel", "version":">= 1.0.0"},{"id":11,"name": "System.Xml.XmlDocument", "version":">= 4.0.1"},{"id":12,"name": "System.Xml.XPath", "version":">= 4.0.1"},{"id":13,"name": "System.Xml.XPath.XmlDocument", "version":">= 4.0.1"},{"id":14,"name": "System.Runtime.Serialization.Json", "version":">= 4.0.2"},{"id":15,"name": "System.Xml.ReaderWriter", "version":">= 4.0.11", "warning":"toUpdate"},{"id":16,"name": "System.ComponentModel.TypeConverter", "version":">= 4.1.0", "lastVersion":"4.2.0"},{"id":17,"name": ".NETStandard", "version": "1.6", "entity":"platform"},{"id":18,"name": "System.Runtime.InteropServices.RuntimeInformation", "version":">= 3.19.0", "warning":"versionConflict"},],"links":[{"source":0, "target":1},{"source":0, "target":2},{"source":1, "target":17},{"source":17, "target":5},{"source":17, "target":6},{"source":17, "target":7},{"source":17, "target":8},{"source":17, "target":9},{"source":17, "target":10},{"source":3, "target":1},{"source":4, "target":11},{"source":4, "target":12},{"source":4, "target":13},{"source":4, "target":14},{"source":4, "target":15},{"source":4, "target":18},{"source":16, "target":15},{"source":4, "target":16},{"source":2, "target":3},{"source":2, "target":4}]}'
 
-            return Graph.drawGraph()
+            return Graph.drawGraph(packageInfo)
         },
         resizeGraph: function () {
             return Graph.resizeGraph()
@@ -85,7 +82,10 @@ export default{
 	fill: #FF0DFF
 }
 .toUpdate{
-	fill: #ff0000
+	fill: #ff9b00
+}
+.versionConflict{
+	fill: red
 }
 #graph{
     display: -webkit-flex;
@@ -97,7 +97,7 @@ export default{
     margin-left: 50px;
     background-color: gray;
 }
-.toUpdate, .platform, .default, .source{
+.node{
 	stroke: black;
 }
 text{
@@ -114,7 +114,11 @@ text{
 	color:green;
 	text-align: center;
 }
-.red{
+.warning{
+	color:orange;
+	text-align: center;
+}
+.error{
 	color:red;
 	text-align: center;
 }
