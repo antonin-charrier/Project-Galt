@@ -54,10 +54,10 @@
         right: 6px;
     }
     
-    input[type=text] {
+    .search{
         position: relative;
         left: 10px;
-        width: 200px;
+        width: 250px;
         box-sizing: border-box;
         border: 2px solid #ccc;
         border-radius: 4px;
@@ -72,7 +72,7 @@
         transition: width 0.4s ease-in-out;
     }
     
-    input[type=text]:focus {
-        width: 500px;
+    .search:focus {
+        width: 450px;
     }
 </style>

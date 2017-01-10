@@ -1,6 +1,6 @@
 <template>
     <div style="height: 100%">
-        <input type="text" class="w3-input w3-light-grey" placeholder="Search on Galt" v-model="query"/>
+        <input type="text" class="search w3-light-grey" placeholder="Search on Galt" v-model="query"/>
         <search-dropdown :packages="results" :working="working" query="query"></search-dropdown>
     </div>
 </template>
@@ -45,3 +45,26 @@
         }
     }
 </script>
+<style>
+    .search {
+        position: relative;
+        left: 10px;
+        width: 250px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+        background-image: url('./assets/searchicon.png');
+        background-size: 25px;
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+    }
+    
+    .search:focus {
+        width: 450px;
+    }
+</style>
