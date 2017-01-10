@@ -10,12 +10,19 @@ import Graph from "../scripts/graph.js"
 export default{
     data: function () {
         return {
-            button : true
+            button : true,
+            packageInfo : null
         }
     },
     methods: {
         drawGraph: function () {
             this.button = !this.button;
+            
+            this.packageInfo = {
+                packageName : 'Code.Cake'
+            };
+            //HTTP request to get package info <--
+
             return Graph.drawGraph()
         },
         resizeGraph: function () {

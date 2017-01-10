@@ -67,19 +67,8 @@ export default {
         VersionsMenu.template = VersionsMenu.template + '<div>';
         for(var i=0; i<this.packageVersions.length ;i++){
             VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.packageVersions[i] + '</router-link>'
-            console.log('foo' + i);
         }
         VersionsMenu.template = VersionsMenu.template + '</div>';
-        console.log(VersionsMenu.template)
-        /*root = "Code.Cake";
-        console.log("foo");
-        this.$http.get('/request/RootPackage/' + root)
-            .then((response) => {
-                // success callback
-                return response.text();
-            }, (response) => {
-                // error callback
-            })*/
     },
     components: {
         'graph' : Graph,
