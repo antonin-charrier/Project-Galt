@@ -1,47 +1,23 @@
 <template>
     <div id="package">
-            <h1 class="package-name">{{ packageName }}</h1>
+            <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageName }}</a></h1>
             <div class="package-info">
             <div class="flex-bloc">
                 <h3 class="flex-info-text">
                     <div class="w3-dropdown-hover">
-                        <button class="w3-btn w3-white" v-on:click="displayVersions"><span class="actual-version">Version 0.14.0</span></button>
+                        <button class="w3-btn w3-white" v-on:click="displayVersions"><span class="actual-version">Version {{ packageCurrentVersion }}</span><div style="font-size: 30px; color: grey; padding-left: 10px" class="fa fa-sort-desc"></div></button>
                         <div class="w3-dropdown-content w3-border version-options" v-if="versions">
-                            <router-link to="/package" href="#">Version 0.14.0</router-link>
-                            <router-link to="/package" href="#">Version 0.13.0</router-link>
-                            <router-link to="/package" href="#">Version 0.12.0</router-link>
-                            <router-link to="/package" href="#">Version 0.11.0</router-link>
-                            <router-link to="/package" href="#">Version 0.10.0</router-link>
-                            <router-link to="/package" href="#">Version 0.8.3</router-link>
-                            <router-link to="/package" href="#">Version 0.8.2</router-link>
-                            <router-link to="/package" href="#">Version 0.8.1</router-link>
-                            <router-link to="/package" href="#">Version 0.8.0</router-link>
-                            <router-link to="/package" href="#">Version 0.7.4</router-link>
-                            <router-link to="/package" href="#">Version 0.7.3</router-link>
-                            <router-link to="/package" href="#">Version 0.7.2</router-link>
-                            <router-link to="/package" href="#">Version 0.7.1</router-link>
-                            <router-link to="/package" href="#">Version 0.6.2</router-link>
-                            <router-link to="/package" href="#">Version 0.6.1</router-link>
-                            <router-link to="/package" href="#">Version 0.6.0</router-link>
-                            <router-link to="/package" href="#">Version 0.6.0-r</router-link>
-                            <router-link to="/package" href="#">Version 0.3.1</router-link>
-                            <router-link to="/package" href="#">Version 0.3.0</router-link>
-                            <router-link to="/package" href="#">Version 0.2.2</router-link>
-                            <router-link to="/package" href="#">Version 0.2.1</router-link>
-                            <router-link to="/package" href="#">Version 0.2.0</router-link>
-                            <router-link to="/package" href="#">Version 0.1.0-r02</router-link>
-                            <router-link to="/package" href="#">Version 0.1.0-beta</router-link>
+                            <version-option></version-option>
+
                         </div>
                     </div>
-                    <span class="flex-info-item">By olivier-spinelli</span>
-                    <span class="flex-info-item">Published on 10/19/2016</span>
+                    <span class="flex-info-item">By</span><a class="flex-info-item-bis package-link" :href="'https://www.nuget.org/profiles/'+packageOwner" target="_blank">{{ packageOwner }}</a>
+                    <span class="flex-info-item">Published on</span><span class="flex-info-item-bis">{{ packagePDate }}</span>
                 </h3>
                 <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="addFav"></i>
                 <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
             </div>
-            <p id="description">
-                Code.Cake library contains Code.Cake.dll (0.14.0) that CodeCakeBuilder applications uses.
-            </div>
+            <p id="description">{{ packageDescription }}</div>
             <div class="flex-bloc">
                 <graph></graph>
                 <div class="flex-issues-versions">
@@ -62,16 +38,21 @@
 <script>
 import Graph from "../components/Graph.vue"
 
+var VersionsMenu = {
+  template: ''
+}
+
 export default {
     data: function () {
         return {
             fav: false,
             versions: false,
-            packageName : 'Code.Cake',
-            packageVersion,
-            packageOwner,
-            packagePDate,
-            packageDescription
+            packageName : 'Code.Cake',  
+            packageCurrentVersion : '0.14.0',
+            packageVersions : ['0.14.0', '0.13.0', '0.12.0', '0.11.0', '0.10.0', '0.8.3', '0.8.2', '0.8.1', '0.8.0', '0.7.4', '0.7.3', '0.7.2', '0.7.1', '0.6.2', '0.6.1', '0.6.0', '0.6.0-r', '0.3.1', '0.3.0', '0.2.2', '0.2.1', '0.2.0', '0.1.0-r02', '0.1.0-beta'],
+            packageOwner : 'olivier-spinelli',
+            packagePDate : '10/19/2016',
+            packageDescription : 'Code.Cake library contains Code.Cake.dll (0.14.0) that CodeCakeBuilder applications uses.'
         }
     },
     methods: {
@@ -82,8 +63,15 @@ export default {
             this.versions = !this.versions
         }
     },
-    /*created: function () {
-        root = "Code.Cake";
+    created: function () {
+        VersionsMenu.template = VersionsMenu.template + '<div>';
+        for(var i=0; i<this.packageVersions.length ;i++){
+            VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.packageVersions[i] + '</router-link>'
+            console.log('foo' + i);
+        }
+        VersionsMenu.template = VersionsMenu.template + '</div>';
+        console.log(VersionsMenu.template)
+        /*root = "Code.Cake";
         console.log("foo");
         this.$http.get('/request/RootPackage/' + root)
             .then((response) => {
@@ -91,10 +79,11 @@ export default {
                 return response.text();
             }, (response) => {
                 // error callback
-            })
-    },*/
+            })*/
+    },
     components: {
-        'graph' : Graph
+        'graph' : Graph,
+        'version-option' : VersionsMenu
     }
 }
 </script>
@@ -102,7 +91,12 @@ export default {
 <style>
     h1.package-name{
         margin-left: 50px;
-        margin-bottom: 0px;
+    }
+    .package-link:link{
+       text-decoration: none; 
+    }
+    .package-link:hover{
+        text-decoration: underline;
     }
     .flex-bloc{
         display: -webkit-flex;
@@ -118,6 +112,9 @@ export default {
     .flex-info-item{
         margin-left: 40px;
     }
+    .flex-info-item-bis{
+        margin-left: 10px;
+    }
     .w3-dropdown-hover{
         margin-top: -5px;
     }
@@ -125,7 +122,7 @@ export default {
         color: #2c3e50;
     }
     .version-options{
-        font-size: 14px;
+        font-size: 16px;
     }
     .w3-dropdown-content{
         height: 300px;
@@ -147,7 +144,6 @@ export default {
         display: -webkit-flex;
         display: flex;
         width: 90%;
-        margin-top: 0px;
         margin-left: 50px;
         margin-right: 50px;
     }

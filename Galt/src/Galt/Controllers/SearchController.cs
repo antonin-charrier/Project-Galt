@@ -10,7 +10,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace Galt.Controllers
 {
-    [Route( "api /[ controller ]" )]
+    [Route( "api/[controller]" )]
     public class SearchController : Controller
     {
         readonly SearchService _searchService;
