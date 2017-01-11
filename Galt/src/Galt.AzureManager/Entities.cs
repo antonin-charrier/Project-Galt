@@ -10,6 +10,9 @@ namespace Galt.AzureManager
     {
         public class UserEntity : TableEntity
         {
+            // daubiht if you touch this again I will literally shank you
+            public UserEntity() { }
+
             public UserEntity( string email )
             {
                 PartitionKey = email;
