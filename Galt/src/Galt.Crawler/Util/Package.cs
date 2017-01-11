@@ -16,7 +16,7 @@ namespace Galt.Crawler.Util
 
         public List<VPackage> Vpackages { get; set; }
 
-        public string Owner { get; set; }
+        public List<string> Authors { get; set; }
 
         public string Description { get; set; }
 

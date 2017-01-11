@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Versioning;
 using Galt.Crawler.Util;
 using NuGet;
+using static Galt.AzureManager.Entities;
 
 namespace Galt.Crawler
 {
@@ -14,6 +15,47 @@ namespace Galt.Crawler
         public NuGetDownloader()
         {
             _repo = PackageRepositoryFactory.Default.CreateRepository( "https://packages.nuget.org/api/v2" );
+        }
+
+        public string GetInfoVPackage(string packageId, string version )
+        {
+            VPackage vPackage = new VPackage(packageId, new Version(version));
+
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+            packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
+
+            vPackage.Dependencies = null;
+
+            string dateTime = packages.First().Published.ToString();
+            dateTime = dateTime.Remove( 10 );
+            string[] dateTimeSplit = dateTime.Split('/');
+            string temp = dateTimeSplit[1];
+            dateTimeSplit[1] = dateTimeSplit[0];
+            dateTimeSplit[0] = temp;
+            dateTime = string.Join( "/", dateTimeSplit );
+
+            vPackage.PublicationDate = dateTime;
+
+            JsonSerializerPackage jsonSeria = new JsonSerializerPackage();
+            return jsonSeria.JsonSerializer( vPackage );
+        }
+
+        public PackageEntity GetInfoPackage( string packageId )
+        {
+            PackageEntity pEntity = new PackageEntity(packageId);
+
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+            pEntity.Authors = packages.Last().Authors.ToList();
+            pEntity.Description = packages.Last().Description;
+
+            List<string> vpackages = new List<string>();
+            foreach( IPackage item in packages )
+            {
+                vpackages.Add( item.Version.ToString() );
+            }
+            pEntity.ListVPackage = vpackages;
+
+            return pEntity;
         }
 
         public IPackage GetLatestVersionPackage( string packageId )
@@ -32,11 +74,22 @@ namespace Galt.Crawler
             List<VPackage> packagesProcessed = new List<VPackage>();
             foreach( var item in packages )
             {
-                VPackage vp = new VPackage( package, item.Version.Version );
-                vp.PublicationDate = item.Published.ToString();
+                VPackage vp = new VPackage( package.PackageId, item.Version.Version );
+                string dateTime = item.Published.ToString();
+
+                dateTime = dateTime.Remove( 10 );
+                string[] dateTimeSplit = dateTime.Split('/');
+                string temp = dateTimeSplit[1];
+                dateTimeSplit[1] = dateTimeSplit[0];
+                dateTimeSplit[0] = temp;
+
+                dateTime = string.Join( "/", dateTimeSplit );
+
+                vp.PublicationDate = dateTime;
                 packagesProcessed.Add( vp );
             }
 
+            package.Authors = packages.Last().Authors.ToList();
             package.Vpackages = packagesProcessed;
             package.Description = packages.First().Description;
             foreach( var item in package.Vpackages )
@@ -60,9 +113,9 @@ namespace Galt.Crawler
                     List<VPackage> listdep = new List<VPackage>();
                     foreach( var item in packages.First().GetCompatiblePackageDependencies( frameW ) )
                     {
-                        listdep.Add( new VPackage( new Package(item.Id), item.VersionSpec.MinVersion.Version ) );
+                        listdep.Add( new VPackage( item.Id, item.VersionSpec.MinVersion.Version ) );
                     }
-                    dicFrameDep.Add( new Framework(frameW.FullName, frameW.Version), listdep);
+                    dicFrameDep.Add( new Framework( frameW.FullName, frameW.Version ), listdep );
                 }
                 return dicFrameDep;
             }

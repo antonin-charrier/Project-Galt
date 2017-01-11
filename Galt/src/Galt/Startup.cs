@@ -56,6 +56,7 @@ namespace Galt
             services.AddSingleton<TokenService>();
             services.AddSingleton<GitHubService>();
             services.AddSingleton<GitHubClient>();
+            services.AddSingleton<PackageService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

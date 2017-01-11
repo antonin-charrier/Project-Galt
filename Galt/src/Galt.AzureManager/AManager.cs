@@ -18,22 +18,30 @@ namespace Galt.AzureManager
             UsersTable = CloudTableClient.GetTableReference( "UsersTable" );
             UsersTable.CreateIfNotExistsAsync();
 
+            VPackagesTable = CloudTableClient.GetTableReference( "VPackagesTable" );
+            VPackagesTable.CreateIfNotExistsAsync();
+
             PackagesTable = CloudTableClient.GetTableReference( "PackagesTable" );
             PackagesTable.CreateIfNotExistsAsync();
 
             UsersRequests = new UsersRequests(this);
-            PackagesRequests = new PackagesRequests(this);
+            VPackagesRequests = new VPackageRequests(this);
+            PackagesRequests = new VPackageRequests(this);
         }
 
         public CloudTable UsersTable { get; }
 
         public CloudTable PackagesTable { get; }
 
+        public CloudTable VPackagesTable { get; }
+
         public CloudStorageAccount CloudStorageAccount { get; }
 
         public CloudTableClient CloudTableClient { get; }
 
-        public PackagesRequests PackagesRequests { get; }
+        public VPackageRequests VPackagesRequests { get; }
+
+        public VPackageRequests PackagesRequests { get; }
 
         public UsersRequests UsersRequests { get; }
     }
