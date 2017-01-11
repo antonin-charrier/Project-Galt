@@ -46,10 +46,12 @@
                 });
 
                 response.then(function(r) {
-                    this.results = r
-                }.bind(this));
-
-                this.working = false;
+                        this.results = r;
+                        this.working = false;
+                    }.bind(this),
+                    function(r) {
+                        this.working = false;
+                    }.bind(this));
             }, 500),
             onFocus: function() {
                 this.focused = true;
