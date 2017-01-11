@@ -64,6 +64,12 @@ export default {
         }
     },
     created: function () {
+          this.$http.get('/api/package/infopackage?packageId=code.cake').then((response) => {
+            console.log(response);
+          }, (response) => {
+            console.log("test failed");
+          });
+    
         VersionsMenu.template = VersionsMenu.template + '<div>';
         for(var i=0; i<this.packageVersions.length ;i++){
             VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.packageVersions[i] + '</router-link>'

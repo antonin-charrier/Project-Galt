@@ -32,7 +32,7 @@ namespace Galt.Services
 
         public IEnumerable<string> GetAuthenticationProviders( string userId )
         {
-            return new List<string> { "GitHub"};
+            return new List<string> {"GitHub"};
         }
     }
 }
