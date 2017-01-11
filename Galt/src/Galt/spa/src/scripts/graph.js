@@ -1,13 +1,7 @@
 module.exports = {
-    simulation : 0,
-    
     drawGraph: function(data) {
-        var div = d3.select("#graph");
-        var width = div._groups[0][0].offsetWidth;
-        var height = div._groups[0][0].offsetHeight;
-
-        var file = "data.json";
-        var currentSimulation;
+        var width = d3.select("#graph")._groups[0][0].offsetWidth;
+        var height = d3.select("#graph")._groups[0][0].offsetHeight;
         var currentGraph;
 
         //json file
@@ -18,8 +12,8 @@ module.exports = {
 
         var graph = {
             "simulation":"",
-            "completGraph":{"simulation": "", "data":JSON.parse(JSON.stringify(data)), "link":"", "node":""},
-            "problemsGraph":{"simulation": "", "data":JSON.parse(JSON.stringify(data)), "link":"", "node":""}
+            "completGraph":{"data":JSON.parse(JSON.stringify(data)), "link":"", "node":""},
+            "problemsGraph":{"data":JSON.parse(JSON.stringify(data)), "link":"", "node":""}
         };
 
         var svg = d3.select("#graph").append("svg")
@@ -98,8 +92,6 @@ module.exports = {
         function changeSimulation (graphName)
         {
             currentGraph = graph[graphName];
-
-            console.log("Tableau LOOL " + graphName + "   : ", graph[graphName]);
             graph.simulation
                 .nodes(graph[graphName].data.nodes)
                 .on("tick", ticked);
@@ -107,8 +99,6 @@ module.exports = {
             graph.simulation.force("link")
                 .links(graph[graphName].data.links)
                 .distance(100);
-                // .distance(definedLinkDistance)
-                // .strength(definedLinkStrength);
 
             graph.simulation.force('charge')
                 .strength(-400);
@@ -254,7 +244,6 @@ module.exports = {
                     });
                     for(var i = 0; i <= linkToRemove.length-1; i++)
                     {
-                        console.log("Lien en cours de suppression : ", linkToRemove[i]-i);
                         graph.problemsGraph.data.links.splice((linkToRemove[i]-i), 1);
                     }
                     linkToRemove = [];
@@ -336,7 +325,6 @@ module.exports = {
             d.fy = null;
         }
 
-        // Zooooooom Zoomzooooooooooom !!!!!
         var zoom = d3.zoom()
             .scaleExtent([1, 40])
             .translateExtent([[-100, -100], [width + 90, height + 100]])
@@ -352,17 +340,7 @@ module.exports = {
             svg.transition()
                 .duration(750)
                 .call(zoom.transform, d3.zoomIdentity);
-        }
-    },
-
-    resizeGraph: function() {
-        var div = d3.select("#graph");
-        var width = div._groups[0][0].offsetWidth;
-        var height = div._groups[0][0].offsetHeight;
-
-        simulation.force("center", d3.forceCenter(width / 2, height / 2));
-        simulation.restart();
-    }
+    }}
 };
 
 
