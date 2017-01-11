@@ -1,6 +1,6 @@
 <template>
     <div id="package">
-            <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageName }}</a></h1>
+            <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageId }}</a></h1>
             <div class="package-info">
             <div class="flex-bloc">
                 <h4 class="flex-info-text">
@@ -36,23 +36,17 @@
 
 <script>
     import Graph from "../components/Graph.vue"
-import VersionsDropdown from "../components/VersionsDropdown.vue"
+    import VersionsDropdown from "../components/VersionsDropdown.vue"
 
     export default {
         data: function() {
             return {
             request: undefined,
             ready: false,
-                fav: false,
+            fav: false,
             versionsDisplayed: false,
             versions: [],
-            packageName : 'Cake.Core',
             packageVersion : '0.14.0',
-            }
-        },
-        computed: {
-            packageId: function() {
-                return this.$route.params.id
             }
         },
         methods: {
@@ -64,32 +58,35 @@ import VersionsDropdown from "../components/VersionsDropdown.vue"
             }
         },
         created: function() {
-        this.$http.get('/api/package/infopackage?packageId=' + this.packageName).then((response) => {
-            this.request = JSON.parse(response.body);
-            this.versions = this.request.ListVPackage;
-            console.log(this.versions);
-            this.ready = true;
+            this.$http.get('/api/package/infopackage?packageId=' + this.packageId).then((response) => {
+                this.request = JSON.parse(response.body);
+                this.versions = this.request.ListVPackage;
+                console.log(this.versions);
+                this.ready = true;
             
-            for(var i=this.request.ListVPackage.length-1; i>=0; i--){
-                VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.request.ListVPackage[i] + '</router-link>'
-            }
-            VersionsMenu.template = VersionsMenu.template + '</div>';
+                for(var i=this.request.ListVPackage.length-1; i>=0; i--){
+                    VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.request.ListVPackage[i] + '</router-link>'
+                }
+                VersionsMenu.template = VersionsMenu.template + '</div>';
 
-            console.log(this.request);
-        }, (response) => {
-            console.log("Request error");
-        });
-    },
-    computed: {
-        description: function() {
-            return this.ready ? this.request.Description : 'Loading...';
+                console.log(this.request);
+            }, (response) => {
+                console.log("Request error");
+            });
         },
-        authors: function() {
-            return this.ready ? this.request.Authors.toString() : 'Loading';
-        },
-        date: function() {
-            return this.ready ? this.request.Timestamp : 'Loading';
-        }
+        computed: {
+            description: function() {
+                return this.ready ? this.request.Description : 'Loading...';
+            },
+            authors: function() {
+                return this.ready ? this.request.Authors.toString() : 'Loading';
+            },
+            date: function() {
+                return this.ready ? this.request.Timestamp : 'Loading';
+            },
+            packageId: function() {
+                return this.$route.params.id
+            }
         },
         components: {
             'graph': Graph,
@@ -128,8 +125,6 @@ import VersionsDropdown from "../components/VersionsDropdown.vue"
         margin-left: 40px;
     }
     
-    .flex-info-item-bis {
-    
     .w3-dropdown-hover {
         margin-top: -5px;
     }
@@ -139,7 +134,7 @@ import VersionsDropdown from "../components/VersionsDropdown.vue"
         color: #2c3e50;
     }
     
-    .version-options {
+    .version-options{
         font-size: 16px;
     }
     
