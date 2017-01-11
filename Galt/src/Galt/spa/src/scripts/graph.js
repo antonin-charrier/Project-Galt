@@ -1,64 +1,20 @@
 module.exports = {
-    simulation : 0,
-    
-    drawGraph: function() {
-        var div = d3.select("#graph");
-        var width = div._groups[0][0].offsetWidth;
-        var height = div._groups[0][0].offsetHeight;
-
-        var file = "data.json";
-        var currentData;
+    drawGraph: function(data) {
+        var width = d3.select("#graph")._groups[0][0].offsetWidth;
+        var height = d3.select("#graph")._groups[0][0].offsetHeight;
+        var currentGraph;
 
         //json file
-        var data = {
-            "nodes" : [
-                {"name": "Code.Cake", "entity":"source", "version":" 0.14"},
-                {"name": "Cake.Core", "entity":"toUpdate", "version":"0.16.2", "lastVersion":"0.18.3"},
-                {"name": "Cake.Common", "version":">= 0.16.2"},
-                {"name": ".NETFramework", "version": "4.5", "entity":"platform"},
-                {"name": ".NETStandard", "version": "1.6", "entity":"platform"},
-                {"name": "NETStandard.Library", "version":">= 1.6.0"},
-                {"name": "Microsoft.Win32.Registry", "version":">= 4.0.0"},
-                {"name": "System.Diagnostics.Process", "version":"4.1.0"},
-                {"name": "System.Runtime.InteropServices.RuntimeInformation", "version":">= 4.0.0"},
-                {"name": "System.Runtime.Loader", "version":"4.0.0"},
-                {"name": "Microsoft.Etensions.DependencyModel", "version":">= 1.0.0"},
-                {"name": "System.Xml.XmlDocument", "version":">= 4.0.1"},
-                {"name": "System.Xml.XPath", "version":">= 4.0.1"},
-                {"name": "System.Xml.XPath.XmlDocument", "version":">= 4.0.1"},
-                {"name": "System.Runtime.Serialization.Json", "version":">= 4.0.2"},
-                {"name": "System.Xml.ReaderWriter", "version":">= 4.0.11", "entity":"toUpdate"},
-                {"name": "System.ComponentModel.TypeConverter", "version":">= 4.1.0", "lastVersion":"4.2.0"}
-            ],
-            "links":[
-                {"source":"Code.Cake", "target":"Cake.Core"},
-                {"source":"Code.Cake", "target":"Cake.Common"},
-                {"source":"Cake.Core", "target":".NETFramework"},
-                {"source":"Cake.Core", "target":".NETStandard"},
-                {"source":".NETStandard", "target":"NETStandard.Library"},
-                {"source":".NETStandard", "target":"Microsoft.Win32.Registry"},
-                {"source":".NETStandard", "target":"System.Diagnostics.Process"},
-                {"source":".NETStandard", "target":"System.Runtime.InteropServices.RuntimeInformation"},
-                {"source":".NETStandard", "target":"System.Runtime.Loader"},
-                {"source":".NETStandard", "target":"Microsoft.Etensions.DependencyModel"},
-                //{"source":".NETFramework", "target":"Cake.Core"},
-                {"source":".NETStandard", "target":"System.Xml.XmlDocument"},
-                {"source":".NETStandard", "target":"System.Xml.XPath"},
-                {"source":".NETStandard", "target":"System.Xml.XPath.XmlDocument"},
-                {"source":".NETStandard", "target":"System.Runtime.Serialization.Json"},
-                {"source":".NETStandard", "target":"System.Xml.ReaderWriter"},
-                {"source":"System.ComponentModel.TypeConverter", "target":"System.Xml.ReaderWriter"},
-                {"source":".NETStandard", "target":"System.ComponentModel.TypeConverter"},
-                {"source":"Cake.Common", "target":".NETFramework"},
-                {"source":"Cake.Common", "target":".NETStandard"}
-            ]
-        };
-
+        var data = JSON.parse(data);
         var node;
         var link;
         var allNodeDisplayed = true;
 
-        currentData =(JSON.parse(JSON.stringify(data)));
+        var graph = {
+            "simulation":"",
+            "completGraph":{"data":JSON.parse(JSON.stringify(data)), "link":"", "node":""},
+            "problemsGraph":{"data":JSON.parse(JSON.stringify(data)), "link":"", "node":""}
+        };
 
         var svg = d3.select("#graph").append("svg")
             .attr("width", "100%")
@@ -77,7 +33,7 @@ module.exports = {
             .attr("cy", 10)
             .on("click", clearButtonClick);
             d3.selectAll("svg")
-            .append("text").text("Show Problems")
+            .append("text").text("Display Issues")
             .attr("class", "textClearButton")
             .attr("x", 10)
             .attr("y", 25)
@@ -92,52 +48,91 @@ module.exports = {
             .attr("orient", "auto")
             .append("polyline").attr("points", "0,0 6,2 0,4");
 
-        simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.name; }))
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            
         //Declaration of tooltip to display informations in nodes
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             .html(function(d) { 
                 var chaine = "";
                 chaine += '<div class="title">' + d.name + "</div>";
-                if (d.entity == "toUpdate") chaine += '<br/><div class="red">To update</div>';
-                else if (d.entity == null) chaine += '<br><div class = "green">Up to date</div>';
+                if (d.warning == "toUpdate") chaine += '<br/><div class="warning">To update</div>';
+                else if (d.warning == "versionConflict") chaine += '<br><div class = "error">Version Conflict</div>';
+                else chaine += '<br><div class = "green">Up to date</div>';
                 if (d.version != null) chaine += "<br/>Version " + d.version + "<br/>";
                 if (d.lastVersion != null) chaine += "Last version " + d.lastVersion + "<br/>";
                 return chaine; 
         });
 
-        svg.call(tip);
-
-        createNodesAndLinks();
+        graph.simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
 
         
 
-        node.append("title")
-            .text(function(d) { return d.name; });
+        svg.call(tip);
 
-        simulation
-            .nodes(currentData.nodes)
-            .on("tick", ticked);
+        currentGraph = graph.completGraph;
+        createNodesAndLinks("completGraph");
 
-        simulation.force("link")
-            .links(currentData.links)
-            .distance(100);
+        currentGraph = graph.problemsGraph;
+        clearNodes();
+        createNodesAndLinks("problemsGraph");
 
-        simulation.force('charge')
-            .strength(-400);
+        d3.selectAll(".problemsGraph").attr("style", "display:none");
+
+        changeSimulation("completGraph")
+        
+        currentGraph = graph.completGraph;
+
+        // =======================================================
+        //       Functions start here !!!
+        //========================================================
+
+        // Change the graph used in the simulation
+        function changeSimulation (graphName)
+        {
+            currentGraph = graph[graphName];
+            graph.simulation
+                .nodes(graph[graphName].data.nodes)
+                .on("tick", ticked);
+
+            graph.simulation.force("link")
+                .links(graph[graphName].data.links)
+                .distance(100);
+
+            graph.simulation.force('charge')
+                .strength(-400);
+            
+            graph.simulation.restart();
+        }
+
+         
+        function definedLinkStrength(d)
+        {
+            var strength = 2;
+
+            if (d.target.entity === "platform") strength = 4;
+
+            return strength;
+        }
+
+        function definedLinkDistance(d)
+        {
+            var distance = 100;
+
+            if (d.target.entity === "platform") distance = 0.0001;
+
+            return distance;
+        }
 
         function ticked() {
-            link
+            currentGraph.link
                 .attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
                 .attr("x2", function(d) { return d.target.x; })
                 .attr("y2", function(d) { return d.target.y; });
 
-            node
+            currentGraph.node
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
         }
@@ -146,34 +141,42 @@ module.exports = {
         {
             if (allNodeDisplayed)
             {
-                clearNodes();
+                d3.selectAll(".completGraph").attr("style", "display:none");
+                d3.selectAll(".problemsGraph").attr("style", "display:initial");
+                currentGraph = graph.problemsGraph;
+                changeSimulation("problemsGraph")
             }
             else
             {
-                currentData = (JSON.parse(JSON.stringify(data)));
-                showNodes();
+                d3.selectAll(".completGraph").attr("style", "display:initial");
+                d3.selectAll(".problemsGraph").attr("style", "display:none");
+                 changeSimulation("completGraph")
             }
-            simulation.restart();
+            
+           
             allNodeDisplayed = !allNodeDisplayed;
         }
 
         //Create all the nodes and links from the currentData array
-        function createNodesAndLinks()
+        function createNodesAndLinks(graphName)
         {
-            link = svg.append("g")
+            var currentG = d3.selectAll(".movable").append("g").attr("class", graphName);
+
+            currentGraph.link = currentG.append("g")
                 .attr("class", "link")
                 .selectAll("line")
-                .data(currentData.links)
+                .data(graph[graphName].data.links)
                 .enter()
                 .append("line")
                 .attr("class", "zoomable")
                 .attr("stroke-width", function(d) { return Math.sqrt(2); })
                 .attr("marker-end", 'url("#endMarkers")');
 
-            node = svg.append("g")
+            currentGraph.node = currentG.append("g")
+                .attr("class", "nodes")
                 .selectAll("circle")
                 .attr("class", "nodes zoomable circle")
-                .data(currentData.nodes)
+                .data(graph[graphName].data.nodes)
                 .enter()
                 .append("circle")
                 .attr("r", 10)
@@ -188,41 +191,27 @@ module.exports = {
                 .on('mouseout', tip.hide);
         }
 
-        function showNodes()
-        {
-            node
-            .exit()
-            .attr("class", chooseClass);
-
-            link
-            .exit()
-            .attr("class", chooseClass);
-
-            simulation.nodes(currentData.nodes);
-        }
-
         // Hide all the child any problem of the given node
         function clearNodes()
         {
             var removedNode = true;
             while (removedNode)
             {
-                console.log("NOUVEAU TOUR D'INSPECTION !!!");
                 var nodeToRemove = [];
                 var linkToRemove = [];
                 removedNode = false;
 
                 // Choose node with any problem to delete
-                for (var i = 0; i <= currentData.nodes.length-1; i++)
+                for (var i = 0; i <= graph.problemsGraph.data.nodes.length-1; i++)
                 {
-                    if (currentData.nodes[i].entity != "toUpdate")
+                    if (graph.problemsGraph.data.nodes[i].warning != "toUpdate" && graph.problemsGraph.data.nodes[i].warning != "versionConflict" && graph.problemsGraph.data.nodes[i].entity != "platform")
                     {
                         var j = 0;
                         var isParent = false;
-                        while(j <= currentData.links.length-1 && !isParent)
+                        while(j <= graph.problemsGraph.data.links.length-1 && !isParent)
                         {
                             isParent = false;
-                            if (currentData.links[j].source == currentData.nodes[i]) 
+                            if (graph.problemsGraph.data.links[j].source == graph.problemsGraph.data.nodes[i].id) 
                             {
                                 isParent = true
                             }
@@ -231,60 +220,39 @@ module.exports = {
                         if (!isParent)
                         {
                             removedNode = true;
-                            nodeToRemove = removeNode(currentData.nodes[i], nodeToRemove);
-                            linkToRemove = removeLink(currentData.nodes[i], linkToRemove);
+                            nodeToRemove = removeNode(graph.problemsGraph.data.nodes[i], nodeToRemove, graph.problemsGraph.data);
+                            linkToRemove = removeLink(graph.problemsGraph.data.nodes[i], linkToRemove, graph.problemsGraph.data);
+
                         }
                     }
                 }
 
-                // clear the node array 
-                if (nodeToRemove != [])
+                // clear the nodes array 
+                if (nodeToRemove != [] && nodeToRemove.length != 0)
                 {
-                    console.log("Voici le tableau de NODES à nettoyer : ", currentData.nodes);
-                    console.log("Nodes à supprimer : ", nodeToRemove);
                     for(var i = 0; i <= nodeToRemove.length-1; i++)
                     {
-                        console.log("Node en cours de suppression : ", nodeToRemove[i]-i);
-                        currentData.nodes.splice((nodeToRemove[i]-i), 1);
+                        graph.problemsGraph.data.nodes.splice((nodeToRemove[i]-i), 1);
                     }
                     nodeToRemove = [];
                 }
-
-                // clear the link array
-                if (linkToRemove != [])
+                // clear the links array
+                if (linkToRemove != [] && linkToRemove.length != 0)
                 {
                     linkToRemove.sort(function(a, b) {
                         return a - b;
                     });
-                    console.log("Voici le tableau de LIENS à nettoyer : ", currentData.links);
-                    console.log("Liens à supprimer : ", linkToRemove);
                     for(var i = 0; i <= linkToRemove.length-1; i++)
                     {
-                        console.log("Lien en cours de suppression : ", linkToRemove[i]-i);
-                        currentData.links.splice((linkToRemove[i]-i), 1);
+                        graph.problemsGraph.data.links.splice((linkToRemove[i]-i), 1);
                     }
                     linkToRemove = [];
                 }
             }
-            console.log("PLUS RIEN A SIGNALER CHEF !!! Voici le tableau nettoyé de NODES : ", currentData.nodes);
-            console.log("Voici le tableau nettoyé de LIENS : ", currentData.links);
-
-            // Clear all the nodes and links
-            svg.selectAll(".node")
-            .data(currentData.nodes)
-            .exit()
-            .attr("class", "invisible");
-
-            svg.selectAll("line")
-            .data(currentData.links)
-            .exit()
-            .attr("class", "invisible");
-
-            recolorNodes();
         }
 
         // Return the array of node to delete with index of the given node
-        function removeNode (node, nodeToRemove)
+        function removeNode (node, nodeToRemove, currentData)
         {
             if (node != undefined)
             {
@@ -295,37 +263,27 @@ module.exports = {
                     { 
                         nodeToRemove.push(i);
                     }
-                    
                 }
             }
 
             return nodeToRemove;
         }
+
         // Return the array of links to delete with index of the links associate given node
-        function removeLink (node, linkToRemove)
+        function removeLink (node, linkToRemove, currentData)
         {
             if (node != undefined)
             {
-                //console.log("On detruit les liens de la node : ", node);
                 for (var i = 0; i <= currentData.links.length-1; i++)
                 {
-                    if (currentData.links[i].source == node || currentData.links[i].target == node)
+                    if ((graph.problemsGraph.data.links[i].source == node.id || graph.problemsGraph.data.links[i].target == node.id) && linkToRemove.indexOf(i) == -1)
                     { 
                         linkToRemove.push(i);
                     }
-                    
                 }
             }
 
             return linkToRemove;
-        }
-        
-        //Refresh the class of all nodes
-        function recolorNodes ()
-        {
-            svg.selectAll(".node")
-            .data(currentData.nodes)
-            .attr("class", function(d){return chooseClass(d)});
         }
 
         //Choose a class for the given node
@@ -335,17 +293,23 @@ module.exports = {
             {
                 case "source" :
                     return "node source";
-                case "toUpdate":
-                    return "node toUpdate";
                 case "platform" :
                     return "node platform";
+            }
+
+            switch(d.warning)
+            {
+                case "toUpdate":
+                    return "node toUpdate";
+                case "versionConflict":
+                    return "node versionConflict";
                 default :
                     return "node default";
             }
         }
 
         function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            if (!d3.event.active) graph.simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
             d.fy = d.y;
         }
@@ -356,27 +320,27 @@ module.exports = {
         }
 
         function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
+            if (!d3.event.active) graph.simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
         }
 
+        var zoom = d3.zoom()
+            .scaleExtent([1, 40])
+            .translateExtent([[-100, -100], [width + 90, height + 100]])
+            .on("zoom", zoomed);
+
+        svg.call(zoom);
+
         function zoomed() {
-            var transform = d3.event.transform;
-            d3.selectAll(".movable").attr("transform", function(d) {
-                return "translate(" + transform.applyX(d3.event.transform.x/6) + "," + transform.applyY(d3.event.transform.y/6) + ")";
-            });
+            d3.selectAll(".movable").attr("transform", d3.event.transform);
         }
-    },
 
-    resizeGraph: function() {
-        var div = d3.select("#graph");
-        var width = div._groups[0][0].offsetWidth;
-        var height = div._groups[0][0].offsetHeight;
-
-        simulation.force("center", d3.forceCenter(width / 2, height / 2));
-        simulation.restart();
-    }
+        function resetted() {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity);
+    }}
 };
 
 

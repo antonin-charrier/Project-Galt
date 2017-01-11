@@ -1,9 +1,9 @@
 <template>
     <div id="mypackages">
         <div class="favorite-packages">
-            <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange" style="font-size:25px; margin-right:10px"></i>My favorite packages</h3>
+            <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange no-cursor" style="font-size:25px; margin-right:10px"></i>My favorite packages</h3>
             <div class="favorite-packages-items">
-                <div class="favorite-packages-info">d3</div>
+                <div class="favorite-packages-info">Code.Cake</div>
                 <color-box-ok></color-box-ok>
                 <router-link to="/package"><button class="view-button">View</button></router-link>
             </div>
@@ -21,7 +21,7 @@
         <div class="recent-packages">
             <h3 class="my-packages-title">Recent packages</h3>
             <div class="recent-packages-items">
-                <div class="recent-packages-info">d3</div>
+                <div class="recent-packages-info">Code.Cake</div>
                 <router-link to="/package"><button class="view-button">View</button></router-link>
             </div>
         </div>
@@ -169,5 +169,8 @@ export default {
 .tooltip:hover .tooltiptext {
     visibility: visible;
     z-index: 2;
+}
+.no-cursor{
+    cursor: auto;
 }
 </style>
