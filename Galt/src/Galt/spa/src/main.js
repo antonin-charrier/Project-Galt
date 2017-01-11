@@ -17,7 +17,7 @@ Vue.use(VueResource);
 const routes = [
     { path: '/', component: Home },
     { path: '/mypackages', component: MyPackages },
-    { path: '/package', component: Package }
+    { path: '/package/:id', component: Package }
 ];
 
 const router = new VueRouter({
