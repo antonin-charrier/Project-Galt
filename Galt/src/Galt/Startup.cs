@@ -56,6 +56,7 @@ namespace Galt
             services.AddSingleton<TokenService>();
             services.AddSingleton<GitHubService>();
             services.AddSingleton<GitHubClient>();
+            services.AddSingleton<PackageService>();
             services.AddSingleton<SearchService>();
         }
 

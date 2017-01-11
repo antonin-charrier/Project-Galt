@@ -16,8 +16,6 @@ namespace Galt.AzureManager
                 RowKey = email;
             }
 
-            public UserEntity() { }
-
             public string Favorite { get; set; }
 
             public string GitHubToken { get; set; }
@@ -31,7 +29,22 @@ namespace Galt.AzureManager
                 RowKey = version;
             }
 
-            public string JsonPackage { get; set; }
+            public string JsonVPackage { get; set; }
+        }
+
+        public class PackageEntity : TableEntity
+        {
+            public PackageEntity(string packageId)
+            {
+                PartitionKey = packageId;
+                RowKey = "blbl";
+            }
+
+            public List<string> ListVPackage { get; set; }
+
+            public string Description { get; set; }
+
+            public List<string> Authors { get; set; }
         }
     }
 }
