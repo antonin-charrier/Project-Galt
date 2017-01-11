@@ -1,6 +1,6 @@
 <template>
     <div class="w3-hover-light-grey w3-white package-drop-div">
-        <table class="package-drop-table">
+        <table class="package-drop-table" @click="onClick">
             <tr>
                 <td rowspan=2 valign="top" class="package-drop-icon-frame">
                     <img v-if="isIconUrlValid" class="package-drop-icon" :src="package.iconUrl"/>
@@ -22,6 +22,7 @@
 </template>
 <script>
     import check from '../../helpers/urlChecker.js'
+    import $ from 'jquery'
 
     export default {
         data: function() {
@@ -33,6 +34,13 @@
         computed: {
             isIconUrlValid: function() {
                 return check(this.package.iconUrl) && !this.imageHas404;
+            }
+        },
+        methods: {
+            onClick: function() {
+                this.$router.push({
+                    path: '/package/' + this.package.identity.id
+                });
             }
         }
     }
