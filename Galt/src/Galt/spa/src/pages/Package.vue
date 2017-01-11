@@ -35,30 +35,35 @@
 </template>
 
 <script>
-import Graph from "../components/Graph.vue"
+    import Graph from "../components/Graph.vue"
 import VersionsDropdown from "../components/VersionsDropdown.vue"
 
-export default {
-    data: function () {
-        return {
+    export default {
+        data: function() {
+            return {
             request: undefined,
             ready: false,
-            fav: false,
+                fav: false,
             versionsDisplayed: false,
             versions: [],
             packageName : 'Cake.Core',
             packageVersion : '0.14.0',
-        }
-    },
-    methods: {
-        addFav: function () {
-            this.fav = !this.fav
+            }
         },
-        displayVersions: function () {
+        computed: {
+            packageId: function() {
+                return this.$route.params.id
+            }
+        },
+        methods: {
+            addFav: function() {
+                this.fav = !this.fav
+            },
+            displayVersions: function() {
             this.versionsDisplayed = !this.versionsDisplayed
-        }
-    },
-    created: function () {
+            }
+        },
+        created: function() {
         this.$http.get('/api/package/infopackage?packageId=' + this.packageName).then((response) => {
             this.request = JSON.parse(response.body);
             this.versions = this.request.ListVPackage;
@@ -85,63 +90,79 @@ export default {
         date: function() {
             return this.ready ? this.request.Timestamp : 'Loading';
         }
-    },
-    components: {
-        'graph' : Graph,
+        },
+        components: {
+            'graph': Graph,
         'versions-dropdown' : VersionsDropdown
+        }
     }
-}
 </script>
 
 <style>
-    h1.package-name{
+    h1.package-name {
         margin-left: 50px;
     }
-    .package-link:link{
-       text-decoration: none; 
+    
+    .package-link:link {
+        text-decoration: none;
     }
-    .package-link:hover{
+    
+    .package-link:hover {
         text-decoration: underline;
     }
-    .flex-bloc{
+    
+    .flex-bloc {
         display: -webkit-flex;
         display: flex;
         margin-bottom: 30px;
     }
-    .flex-info-text{
+    
+    .flex-info-text {
         display: -webkit-flex;
         display: flex;
         width: 85%;
         margin-left: 50px;
     }
-    .flex-info-item{
+    
+    .flex-info-item {
         margin-left: 40px;
     }
-    .w3-dropdown-hover{
+    
+    .flex-info-item-bis {
+    
+    .w3-dropdown-hover {
         margin-top: -5px;
     }
-    .actual-version, .version-options{
+    
+    .actual-version,
+    .version-options {
         color: #2c3e50;
     }
-    .version-options{
+    
+    .version-options {
         font-size: 16px;
     }
-    .w3-dropdown-content{
+    
+    .w3-dropdown-content {
         height: 300px;
         width: 100%;
         overflow: auto;
     }
-    .fa-star{
-        font-size:40px;
+    
+    .fa-star {
+        font-size: 40px;
         cursor: pointer;
     }
-    .fa-star-orange{
+    
+    .fa-star-orange {
         color: orange;
     }
-    .fa-star-grey{
+    
+    .fa-star-grey {
         color: grey;
     }
-    #description{
+    
+    #description {
         text-align: justify;
         display: -webkit-flex;
         display: flex;
@@ -149,7 +170,8 @@ export default {
         margin-left: 50px;
         margin-right: 50px;
     }
-    .flex-issues-versions{
+    
+    .flex-issues-versions {
         text-align: justify;
         display: -webkit-flex;
         display: flex;

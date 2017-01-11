@@ -19,6 +19,7 @@
                 query: "",
                 working: false,
                 focused: false,
+                losingFocus: false,
                 results: [],
                 firstRun: true
             }
@@ -55,9 +56,16 @@
             }, 500),
             onFocus: function() {
                 this.focused = true;
+                this.losingFocus = false;
             },
             onFocusOut: function() {
-                this.focused = false;
+                this.losingFocus = true;
+                setTimeout(function() {
+                    if (this.losingFocus) {
+                        this.focused = false;
+                        this.losingFocus = false;
+                    }
+                }.bind(this), 200);
             }
         }
     }
