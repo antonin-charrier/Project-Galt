@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <ul class="w3-navbar w3-text-dark-grey w3-border-bottom w3-top w3-light-grey">
+    <ul class="w3-navbar w3-text-dark-grey w3-border-bottom w3-top w3-light-grey" style="overflow: visible">
       <li><router-link class="w3-hover-gray" to="/">
         <logo-32x32></logo-32x32>
       </router-link></li>
-      <li><input type="text" class=" w3-light-grey search" placeholder="Search on Galt"></li>
+      <li style="height: 54px"><search></search></li>
       <connected v-if="isConnected"></connected>
       <disconnected v-else></disconnected>
     </ul>
@@ -16,6 +16,7 @@
 <script>
     import Connected from './components/Connected.vue'
     import Disconnected from './components/Disconnected.vue'
+    import Search from './components/search/Search.vue'
     import Logo32x32 from './components/Logo-32x32.vue'
 
     export default {
@@ -34,6 +35,7 @@
         components: {
             'connected': Connected,
             'disconnected': Disconnected,
+            'search': Search,
             'logo-32x32': Logo32x32
         }
     }
