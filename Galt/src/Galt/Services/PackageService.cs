@@ -27,10 +27,9 @@ namespace Galt.Services
 
             if( VpackageEntity == null )
             {
-                VpackageEntity = new VPackageEntity( packageId, version );
-                VpackageEntity.JsonVPackage = _nugetDL.GetInfoVPackage( packageId, version );
+                VpackageEntity = _nugetDL.GetInfoVPackage( packageId, version );
 
-                await _vPackageReq.AddIfNotExists( packageId, version, VpackageEntity.JsonVPackage );
+                await _vPackageReq.AddIfNotExists( VpackageEntity );
             }
 
             return VpackageEntity;
@@ -40,10 +39,17 @@ namespace Galt.Services
         {
             PackageEntity pEntity = await GetPackage( packageId );
             string[] ArrayVersions = pEntity.ListVPackage.ToArray();
-            string lastVersion = ArrayVersions[ArrayVersions.Length - 1];
+            string lastVersion = ArrayVersions[0];
 
             VPackageEntity vPEntity = await _vPackageReq.getVPackage(packageId, lastVersion);
-            
+
+            if( vPEntity == null )
+            {
+                vPEntity = _nugetDL.GetInfoVPackage( packageId, lastVersion );
+
+                await _vPackageReq.AddIfNotExists( vPEntity );
+            }
+
             return vPEntity;
         }
 

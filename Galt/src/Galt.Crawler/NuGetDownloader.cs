@@ -17,14 +17,12 @@ namespace Galt.Crawler
             _repo = PackageRepositoryFactory.Default.CreateRepository( "https://packages.nuget.org/api/v2" );
         }
 
-        public string GetInfoVPackage(string packageId, string version )
+        public VPackageEntity GetInfoVPackage(string packageId, string version )
         {
-            VPackage vPackage = new VPackage(packageId, new Version(version));
+            VPackageEntity vPEntity = new VPackageEntity(packageId, version);
 
             List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
             packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
-
-            vPackage.Dependencies = null;
 
             string dateTime = packages.First().Published.ToString();
             dateTime = dateTime.Remove( 10 );
@@ -34,10 +32,9 @@ namespace Galt.Crawler
             dateTimeSplit[0] = temp;
             dateTime = string.Join( "/", dateTimeSplit );
 
-            vPackage.PublicationDate = dateTime;
+            vPEntity.PublicationDate = dateTime;
 
-            JsonSerializerPackage jsonSeria = new JsonSerializerPackage();
-            return jsonSeria.JsonSerializer( vPackage );
+            return vPEntity;
         }
 
         public PackageEntity GetInfoPackage( string packageId )
@@ -49,6 +46,7 @@ namespace Galt.Crawler
             pEntity.Description = packages.Last().Description;
 
             List<string> vpackages = new List<string>();
+            vpackages.Reverse();
             foreach( IPackage item in packages )
             {
                 vpackages.Add( item.Version.ToString() );

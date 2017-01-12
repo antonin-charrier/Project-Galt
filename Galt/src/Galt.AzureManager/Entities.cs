@@ -31,8 +31,9 @@ namespace Galt.AzureManager
                 PartitionKey = packageId;
                 RowKey = version;
             }
+            public string PublicationDate { get; set; }
 
-            public string JsonVPackage { get; set; }
+            public string FullDependencies { get; set; }
         }
 
         public class PackageEntity : TableEntity

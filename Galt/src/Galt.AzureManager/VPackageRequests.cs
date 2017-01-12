@@ -14,15 +14,13 @@ namespace Galt.AzureManager
 
         AManager AManager { get; }
 
-        public async Task<bool> AddIfNotExists(string packageId, string version, string jsonSeria = null)
+        public async Task<bool> AddIfNotExists(VPackageEntity vPE)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve(packageId, version);
+            TableOperation retrieveOperation = TableOperation.Retrieve(vPE.PartitionKey, vPE.RowKey);
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync(retrieveOperation);
             if( retrieved.Result != null ) return false;
 
-            VPackageEntity p = new VPackageEntity(packageId, version);
-            p.JsonVPackage = jsonSeria;
-            TableOperation insertOperation = TableOperation.Insert(p);
+            TableOperation insertOperation = TableOperation.Insert(vPE);
             await AManager.VPackagesTable.ExecuteAsync( insertOperation );
             return true;
         }
@@ -34,14 +32,14 @@ namespace Galt.AzureManager
             return (VPackageEntity)retrieved.Result;
         }
 
-        public async Task<bool> AddDependenciesIfNotExist(string packageId, string version, string JsonSerializedVPackage)
+        public async Task<bool> AddDependenciesIfNotExist( VPackageEntity vPE, string fullDependencies )
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( packageId, version );
+            TableOperation retrieveOperation = TableOperation.Retrieve( vPE.PartitionKey, vPE.RowKey );
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
             VPackageEntity p = (VPackageEntity)retrieved.Result;
-            p.JsonVPackage = JsonSerializedVPackage;
+            p.FullDependencies = fullDependencies;
             TableOperation modifyOperation = TableOperation.Replace(p);
             await AManager.VPackagesTable.ExecuteAsync( modifyOperation );
             return true;

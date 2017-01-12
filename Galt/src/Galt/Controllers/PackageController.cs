@@ -3,6 +3,7 @@ using Galt.AzureManager;
 using Galt.Crawler;
 using Galt.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using static Galt.AzureManager.Entities;
 
 namespace Galt.Controllers
@@ -20,26 +21,29 @@ namespace Galt.Controllers
         }
 
         [HttpGet( "infoPackage" )]
-        public async Task<string> GetPackageInfo(string packageId)
+        public async Task<string> GetPackageInfo(string packageId, string version = null)
         {
             PackageEntity p = await _packageService.GetPackage( packageId );
             string packageInfo = JsonSeria.JsonSerializer( p );
-            return packageInfo;
-        }
 
-        [HttpGet("infoVPackage")]
-        public async Task<string> GetVPackageInfo(string packageId, string version = null)
-        {
             VPackageEntity vP;
-            if(version != null)
+            if( version != null )
             {
-                vP = await _packageService.GetVPackage(packageId, version);
-            } else
+                vP = await _packageService.GetVPackage( packageId, version );
+            }
+            else
             {
-                vP = await _packageService.GetLastVPackage(packageId);
+                vP = await _packageService.GetLastVPackage( packageId );
             }
 
-            return vP.JsonVPackage;
+            JObject rss = JObject.Parse(packageInfo);
+            rss.Property( "ETag" ).Remove();
+            rss.Property( "RowKey" ).Remove();
+            rss.Property( "Timestamp" ).Remove();
+            rss.Property( "PartitionKey" ).Remove();
+            rss.Property( "Description" ).AddAfterSelf( new JProperty( "PublicationDate", vP.PublicationDate ) );
+
+            return rss.ToString();
         }
 
         [HttpGet( "graph" )]
