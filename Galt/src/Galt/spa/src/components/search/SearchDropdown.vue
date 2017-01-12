@@ -27,7 +27,7 @@
     .search-dropdown {
         top: 100%;
         position: absolute;
-        max-height: 513px;
+        max-height: 257px;
         overflow-x: hidden;
     }
 </style>
