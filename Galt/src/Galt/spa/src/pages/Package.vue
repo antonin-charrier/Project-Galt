@@ -71,20 +71,36 @@
                 this.getInfoPackage();
             },
             getInfoPackage: function(){
-                var version = this.$route.params.version;
-                this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
-                    this.request = JSON.parse(response.body);
-                    version ? this.currentVersion = version : this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
-                    this.options = [];
-                    for(var i=0; i<this.request.ListVPackage.length; i++){
-                        this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
-                    }
-                    this.loading = false;
+                if(this.$route.params.version){
+                    var version = this.$route.params.version;
+                    this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
+                        this.request = JSON.parse(response.body);
+                        this.currentVersion = version;
+                        this.options = [];
+                        for(var i=0; i<this.request.ListVPackage.length; i++){
+                            this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
+                        }
+                        this.loading = false;
 
-                    console.log(this.request);
-                }, (response) => {
-                    console.log("Request error");
-                });
+                        console.log(this.request);
+                    }, (response) => {
+                        console.log("Request error");
+                    });
+                } else{
+                    this.$http.get('/api/package/infopackage?packageId='+this.packageId).then((response) => {
+                        this.request = JSON.parse(response.body);
+                        this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
+                        this.options = [];
+                        for(var i=0; i<this.request.ListVPackage.length; i++){
+                            this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
+                        }
+                        this.loading.false;
+
+                        console.log(this.request);
+                    }, (response) => {
+                        console.log("Request error");
+                    })
+                }
             }
         },
         created: function() {
