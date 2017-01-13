@@ -27,10 +27,13 @@ namespace Galt.Crawler
             string dateTime = packages.First().Published.ToString();
             dateTime = dateTime.Remove( 10 );
             string[] dateTimeSplit = dateTime.Split('/');
-            string temp = dateTimeSplit[1];
-            dateTimeSplit[1] = dateTimeSplit[0];
-            dateTimeSplit[0] = temp;
-            dateTime = string.Join( "/", dateTimeSplit );
+            if (dateTimeSplit.Length >= 2)
+            {
+                string temp = dateTimeSplit[ 1 ];
+                dateTimeSplit[ 1 ] = dateTimeSplit[ 0 ];
+                dateTimeSplit[ 0 ] = temp;
+                dateTime = string.Join( "/", dateTimeSplit );
+            }
 
             vPEntity.PublicationDate = dateTime;
 
