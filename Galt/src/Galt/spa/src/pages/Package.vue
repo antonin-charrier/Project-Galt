@@ -1,54 +1,56 @@
 <template>
-    <div id="package">
-            <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageName }}</a></h1>
-            <div class="package-info">
-            <div class="flex-bloc">
-                <h4 class="flex-info-text">
-                    <!--<div class="w3-dropdown-hover">
-                        <button class="w3-btn w3-white" v-on:click="displayVersions"><span class="actual-version">Version {{ packageVersion }}</span><div style="font-size: 20px; color: grey; padding-left: 10px" class="fa fa-sort-desc"></div></button>
-                        <div class="w3-dropdown-content w3-border version-options" v-if="versionsDisplayed">
-                            <versions-dropdown v-for="version in versions" :version="request"></versions-dropdown>
+    <div id="outer">
+        <div v-show="loading" id="loading-div">
+            <bounce-loader :loading="loading" :color="color" :size="size"></bounce-loader>
+        </div>
+        <div v-show="!loading" id="package">
+                <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageName }}</a></h1>
+                <div class="package-info">
+                <div class="flex-bloc">
+                    <h4 class="flex-info-text">
+                        <select v-model="currentVersion">
+                            <option v-for="option in options" v-bind:value="option.value">
+                                {{ option.text }}
+                            </option>
+                        </select>
+                        <span class="flex-info-item">{{ authors }}</span>
+                        <span class="flex-info-item">{{ date }}</span>
+                    </h4>
+                    <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="addFav"></i>
+                    <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
+                </div>
+                <p id="description">{{ description }}<p>
+                </div>
+                <div class="flex-bloc">
+                    <graph></graph>
+                    <div class="flex-issues-versions">
+                        <div class="issues">
+                            <h3>Issues</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
                         </div>
-                    </div>-->
-                    <select v-model="currentVersion">
-                        <option v-for="option in options" v-bind:value="option.value">
-                            {{ option.text }}
-                        </option>
-                    </select>
-                    <span class="flex-info-item">By {{ authors }}</span>
-                    <span class="flex-info-item">Published on {{ date }}</span>
-                </h4>
-                <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="addFav"></i>
-                <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
-            </div>
-            <p id="description">{{ description }}</div>
-            <div class="flex-bloc">
-                <graph></graph>
-                <div class="flex-issues-versions">
-                    <div class="issues">
-                        <h3>Issues</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
-                    </div>
-                    <div class="new-versions">
-                        <h3>New versions</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                        <div class="new-versions">
+                            <h3>New versions</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <router-view></router-view>
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
 <script>
     import Graph from "../components/Graph.vue"
     import VersionsDropdown from "../components/VersionsDropdown.vue"
+    import BounceLoader from 'vue-spinner/src/BounceLoader.vue'
 
     export default {
         data: function() {
             return {
                 request: undefined,
-                ready: false,
                 fav: false,
+                loading: true,
+                color: '#226D71',
                 versionsDisplayed: false,
                 currentVersion: '',
                 options: []
@@ -62,22 +64,22 @@
                 this.versionsDisplayed = !this.versionsDisplayed
             },
             changeVersion: function() {
+                this.loading = true;
                 this.$router.push({
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
                 this.getInfoPackage();
             },
             getInfoPackage: function(){
-            var version = this.$route.params.version
-                console.log('/api/package/infopackage?packageId=' + this.packageId + '&version=' + this.$route.params.version);
-  this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
-  this.request = JSON.parse(response.body);
-  this.$route.params.version ? this.currentVersion = this.$route.params.version : this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
-  this.options = [];
-  for(var i=0; i<this.request.ListVPackage.length; i++){
+                var version = this.$route.params.version;
+                this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
+                    this.request = JSON.parse(response.body);
+                    version ? this.currentVersion = version : this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
+                    this.options = [];
+                    for(var i=0; i<this.request.ListVPackage.length; i++){
                         this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
                     }
-                    this.ready = true;
+                    this.loading = false;
 
                     console.log(this.request);
                 }, (response) => {
@@ -90,19 +92,19 @@
         },
         computed: {
             description: function() {
-                return this.ready ? this.request.Description : 'Loading...';
+                if(!this.loading) return this.request.Description;
             },
             authors: function() {
-                return this.ready ? this.request.Authors.toString() : 'Loading';
+                if(!this.loading) return 'By ' + this.request.Authors.toString();
             },
             date: function() {
-                return this.ready ? this.request.PublicationDate : 'Loading';
+                if(!this.loading) return 'Published on ' + this.request.PublicationDate;
             },
             packageId: function() {
                 return this.$route.params.id
             },
             packageName: function() {
-                return this.ready ? this.packageId : 'Loading';
+                if(!this.loading) return this.packageId;
             }
         },
         watch: {
@@ -112,12 +114,22 @@
         },
         components: {
             'graph': Graph,
-            'versions-dropdown' : VersionsDropdown
+            'versions-dropdown' : VersionsDropdown,
+            'bounce-loader' : BounceLoader
         }
     }
 </script>
 
 <style>
+    #outer {
+        width: 100%;
+        height: 90%;
+    }
+    #loading-div {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
     h1.package-name {
         margin-left: 50px;
     }
