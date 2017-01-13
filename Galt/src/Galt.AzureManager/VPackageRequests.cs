@@ -16,7 +16,7 @@ namespace Galt.AzureManager
 
         public async Task<bool> AddIfNotExists(VPackageEntity vPE)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve(vPE.PartitionKey, vPE.RowKey);
+            TableOperation retrieveOperation = TableOperation.Retrieve<VPackageEntity>(vPE.PartitionKey, vPE.RowKey);
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync(retrieveOperation);
             if( retrieved.Result != null ) return false;
 
@@ -27,14 +27,14 @@ namespace Galt.AzureManager
 
         public async Task<VPackageEntity> getVPackage(string packageId, string version)
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve(packageId, version);
+            TableOperation retrieveOperation = TableOperation.Retrieve<VPackageEntity>(packageId, version);
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync(retrieveOperation);
             return (VPackageEntity)retrieved.Result;
         }
 
         public async Task<bool> AddDependenciesIfNotExist( VPackageEntity vPE, string fullDependencies )
         {
-            TableOperation retrieveOperation = TableOperation.Retrieve( vPE.PartitionKey, vPE.RowKey );
+            TableOperation retrieveOperation = TableOperation.Retrieve<VPackageEntity>( vPE.PartitionKey, vPE.RowKey );
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 

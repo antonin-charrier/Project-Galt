@@ -8,7 +8,7 @@ export default {
     props: ['version'],
     computed: {
         versions: function(){
-            return this.package.ListVPackage[0];
+            return this.version.ListVPackage[0];
         }
     }
 }

@@ -26,6 +26,8 @@ namespace Galt.AzureManager
 
         public class VPackageEntity : TableEntity
         {
+            public VPackageEntity () { }
+
             public VPackageEntity( string packageId, string version )
             {
                 PartitionKey = packageId;

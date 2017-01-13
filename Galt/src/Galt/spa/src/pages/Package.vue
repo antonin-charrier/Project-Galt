@@ -1,15 +1,20 @@
 <template>
     <div id="package">
-            <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageId }}</a></h1>
+            <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageName }}</a></h1>
             <div class="package-info">
             <div class="flex-bloc">
                 <h4 class="flex-info-text">
-                    <div class="w3-dropdown-hover">
+                    <!--<div class="w3-dropdown-hover">
                         <button class="w3-btn w3-white" v-on:click="displayVersions"><span class="actual-version">Version {{ packageVersion }}</span><div style="font-size: 20px; color: grey; padding-left: 10px" class="fa fa-sort-desc"></div></button>
                         <div class="w3-dropdown-content w3-border version-options" v-if="versionsDisplayed">
-                            <versions-dropdown v-for="version in versions" :package="request"></versions-dropdown>
+                            <versions-dropdown v-for="version in versions" :version="request"></versions-dropdown>
                         </div>
-                    </div>
+                    </div>-->
+                    <select v-model="currentVersion">
+                        <option v-for="option in options" v-bind:value="option.value">
+                            {{ option.text }}
+                        </option>
+                    </select>
                     <span class="flex-info-item">By {{ authors }}</span>
                     <span class="flex-info-item">Published on {{ date }}</span>
                 </h4>
@@ -41,12 +46,12 @@
     export default {
         data: function() {
             return {
-            request: undefined,
-            ready: false,
-            fav: false,
-            versionsDisplayed: false,
-            versions: [],
-            packageVersion : '0.14.0',
+                request: undefined,
+                ready: false,
+                fav: false,
+                versionsDisplayed: false,
+                currentVersion: '',
+                options: []
             }
         },
         methods: {
@@ -54,25 +59,30 @@
                 this.fav = !this.fav
             },
             displayVersions: function() {
-            this.versionsDisplayed = !this.versionsDisplayed
+                this.versionsDisplayed = !this.versionsDisplayed
+            },
+            changeVersion: function() {
+                this.$router.push({
+                    path: '/package/' + this.packageId + '/' + this.currentVersion
+                });
+                this.getInfoPackage();
+            },
+            getInfoPackage: function(){
+                console.log('/api/package/infopackage?packageId=' + this.packageId + '&' + this.$route.params.version);
+                this.$http.get('/api/package/infopackage?packageId=' + this.packageId + '&' + this.$route.params.version).then((response) => {
+                    this.request = JSON.parse(response.body);
+                    this.$route.params.version ? this.currentVersion = this.$route.params.version : this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
+                    for(var i=0; i<this.request.ListVPackage.length; i++){
+                        this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
+                    }
+                    this.ready = true;
+                }, (response) => {
+                    console.log("Request error");
+                });
             }
         },
         created: function() {
-            this.$http.get('/api/package/infopackage?packageId=' + this.packageId).then((response) => {
-                this.request = JSON.parse(response.body);
-                this.versions = this.request.ListVPackage;
-                console.log(this.versions);
-                this.ready = true;
-            
-                for(var i=this.request.ListVPackage.length-1; i>=0; i--){
-                    VersionsMenu.template = VersionsMenu.template + '<router-link to="/package" href="#">Version ' + this.request.ListVPackage[i] + '</router-link>'
-                }
-                VersionsMenu.template = VersionsMenu.template + '</div>';
-
-                console.log(this.request);
-            }, (response) => {
-                console.log("Request error");
-            });
+            this.getInfoPackage();
         },
         computed: {
             description: function() {
@@ -82,15 +92,23 @@
                 return this.ready ? this.request.Authors.toString() : 'Loading';
             },
             date: function() {
-                return this.ready ? this.request.Timestamp : 'Loading';
+                return this.ready ? this.request.PublicationDate : 'Loading';
             },
             packageId: function() {
                 return this.$route.params.id
+            },
+            packageName: function() {
+                return this.ready ? this.packageId : 'Loading';
+            }
+        },
+        watch: {
+            currentVersion: function() {
+                this.changeVersion();
             }
         },
         components: {
             'graph': Graph,
-        'versions-dropdown' : VersionsDropdown
+            'versions-dropdown' : VersionsDropdown
         }
     }
 </script>
