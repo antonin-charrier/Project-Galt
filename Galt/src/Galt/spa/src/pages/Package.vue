@@ -68,12 +68,13 @@
                 this.getInfoPackage();
             },
             getInfoPackage: function(){
+            var version = this.$route.params.version
                 console.log('/api/package/infopackage?packageId=' + this.packageId + '&version=' + this.$route.params.version);
-                this.$http.get('/api/package/infopackage?packageId=' + this.packageId + '&' + this.$route.params.version).then((response) => {
-                    this.request = JSON.parse(response.body);
-                    this.$route.params.version ? this.currentVersion = this.$route.params.version : this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
-                    this.options = [];
-                    for(var i=0; i<this.request.ListVPackage.length; i++){
+  this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
+  this.request = JSON.parse(response.body);
+  this.$route.params.version ? this.currentVersion = this.$route.params.version : this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
+  this.options = [];
+  for(var i=0; i<this.request.ListVPackage.length; i++){
                         this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
                     }
                     this.ready = true;
