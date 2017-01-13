@@ -72,6 +72,7 @@
         max-height: 64px;
         max-width: 512px;
         overflow: hidden;
+        cursor: pointer;
     }
     
     .summary-box {
