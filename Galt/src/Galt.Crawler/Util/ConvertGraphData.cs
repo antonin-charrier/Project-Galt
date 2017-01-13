@@ -15,7 +15,7 @@ namespace Galt.Crawler.Util
         Dictionary<string, List<Dictionary<string, string>>> _graph;
 
         // Convert the given VPackage in a JSON object with all the informations needed
-        public void convertGraphData(VPackage vPackage)
+        public Dictionary<string, List<Dictionary<string, string>>> convertGraphData(VPackage vPackage)
         {
             _graph = new Dictionary<string, List<Dictionary<string, string>>>();
             _graph.Add("nodes", new List<Dictionary<string, string>>());
@@ -36,6 +36,7 @@ namespace Galt.Crawler.Util
                     }
                 }
             }
+            return _graph;
         }
 
         // Add dependencies of the given VPackage in the JSON object
