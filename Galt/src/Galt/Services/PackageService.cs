@@ -39,7 +39,7 @@ namespace Galt.Services
         {
             PackageEntity pEntity = await GetPackage( packageId );
             string[] ArrayVersions = pEntity.ListVPackage.ToArray();
-            string lastVersion = ArrayVersions[0];
+            string lastVersion = ArrayVersions[ArrayVersions.Length-1];
 
             VPackageEntity vPEntity = await _vPackageReq.getVPackage(packageId, lastVersion);
 
