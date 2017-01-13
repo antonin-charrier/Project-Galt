@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Galt.Crawler.Util
 {
-    public class ConvertGraphData
+    public class GraphData
     {
 
         Dictionary<string, List<Dictionary<string, string>>> _graph;
 
         // Convert the given VPackage in a JSON object with all the informations needed
-        public Dictionary<string, List<Dictionary<string, string>>> convertGraphData(VPackage vPackage)
+        public Dictionary<string, List<Dictionary<string, string>>> ConvertGraphData(VPackage vPackage)
         {
             _graph = new Dictionary<string, List<Dictionary<string, string>>>();
             _graph.Add("nodes", new List<Dictionary<string, string>>());
