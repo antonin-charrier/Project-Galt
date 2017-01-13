@@ -42,6 +42,7 @@ namespace Galt.Controllers
             rss.Property( "Timestamp" ).Remove();
             rss.Property( "PartitionKey" ).Remove();
             rss.Property( "Description" ).AddAfterSelf( new JProperty( "PublicationDate", vP.PublicationDate ) );
+            rss.Property( "PublicationDate" ).AddAfterSelf( new JProperty( "Version", version ) );
 
             return rss.ToString();
         }
