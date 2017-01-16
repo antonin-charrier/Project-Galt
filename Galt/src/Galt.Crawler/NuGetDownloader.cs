@@ -67,7 +67,7 @@ namespace Galt.Crawler
             return packages.Last().Version.ToString();
         }
 
-        public VPackage FillPackage( string packageId, string version )
+        public VPackage FillVPackage( string packageId, string version )
         {
             List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
             packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
