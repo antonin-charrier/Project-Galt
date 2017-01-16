@@ -43,10 +43,10 @@ namespace Galt.Crawler.Util
         private void AddDependency(VPackage vPackage, string ParentId)
         {
             string id = "0";
-            foreach (Framework framework in vPackage.Dependencies.DicDependencies.Keys)
+            foreach (string framework in vPackage.Dependencies.Keys)
             {
-                _graph["nodes"].Add(VPackageToDictionary(framework.FrameworkId, _graph.Count.ToString(), "platform", vPackage.Version.ToString()));
-                foreach (VPackage newVPackage in vPackage.Dependencies.DicDependencies[framework])
+                _graph["nodes"].Add(VPackageToDictionary(framework, _graph.Count.ToString(), "platform", vPackage.Version.ToString()));
+                foreach (VPackage newVPackage in vPackage.Dependencies[framework])
                 {
                     id = _graph.Count.ToString();
                     _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, vPackage.Version.ToString()));

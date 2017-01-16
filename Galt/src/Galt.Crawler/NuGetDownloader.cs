@@ -59,68 +59,56 @@ namespace Galt.Crawler
             return pEntity;
         }
 
-        public IPackage GetLatestVersionPackage( string packageId )
+        public string GetLatestVersionPackage( string packageId )
         {
             List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
             packages = packages.Where( item => (item.IsLatestVersion) ).ToList();
 
-            return packages.First();
+            return packages.Last().Version.ToString();
         }
 
-        public Package FillPackage( string packageId )
+        public VPackage FillPackage( string packageId, string version )
         {
-            Package package = new Package(packageId);
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+            packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
 
-            List<IPackage> packages = _repo.FindPackagesById(package.PackageId).ToList();
-            List<VPackage> packagesProcessed = new List<VPackage>();
-            foreach( var item in packages )
-            {
-                VPackage vp = new VPackage( package.PackageId, item.Version.Version );
-                string dateTime = item.Published.ToString();
+            VPackage vp = new VPackage( packageId, packages.First().Version.Version );
+            string dateTime = packages.First().Published.ToString();
 
-                dateTime = dateTime.Remove( 10 );
-                string[] dateTimeSplit = dateTime.Split('/');
-                string temp = dateTimeSplit[1];
-                dateTimeSplit[1] = dateTimeSplit[0];
-                dateTimeSplit[0] = temp;
+            dateTime = dateTime.Remove( 10 );
+            string[] dateTimeSplit = dateTime.Split('/');
+            string temp = dateTimeSplit[1];
+            dateTimeSplit[1] = dateTimeSplit[0];
+            dateTimeSplit[0] = temp;
 
-                dateTime = string.Join( "/", dateTimeSplit );
+            dateTime = string.Join( "/", dateTimeSplit );
 
-                vp.PublicationDate = dateTime;
-                packagesProcessed.Add( vp );
-            }
+            vp.PublicationDate = dateTime;
 
-            package.Authors = packages.Last().Authors.ToList();
-            package.Vpackages = packagesProcessed;
-            package.Description = packages.First().Description;
-            foreach( var item in package.Vpackages )
-            {
-                item.Dependencies = new Dependencies( item );
-                item.Dependencies.DicDependencies = GetDependenciesSpecificVersion( item );
-            }
-            return package;
+            return vp;
         }
 
-        public Dictionary<Framework, IEnumerable<VPackage>> GetDependenciesSpecificVersion( VPackage vPackage )
+        public void GetDependenciesSpecificVersion( VPackage vPackage )
         {
             List<IPackage> packages = _repo.FindPackagesById(vPackage.PackageId).ToList();
             packages = packages.Where( p => (p.Version.Version.ToString() == vPackage.Version.ToString()) ).ToList();
 
             if( !packages.IsEmpty() )
             {
-                Dictionary<Framework, IEnumerable<VPackage>> dicFrameDep = new Dictionary<Framework, IEnumerable<VPackage>>();
+                Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
                 foreach( FrameworkName frameW in packages.First().GetSupportedFrameworks() )
                 {
                     List<VPackage> listdep = new List<VPackage>();
                     foreach( var item in packages.First().GetCompatiblePackageDependencies( frameW ) )
                     {
-                        listdep.Add( new VPackage( item.Id, item.VersionSpec.MinVersion.Version ) );
+                        VPackage vpackagedep = new VPackage( item.Id, item.VersionSpec.MinVersion.Version );
+                        listdep.Add( vpackagedep );
+                        GetDependenciesSpecificVersion( vpackagedep );
                     }
-                    dicFrameDep.Add( new Framework( frameW.FullName, frameW.Version ), listdep );
+                    dicFrameDep.Add( frameW.FullName, listdep );
                 }
-                return dicFrameDep;
+                vPackage.Dependencies = dicFrameDep;
             }
-            return null;
         }
     }
 }

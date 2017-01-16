@@ -19,7 +19,7 @@ namespace Galt.Crawler.Util
 
         public Version Version { get; }
 
-        public Dependencies Dependencies { get; set; }
+        public Dictionary<string, IEnumerable<VPackage>> Dependencies { get; set; }
 
         public string PublicationDate { get; set; }
 

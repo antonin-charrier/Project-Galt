@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using Galt.Crawler.Util;
 using NuGet;
 using NUnit.Framework;
 
@@ -15,7 +16,7 @@ namespace Galt.Crawler.Tests
         public void Test_Package()
         {
             NuGetDownloader n = new NuGetDownloader();
-            var p = n.FillPackage( "Code.Cake" );
+            var p = n.FillPackage( "Code.Cake", n.GetLatestVersionPackage("Code.Cake"));
 
             Assert.AreEqual( p.PackageId, "Code.Cake" );
             //Assert.AreEqual( p.Vpackages.Last().Version.ToString(), "0.14.0.0" );
@@ -27,8 +28,9 @@ namespace Galt.Crawler.Tests
         {
             JsonSerializerPackage s = new JsonSerializerPackage();
             NuGetDownloader n = new NuGetDownloader();
-            var p = n.FillPackage( "Code.Cake" );
-            string result = s.JsonSerializer( p );
+            VPackage vp = n.FillPackage( "Code.Cake", n.GetLatestVersionPackage( "Code.Cake" ));
+            n.GetDependenciesSpecificVersion(vp);
+            string result = s.JsonSerializer( vp );
 
             // Set a variable to the My Documents path.
             string mydocpath =

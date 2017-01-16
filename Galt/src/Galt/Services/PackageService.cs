@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Galt.AzureManager;
 using Galt.Crawler;
+using Galt.Crawler.Util;
 using static Galt.AzureManager.Entities;
 
 namespace Galt.Services
@@ -12,6 +13,7 @@ namespace Galt.Services
         VPackageRequests _vPackageReq;
         PackageRequests _packageReq;
         NuGetDownloader _nugetDL;
+        GraphData _graphData;
 
         public PackageService()
         {
@@ -19,6 +21,7 @@ namespace Galt.Services
             _packageReq = new PackageRequests(manager);
             _vPackageReq = new VPackageRequests(manager);
             _nugetDL = new NuGetDownloader();
+            _graphData = new GraphData();
         }
 
         internal async Task<VPackageEntity> GetVPackage( string packageId, string version )
@@ -28,6 +31,8 @@ namespace Galt.Services
             if( VpackageEntity == null )
             {
                 VpackageEntity = _nugetDL.GetInfoVPackage( packageId, version );
+
+                //ICIIIIIIIIIII
 
                 await _vPackageReq.AddIfNotExists( VpackageEntity );
             }
