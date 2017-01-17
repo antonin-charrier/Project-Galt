@@ -68,11 +68,11 @@
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
             },
-            redirect: function(){
-                if(this.$route.params.version){
+            redirect: function() {
+                if (this.$route.params.version) {
                     this.currentVersion = this.$route.params.version;
                 } else {
-                    this.$http.get('/api/package/infopackage?packageId='+this.packageId).then((response) => {
+                    this.$http.get('/api/package/infopackage?packageId=' + this.packageId).then((response) => {
                         this.request = JSON.parse(response.body);
                         this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
                         this.$router.push({
@@ -83,12 +83,15 @@
                     });
                 }
             },
-            getInfoPackage: function(){
-                this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+this.currentVersion).then((response) => {
+            getInfoPackage: function() {
+                this.$http.get('/api/package/infopackage?packageId=' + this.packageId + '&version=' + this.currentVersion).then((response) => {
                     this.request = JSON.parse(response.body);
                     this.options = [];
-                    for(var i=0; i<this.request.ListVPackage.length; i++){
-                        this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
+                    for (var i = 0; i < this.request.ListVPackage.length; i++) {
+                        this.options.push({
+                            text: 'Version ' + this.request.ListVPackage[i],
+                            value: this.request.ListVPackage[i]
+                        })
                     }
                     this.loading = false;
                 }, (response) => {
@@ -102,24 +105,24 @@
         },
         computed: {
             description: function() {
-                if(!this.loading) return this.request.Description;
+                if (!this.loading) return this.request.Description;
             },
             authors: function() {
-                if(!this.loading) return 'By ' + this.request.Authors.toString();
+                if (!this.loading) return 'By ' + this.request.Authors.toString();
             },
             date: function() {
-                if(!this.loading) return 'Published on ' + this.request.PublicationDate;
+                if (!this.loading) return 'Published on ' + this.request.PublicationDate;
             },
             packageId: function() {
                 return this.$route.params.id
             },
             packageName: function() {
-                if(!this.loading) return this.packageId;
+                if (!this.loading) return this.packageId;
             }
         },
         watch: {
             currentVersion: function() {
-                if(this.currentVersion){
+                if (this.currentVersion) {
                     this.loading = true;
                     this.changeVersion();
                     this.getInfoPackage();
@@ -133,8 +136,8 @@
         },
         components: {
             'graph': Graph,
-            'versions-dropdown' : VersionsDropdown,
-            'bounce-loader' : BounceLoader
+            'versions-dropdown': VersionsDropdown,
+            'bounce-loader': BounceLoader
         }
     }
 </script>
@@ -144,11 +147,17 @@
         width: 100%;
         height: 90%;
     }
+    
     #loading-div {
         height: 100%;
         display: flex;
         align-items: center;
     }
+    
+    #loading-div div {
+        margin: auto;
+    }
+    
     h1.package-name {
         margin-left: 50px;
     }
@@ -187,7 +196,7 @@
         color: #2c3e50;
     }
     
-    .version-options{
+    .version-options {
         font-size: 16px;
     }
     
