@@ -21,7 +21,7 @@
     export default {
         data: function() {
             return {
-                favorites : [{packageId: 'Code.Cake'}, {packageId: 'Cake'}]
+                favorites : [{packageId: 'Code.Cake', state: 'ok'}, {packageId: 'Cake', state: 'alert'},{packageId: 'Cake.Core', state: 'issue'}]
             }
         },
         components: {

@@ -1,7 +1,9 @@
 <template>
     <div class="favorite-packages-items">
         <div class="favorite-packages-info">{{ favorite.packageId }}</div>
-        <color-box-ok></color-box-ok>
+        <color-box-ok v-if="favorite.state === 'ok'"></color-box-ok>
+        <color-box-alert v-if="favorite.state === 'alert'"></color-box-alert>
+        <color-box-issue v-if="favorite.state === 'issue'"></color-box-issue>
         <router-link :to="'/package/'+favorite.packageId"><button class="view-button">View</button></router-link>
     </div>
 </template>
