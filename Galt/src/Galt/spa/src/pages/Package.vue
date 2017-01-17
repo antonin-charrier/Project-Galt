@@ -72,15 +72,14 @@
             redirect: function() {
                 if (this.$route.params.version) {
                     this.currentVersion = this.$route.params.version;
+                    this.getInfoPackage(this.currentVersion)
                 } else {
                     this.$http.get('/api/package/lastversion?packageId=' + this.packageId).then(function(response) {
                         this.$router.push({
                             path: '/package/' + this.packageId + '/' + this.currentVersion
                         })
                         this.getInfoPackage(response.body);
-                    }, function(response) {
-                        console.log("Request error");
-                    }.bind(this));
+                    }, function(response) {}.bind(this));
                 }
             },
             getInfoPackage: function(version) {
@@ -95,9 +94,7 @@
                     }
                     this.currentVersion = version;
                     this.loading = false;
-                }, function(response) {
-                    console.log("Request error");
-                }.bind(this));
+                }, function(response) {}.bind(this));
             }
         },
         created: function() {
@@ -123,6 +120,12 @@
         watch: {
             '$route': function() {
                 this.loading = true;
+                this.redirect();
+            },
+            currentVersion: function(newValue) {
+                this.$router.push({
+                    path: '/package/' + this.packageId + '/' + newValue
+                })
                 this.redirect();
             }
         },
