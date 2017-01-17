@@ -64,46 +64,40 @@
                 this.versionsDisplayed = !this.versionsDisplayed
             },
             changeVersion: function() {
-                this.loading = true;
                 this.$router.push({
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
-                this.getInfoPackage();
             },
-            getInfoPackage: function(){
+            redirect: function(){
                 if(this.$route.params.version){
-                    var version = this.$route.params.version;
-                    this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
-                        this.request = JSON.parse(response.body);
-                        this.currentVersion = version;
-                        this.options = [];
-                        for(var i=0; i<this.request.ListVPackage.length; i++){
-                            this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
-                        }
-                        this.loading = false;
-
-                        console.log(this.request);
-                    }, (response) => {
-                        console.log("Request error");
-                    });
-                } else{
+                    this.currentVersion = this.$route.params.version;
+                } else {
                     this.$http.get('/api/package/infopackage?packageId='+this.packageId).then((response) => {
                         this.request = JSON.parse(response.body);
                         this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
-                        this.options = [];
-                        for(var i=0; i<this.request.ListVPackage.length; i++){
-                            this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
-                        }
-                        this.loading.false;
-
-                        console.log(this.request);
+                        this.$router.push({
+                            path: '/package/' + this.packageId + '/' + this.currentVersion
+                        })
                     }, (response) => {
                         console.log("Request error");
-                    })
+                    });
                 }
+            },
+            getInfoPackage: function(){
+                this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+this.currentVersion).then((response) => {
+                    this.request = JSON.parse(response.body);
+                    this.options = [];
+                    for(var i=0; i<this.request.ListVPackage.length; i++){
+                        this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
+                    }
+                    this.loading = false;
+                }, (response) => {
+                    console.log("Request error");
+                });
             }
         },
         created: function() {
+            this.redirect();
             this.getInfoPackage();
         },
         computed: {
@@ -125,7 +119,16 @@
         },
         watch: {
             currentVersion: function() {
-                this.changeVersion();
+                if(this.currentVersion){
+                    this.loading = true;
+                    this.changeVersion();
+                    this.getInfoPackage();
+                }
+            },
+            packageId: function() {
+                this.loading = true;
+                this.redirect();
+                this.getInfoPackage();
             }
         },
         components: {
