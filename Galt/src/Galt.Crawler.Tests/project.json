@@ -7,7 +7,8 @@
   "dependencies": {
     "Galt.Crawler": "1.0.0-*",
     "NuGet.Core": "2.12.0",
-    "NUnitLite": "3.5.0"
+    "NUnitLite": "3.5.0",
+    "System.Runtime.Serialization.Json": "4.0.1"
   },
 
   "frameworks": {

@@ -11,10 +11,14 @@ namespace Galt.Crawler
     public class NuGetDownloader
     {
         IPackageRepository _repo;
+        GraphData _graphData;
+        JsonSerializerPackage _jsonSeria;
 
         public NuGetDownloader()
         {
             _repo = PackageRepositoryFactory.Default.CreateRepository( "https://packages.nuget.org/api/v2" );
+            _graphData = new GraphData();
+            _jsonSeria = new JsonSerializerPackage();
         }
 
         public VPackageEntity GetInfoVPackage(string packageId, string version )
@@ -36,6 +40,8 @@ namespace Galt.Crawler
             }
 
             vPEntity.PublicationDate = dateTime;
+            VPackage vP = FillVPackage( packageId, version );
+            vPEntity.FullDependencies = _jsonSeria.JsonSerializer( _graphData.ConvertGraphData( vP ) );
 
             return vPEntity;
         }
@@ -91,6 +97,7 @@ namespace Galt.Crawler
         public void GetDependenciesSpecificVersion( VPackage vPackage )
         {
             List<IPackage> packages = _repo.FindPackagesById(vPackage.PackageId).ToList();
+
             packages = packages.Where( p => (p.Version.Version.ToString() == vPackage.Version.ToString()) ).ToList();
 
             if( !packages.IsEmpty() )
@@ -103,6 +110,8 @@ namespace Galt.Crawler
                     {
                         VPackage vpackagedep = new VPackage( item.Id, item.VersionSpec.MinVersion.Version );
                         listdep.Add( vpackagedep );
+                        
+                        Console.WriteLine(item.Id);
                         GetDependenciesSpecificVersion( vpackagedep );
                     }
                     dicFrameDep.Add( frameW.FullName, listdep );
