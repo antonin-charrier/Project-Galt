@@ -47,6 +47,14 @@ namespace Galt.Controllers
             return rss.ToString();
         }
 
+        [HttpGet("LastVersion")]
+        public async Task<string> GetLastVersionpackage(string packageId)
+        {
+            VPackageEntity vP = await _packageService.GetLastVPackage(packageId);
+
+            return vP.RowKey;
+        }
+
         [HttpGet( "graph" )]
         public string GetVpackageDependencies()
         {
