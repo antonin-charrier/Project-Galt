@@ -8,7 +8,7 @@
                 <div class="package-info">
                 <div class="flex-bloc">
                     <h4 class="flex-info-text">
-                        <select v-model="currentVersion">
+                        <select id="version-dropdown" v-model="currentVersion">
                             <option v-for="option in options" v-bind:value="option.value">
                                 {{ option.text }}
                             </option>
@@ -40,8 +40,8 @@
 </template>
 
 <script>
+    import $ from 'jquery'
     import Graph from "../components/Graph.vue"
-    import VersionsDropdown from "../components/VersionsDropdown.vue"
     import BounceLoader from 'vue-spinner/src/BounceLoader.vue'
 
     export default {
@@ -64,74 +64,71 @@
                 this.versionsDisplayed = !this.versionsDisplayed
             },
             changeVersion: function() {
-                this.loading = true;
                 this.$router.push({
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
                 this.getInfoPackage();
             },
-            getInfoPackage: function(){
-                if(this.$route.params.version){
-                    var version = this.$route.params.version;
-                    this.$http.get('/api/package/infopackage?packageId='+this.packageId+'&version='+version).then((response) => {
-                        this.request = JSON.parse(response.body);
-                        this.currentVersion = version;
-                        this.options = [];
-                        for(var i=0; i<this.request.ListVPackage.length; i++){
-                            this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
-                        }
-                        this.loading = false;
-
-                        console.log(this.request);
-                    }, (response) => {
+            redirect: function() {
+                if (this.$route.params.version) {
+                    this.currentVersion = this.$route.params.version;
+                } else {
+                    this.$http.get('/api/package/lastversion?packageId=' + this.packageId).then(function(response) {
+                        this.$router.push({
+                            path: '/package/' + this.packageId + '/' + this.currentVersion
+                        })
+                        this.getInfoPackage(response.body);
+                    }, function(response) {
                         console.log("Request error");
-                    });
-                } else{
-                    this.$http.get('/api/package/infopackage?packageId='+this.packageId).then((response) => {
-                        this.request = JSON.parse(response.body);
-                        this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
-                        this.options = [];
-                        for(var i=0; i<this.request.ListVPackage.length; i++){
-                            this.options.push({text: 'Version ' + this.request.ListVPackage[i], value: this.request.ListVPackage[i]})
-                        }
-                        this.loading.false;
-
-                        console.log(this.request);
-                    }, (response) => {
-                        console.log("Request error");
-                    })
+                    }.bind(this));
                 }
+            },
+            getInfoPackage: function(version) {
+                this.$http.get('/api/package/infopackage?packageId=' + this.packageId + '&version=' + version).then(function(response) {
+                    this.request = JSON.parse(response.body);
+                    this.options = [];
+                    for (var i = 0; i < this.request.ListVPackage.length; i++) {
+                        this.options.push({
+                            text: 'Version ' + this.request.ListVPackage[i],
+                            value: this.request.ListVPackage[i]
+                        })
+                    }
+                    this.currentVersion = version;
+                    this.loading = false;
+                }, function(response) {
+                    console.log("Request error");
+                }.bind(this));
             }
         },
         created: function() {
-            this.getInfoPackage();
+            this.redirect();
         },
         computed: {
             description: function() {
-                if(!this.loading) return this.request.Description;
+                if (!this.loading) return this.request.Description;
             },
             authors: function() {
-                if(!this.loading) return 'By ' + this.request.Authors.toString();
+                if (!this.loading) return 'By ' + this.request.Authors.toString();
             },
             date: function() {
-                if(!this.loading) return 'Published on ' + this.request.PublicationDate;
+                if (!this.loading) return 'Published on ' + this.request.PublicationDate;
             },
             packageId: function() {
                 return this.$route.params.id
             },
             packageName: function() {
-                if(!this.loading) return this.packageId;
+                if (!this.loading) return this.packageId;
             }
         },
         watch: {
-            currentVersion: function() {
-                this.changeVersion();
+            '$route': function() {
+                this.loading = true;
+                this.redirect();
             }
         },
         components: {
             'graph': Graph,
-            'versions-dropdown' : VersionsDropdown,
-            'bounce-loader' : BounceLoader
+            'bounce-loader': BounceLoader
         }
     }
 </script>
@@ -141,11 +138,17 @@
         width: 100%;
         height: 90%;
     }
+    
     #loading-div {
         height: 100%;
         display: flex;
         align-items: center;
     }
+    
+    #loading-div div {
+        margin: auto;
+    }
+    
     h1.package-name {
         margin-left: 50px;
     }
@@ -184,7 +187,7 @@
         color: #2c3e50;
     }
     
-    .version-options{
+    .version-options {
         font-size: 16px;
     }
     
