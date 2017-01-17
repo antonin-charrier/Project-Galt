@@ -91,6 +91,7 @@ namespace Galt.Crawler
         public void GetDependenciesSpecificVersion( VPackage vPackage )
         {
             List<IPackage> packages = _repo.FindPackagesById(vPackage.PackageId).ToList();
+
             packages = packages.Where( p => (p.Version.Version.ToString() == vPackage.Version.ToString()) ).ToList();
 
             if( !packages.IsEmpty() )
@@ -103,6 +104,8 @@ namespace Galt.Crawler
                     {
                         VPackage vpackagedep = new VPackage( item.Id, item.VersionSpec.MinVersion.Version );
                         listdep.Add( vpackagedep );
+                        
+                        Console.WriteLine(item.Id);
                         GetDependenciesSpecificVersion( vpackagedep );
                     }
                     dicFrameDep.Add( frameW.FullName, listdep );

@@ -21,7 +21,7 @@ namespace Galt.Crawler.Util
             _graph.Add("nodes", new List<Dictionary<string, string>>());
             _graph.Add("links", new List<Dictionary<string, string>>());
 
-            _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph.Count.ToString(), "source", vPackage.Version.ToString()));
+            _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString()));
             AddDependency(vPackage, "0");
 
             // Add the warnings on nodes withs issues
@@ -45,23 +45,49 @@ namespace Galt.Crawler.Util
             string id = "0";
             foreach (string framework in vPackage.Dependencies.Keys)
             {
-                _graph["nodes"].Add(VPackageToDictionary(framework, _graph.Count.ToString(), "platform", vPackage.Version.ToString()));
+                id = _graph["nodes"].Count.ToString();
+                if (vPackage.Dependencies[framework].Count() != 0)
+                {
+                    _graph["nodes"].Add(VPackageToDictionary(framework, id, "platform", vPackage.Version.ToString()));
+                    _graph["links"].Add(CreateLink(ParentId, id));
+                    ParentId = id;
+                }
                 foreach (VPackage newVPackage in vPackage.Dependencies[framework])
                 {
-                    id = _graph.Count.ToString();
-                    _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, vPackage.Version.ToString()));
-                    _graph["links"].Add(CreateLink(ParentId, id));
-                    AddDependency(newVPackage, id);
+                    id = _graph["nodes"].Count.ToString();
+                    bool found = false;
+                    string idFound = "0";
+
+                    foreach(Dictionary<string, string> node in _graph["nodes"])
+                    {
+                        if (node["name"] == newVPackage.PackageId && node["version"] == vPackage.Version.ToString())
+                        {
+                            found = true;
+                            idFound = node["id"];
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, vPackage.Version.ToString()));
+                        _graph["links"].Add(CreateLink(ParentId, id));
+                        AddDependency(newVPackage, id);
+                    }
+                    else
+                    {
+                        _graph["links"].Add(CreateLink(ParentId, idFound));
+                    }
+                    
                 }
             }
         }
 
         // Convert a VPackage to a Dictionary
-        private Dictionary<string, string> VPackageToDictionary(string name, string id, string entity, string version)
+        private Dictionary<string, string> VPackageToDictionary(string name, string newId, string entity, string version)
         {
             Dictionary<string, string> dico = new Dictionary<string, string>();
 
-            dico.Add("id", id);
+            dico.Add("id", newId);
             dico.Add("name", name);
             if (entity != null || entity != "") dico.Add("entity", entity);
             if (version != null || version != "") dico.Add("version", version);
