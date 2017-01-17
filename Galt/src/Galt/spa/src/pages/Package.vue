@@ -67,17 +67,18 @@
                 this.$router.push({
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
+                this.getInfoPackage();
             },
             redirect: function() {
                 if (this.$route.params.version) {
                     this.currentVersion = this.$route.params.version;
                 } else {
-                    this.$http.get('/api/package/infopackage?packageId=' + this.packageId).then((response) => {
-                        this.request = JSON.parse(response.body);
-                        this.currentVersion = this.request.ListVPackage[this.request.ListVPackage.length - 1];
+                    this.$http.get('/api/package/lastversion?packageId=' + this.packageId).then((response) => {
+                        this.currentVersion = response.body;
                         this.$router.push({
                             path: '/package/' + this.packageId + '/' + this.currentVersion
                         })
+                        this.getInfoPackage();
                     }, (response) => {
                         console.log("Request error");
                     });
@@ -101,7 +102,6 @@
         },
         created: function() {
             this.redirect();
-            this.getInfoPackage();
         },
         computed: {
             description: function() {
@@ -125,13 +125,11 @@
                 if (this.currentVersion) {
                     this.loading = true;
                     this.changeVersion();
-                    this.getInfoPackage();
                 }
             },
             packageId: function() {
                 this.loading = true;
                 this.redirect();
-                this.getInfoPackage();
             }
         },
         components: {

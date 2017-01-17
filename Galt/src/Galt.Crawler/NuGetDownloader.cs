@@ -49,7 +49,7 @@ namespace Galt.Crawler
             pEntity.Description = packages.Last().Description;
 
             List<string> vpackages = new List<string>();
-            vpackages.Reverse();
+            packages.Reverse();
             foreach( IPackage item in packages )
             {
                 vpackages.Add( item.Version.ToString() );
