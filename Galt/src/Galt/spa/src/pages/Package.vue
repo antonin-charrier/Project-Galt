@@ -41,7 +41,6 @@
 
 <script>
     import Graph from "../components/Graph.vue"
-    import VersionsDropdown from "../components/VersionsDropdown.vue"
     import BounceLoader from 'vue-spinner/src/BounceLoader.vue'
 
     export default {
@@ -134,7 +133,6 @@
         },
         components: {
             'graph': Graph,
-            'versions-dropdown': VersionsDropdown,
             'bounce-loader': BounceLoader
         }
     }
