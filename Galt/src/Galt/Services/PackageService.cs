@@ -42,7 +42,7 @@ namespace Galt.Services
         {
             PackageEntity pEntity = await GetPackage( packageId );
             string[] ArrayVersions = pEntity.ListVPackage.ToArray();
-            string lastVersion = ArrayVersions[ArrayVersions.Length-1];
+            string lastVersion = ArrayVersions[0];
 
             return await GetVPackage( packageId, lastVersion ); ;
         }
