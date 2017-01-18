@@ -22,7 +22,7 @@
                 <p id="description">{{ description }}<p>
                 </div>
                 <div class="flex-bloc">
-                    <graph></graph>
+                    <graph :package="packageId" :version="currentVersion" :display="graphDisplayed"></graph>
                     <div class="flex-issues-versions">
                         <div class="issues">
                             <h3>Issues</h3>
@@ -53,7 +53,8 @@
                 color: '#226D71',
                 versionsDisplayed: false,
                 currentVersion: '',
-                options: []
+                options: [],
+                graphDisplayed: false
             }
         },
         methods: {
