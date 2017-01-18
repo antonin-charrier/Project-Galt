@@ -1,25 +1,11 @@
 <template>
     <div id="mypackages">
         <div class="favorite-packages">
-            <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange no-cursor" style="font-size:25px; margin-right:10px"></i>My favorite packages</h3>
-            <div class="favorite-packages-items">
-                <div class="favorite-packages-info">Code.Cake</div>
-                <color-box-ok></color-box-ok>
-                <router-link to="/package"><button class="view-button">View</button></router-link>
-            </div>
-            <div class="favorite-packages-items">
-                <div class="favorite-packages-info">Package.Example.2</div>
-                <color-box-alert></color-box-alert>
-                <router-link to="/package"><button class="view-button">View</button></router-link>
-            </div>
-            <div class="favorite-packages-items">
-                <div class="favorite-packages-info">Package.Example.3</div>
-                <color-box-issue></color-box-issue>
-                <router-link to="/package"><button class="view-button">View</button></router-link>
-            </div>
+            <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange no-cursor" style="font-size:25px; margin-right:10px"></i>My favorites</h3>
+            <favorite-package v-for="favorite in favorites" :favorite="favorite"></favorite-package>
         </div>
         <div class="recent-packages">
-            <h3 class="my-packages-title">Recent packages</h3>
+            <h3 class="my-packages-title">Recently consulted</h3>
             <div class="recent-packages-items">
                 <div class="recent-packages-info">Code.Cake</div>
                 <router-link to="/package"><button class="view-button">View</button></router-link>
@@ -30,17 +16,18 @@
 </template>
 
 <script>
-import ColorBoxOK from '../components/ColorBoxOK.vue'
-import ColorBoxAlert from '../components/ColorBoxAlert.vue'
-import ColorBoxIssue from '../components/ColorBoxIssue.vue'
+    import FavoritePackage from '../components/FavoritePackage.vue'
 
-export default {
-    components: {
-        'color-box-ok' : ColorBoxOK,
-        'color-box-alert' : ColorBoxAlert,
-        'color-box-issue' : ColorBoxIssue
+    export default {
+        data: function() {
+            return {
+                favorites : [{packageId: 'Code.Cake', state: 'ok'}, {packageId: 'Cake', state: 'alert'},{packageId: 'Cake.Core', state: 'issue'}]
+            }
+        },
+        components: {
+            'favorite-package' : FavoritePackage
+        }
     }
-}
 
 </script>
 

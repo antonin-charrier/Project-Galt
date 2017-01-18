@@ -10,7 +10,6 @@ namespace Galt.AzureManager
     {
         public class UserEntity : TableEntity
         {
-            // daubiht if you touch this again I will literally shank you
             public UserEntity() { }
 
             public UserEntity( string email )
@@ -19,7 +18,7 @@ namespace Galt.AzureManager
                 RowKey = email;
             }
 
-            public string Favorite { get; set; }
+            public string[] Favorite { get; set; }
 
             public string GitHubToken { get; set; }
         }
@@ -45,6 +44,8 @@ namespace Galt.AzureManager
                 PartitionKey = packageId;
                 RowKey = "blbl";
             }
+
+            public PackageEntity() { }
 
             public List<string> ListVPackage { get; set; }
 

@@ -22,7 +22,7 @@
                 <p id="description">{{ description }}<p>
                 </div>
                 <div class="flex-bloc">
-                    <graph></graph>
+                    <graph :package="packageId" :version="currentVersion" :display="graphDisplayed"></graph>
                     <div class="flex-issues-versions">
                         <div class="issues">
                             <h3>Issues</h3>
@@ -53,7 +53,8 @@
                 color: '#226D71',
                 versionsDisplayed: false,
                 currentVersion: '',
-                options: []
+                options: [],
+                graphDisplayed: false
             }
         },
         methods: {
@@ -72,15 +73,14 @@
             redirect: function() {
                 if (this.$route.params.version) {
                     this.currentVersion = this.$route.params.version;
+                    this.getInfoPackage(this.currentVersion)
                 } else {
                     this.$http.get('/api/package/lastversion?packageId=' + this.packageId).then(function(response) {
                         this.$router.push({
                             path: '/package/' + this.packageId + '/' + this.currentVersion
                         })
                         this.getInfoPackage(response.body);
-                    }, function(response) {
-                        console.log("Request error");
-                    }.bind(this));
+                    }, function(response) {}.bind(this));
                 }
             },
             getInfoPackage: function(version) {
@@ -95,9 +95,7 @@
                     }
                     this.currentVersion = version;
                     this.loading = false;
-                }, function(response) {
-                    console.log("Request error");
-                }.bind(this));
+                }, function(response) {}.bind(this));
             }
         },
         created: function() {
@@ -123,6 +121,12 @@
         watch: {
             '$route': function() {
                 this.loading = true;
+                this.redirect();
+            },
+            currentVersion: function(newValue) {
+                this.$router.push({
+                    path: '/package/' + this.packageId + '/' + newValue
+                })
                 this.redirect();
             }
         },

@@ -11,10 +11,14 @@ namespace Galt.Crawler
     public class NuGetDownloader
     {
         IPackageRepository _repo;
+        GraphData _graphData;
+        JsonSerializerPackage _jsonSeria;
 
         public NuGetDownloader()
         {
             _repo = PackageRepositoryFactory.Default.CreateRepository( "https://packages.nuget.org/api/v2" );
+            _graphData = new GraphData();
+            _jsonSeria = new JsonSerializerPackage();
         }
 
         public VPackageEntity GetInfoVPackage(string packageId, string version )
@@ -24,18 +28,29 @@ namespace Galt.Crawler
             List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
             packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
 
-            string dateTime = packages.First().Published.ToString();
-            dateTime = dateTime.Remove( 10 );
-            string[] dateTimeSplit = dateTime.Split('/');
-            if (dateTimeSplit.Length >= 2)
+            string dateTime;
+
+            // Savage fix for yet another of Thibaut's mistakes
+            // This will prevent crashes but cause misbehavior
+            // TODO: Find a better fix
+            if ( packages.Count > 0 )
             {
-                string temp = dateTimeSplit[ 1 ];
-                dateTimeSplit[ 1 ] = dateTimeSplit[ 0 ];
-                dateTimeSplit[ 0 ] = temp;
-                dateTime = string.Join( "/", dateTimeSplit );
+                dateTime = packages.First().Published.ToString();
+                dateTime = dateTime.Remove( 10 );
+                string[] dateTimeSplit = dateTime.Split( '/' );
+                if ( dateTimeSplit.Length >= 2 )
+                {
+                    string temp = dateTimeSplit[ 1 ];
+                    dateTimeSplit[ 1 ] = dateTimeSplit[ 0 ];
+                    dateTimeSplit[ 0 ] = temp;
+                    dateTime = string.Join( "/", dateTimeSplit );
+                }
             }
+            else dateTime = string.Empty;
 
             vPEntity.PublicationDate = dateTime;
+            VPackage vP = FillVPackage( packageId, version );
+            vPEntity.FullDependencies = _jsonSeria.JsonSerializer( _graphData.ConvertGraphData( vP ) );
 
             return vPEntity;
         }
@@ -77,11 +92,13 @@ namespace Galt.Crawler
 
             dateTime = dateTime.Remove( 10 );
             string[] dateTimeSplit = dateTime.Split('/');
-            string temp = dateTimeSplit[1];
-            dateTimeSplit[1] = dateTimeSplit[0];
-            dateTimeSplit[0] = temp;
-
-            dateTime = string.Join( "/", dateTimeSplit );
+            if ( dateTimeSplit.Length >= 2 )
+            {
+                string temp = dateTimeSplit[ 1 ];
+                dateTimeSplit[ 1 ] = dateTimeSplit[ 0 ];
+                dateTimeSplit[ 0 ] = temp;
+                dateTime = string.Join( "/", dateTimeSplit );
+            }
 
             vp.PublicationDate = dateTime;
 

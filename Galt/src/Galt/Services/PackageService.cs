@@ -32,8 +32,6 @@ namespace Galt.Services
             {
                 VpackageEntity = _nugetDL.GetInfoVPackage( packageId, version );
 
-                //ICIIIIIIIIIII
-
                 await _vPackageReq.AddIfNotExists( VpackageEntity );
             }
 
@@ -44,18 +42,9 @@ namespace Galt.Services
         {
             PackageEntity pEntity = await GetPackage( packageId );
             string[] ArrayVersions = pEntity.ListVPackage.ToArray();
-            string lastVersion = ArrayVersions[ArrayVersions.Length-1];
+            string lastVersion = ArrayVersions[0];
 
-            VPackageEntity vPEntity = await _vPackageReq.getVPackage(packageId, lastVersion);
-
-            if( vPEntity == null )
-            {
-                vPEntity = _nugetDL.GetInfoVPackage( packageId, lastVersion );
-
-                await _vPackageReq.AddIfNotExists( vPEntity );
-            }
-
-            return vPEntity;
+            return await GetVPackage( packageId, lastVersion ); ;
         }
 
         internal async Task<PackageEntity> GetPackage(string packageId)
@@ -70,6 +59,13 @@ namespace Galt.Services
             }
 
             return packageEntity;
+        }
+
+        internal async Task<string> GetFullDependencies( string packageId, string version )
+        {
+            VPackageEntity vP = await GetVPackage( packageId, version );
+
+            return vP.FullDependencies;
         }
     }
 }

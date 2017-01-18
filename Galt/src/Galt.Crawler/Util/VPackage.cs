@@ -13,6 +13,7 @@ namespace Galt.Crawler.Util
 
             PackageId = packageId;
             Version = version;
+            Dependencies = new Dictionary<string, IEnumerable<VPackage>>();
         }
 
         public string PackageId { get; }
