@@ -63,6 +63,7 @@ export default {
 	fill: none;
 	stroke: black;
 	stroke-width: 1px;
+    cursor: default;
 }
 .default{
 	fill: #07A901;
@@ -92,9 +93,11 @@ export default {
 #graph{
     width: 100%;
     height: 100%;
+    cursor: move;
 }
 .node{
 	stroke: black;
+    cursor: help;
 }
 text{
 	fill: #fff;
