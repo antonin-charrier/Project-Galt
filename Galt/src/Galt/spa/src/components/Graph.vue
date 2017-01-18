@@ -1,6 +1,7 @@
 <template>
-    <div id="graph">
+    <div id="graph-container">
         <button class="graph-button" v-on:click="drawGraph" v-if="!displayed">Generate package graph</button>
+        <div id="graph" v-else></div>
     </div>
 </template>
 
@@ -8,21 +9,18 @@
 import GraphScript from "../scripts/graph.js"
 
 export default {
-    props: ['package', 'version', 'display'],
-    computed: {
-        displayed: function() {
-            return this.display;
+    data: function() {
+        return {
+            displayed: false
         }
     },
+    props: ['package', 'version'],
     methods: {
         drawGraph: function () {
-            this.displayed = !this.displayed;
-
             this.$http.get('/api/package/graph?packageId=' + this.package + '&version=' + this.version).then(function(response) {
-                console.log('/api/package/graph?packageId=' + this.package + '&version=' + this.version);
-                console.log(response.body);
                 return GraphScript.drawGraph(response.body);
             }, function(response) {}.bind(this));
+            this.displayed = !this.displayed;
         }
     }
 }
@@ -81,7 +79,7 @@ export default {
 .versionConflict{
 	fill: red
 }
-#graph{
+#graph-container{
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
@@ -90,6 +88,10 @@ export default {
     width: 100%;
     margin-left: 50px;
     background-color: gray;
+}
+#graph{
+    width: 100%;
+    height: 100%;
 }
 .node{
 	stroke: black;

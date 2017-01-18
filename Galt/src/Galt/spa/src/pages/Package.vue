@@ -22,7 +22,7 @@
                 <p id="description">{{ description }}<p>
                 </div>
                 <div class="flex-bloc">
-                    <graph :package="packageId" :version="currentVersion" :display="graphDisplayed"></graph>
+                    <graph :package="packageId" :version="currentVersion"></graph>
                     <div class="flex-issues-versions">
                         <div class="issues">
                             <h3>Issues</h3>
