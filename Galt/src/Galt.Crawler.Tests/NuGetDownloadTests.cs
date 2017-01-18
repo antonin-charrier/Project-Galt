@@ -65,11 +65,6 @@ namespace Galt.Crawler.Tests
 
             string truc = s.JsonSerializer(gd.ConvertGraphData(lol));
 
-            
-
-
-            
-
             // Set a variable to the My Documents path.
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 

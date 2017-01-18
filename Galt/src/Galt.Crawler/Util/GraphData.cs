@@ -29,7 +29,7 @@ namespace Galt.Crawler.Util
             {
                 foreach (Dictionary<string, string> otherNode in _graph["nodes"])
                 {
-                    if (currentNode["id"] != otherNode["id"] && currentNode["version"] != currentNode["version"])
+                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning"))
                     {
                         currentNode.Add("warning", "versionConflict");
                         otherNode.Add("warning", "versionConflict");
@@ -52,6 +52,8 @@ namespace Galt.Crawler.Util
                     _graph["links"].Add(CreateLink(ParentId, id));
                     ParentId = id;
                 }
+
+                // Adding of all the package in the framework. Ignore present package
                 foreach (VPackage newVPackage in vPackage.Dependencies[framework])
                 {
                     id = _graph["nodes"].Count.ToString();
@@ -60,7 +62,7 @@ namespace Galt.Crawler.Util
 
                     foreach(Dictionary<string, string> node in _graph["nodes"])
                     {
-                        if (node["name"] == newVPackage.PackageId && node["version"] == vPackage.Version.ToString())
+                        if (node["name"] == newVPackage.PackageId && node["version"] == newVPackage.Version.ToString())
                         {
                             found = true;
                             idFound = node["id"];
@@ -69,7 +71,7 @@ namespace Galt.Crawler.Util
 
                     if (!found)
                     {
-                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, vPackage.Version.ToString()));
+                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, newVPackage.Version.ToString()));
                         _graph["links"].Add(CreateLink(ParentId, id));
                         AddDependency(newVPackage, id);
                     }
