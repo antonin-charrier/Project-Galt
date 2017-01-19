@@ -1,9 +1,10 @@
 <template>
     <div id="outer">
-        <div v-show="loading" id="loading-div">
-            <bounce-loader :loading="loading" :color="color" :size="size"></bounce-loader>
+        <div v-show="loading" class="loading-div">
+            <bounce-loader class="spinner" :loading="loading" :color="color" :size="size"></bounce-loader>
         </div>
         <div v-show="!loading" id="package">
+            <div class="flex-package">
                 <h1 class="package-name"><a class="package-link" :href="'https://www.nuget.org/packages/'+packageName" target="_blank">{{ packageName }}</a></h1>
                 <div class="package-info">
                 <div class="flex-bloc">
@@ -16,24 +17,35 @@
                         <span class="flex-info-item">{{ authors }}</span>
                         <span class="flex-info-item">{{ date }}</span>
                     </h4>
-                    <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="addFav"></i>
+                    <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="removeFav"></i>
                     <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
                 </div>
                 <p id="description">{{ description }}<p>
                 </div>
-                <div class="flex-bloc">
-                    <graph :package="packageId" :version="currentVersion"></graph>
-                    <div class="flex-issues-versions">
-                        <div class="issues">
-                            <h3>Issues</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
-                        </div>
-                        <div class="new-versions">
-                            <h3>New versions</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
-                        </div>
+            </div>
+            <div class="flex-bloc">
+                <div class="flex-retrieve">
+                    <button class="graph-button" v-on:click="displayGraph" v-if="!graphDisplayed && !graphLoading">
+                        Retrieve graph data
+                    </button>
+                </div>
+                <div v-show="graphLoading" class="loading-div flex-loading">
+                    <bounce-loader class="spinner" :loading="graphLoading" :color="color" :size="size"></bounce-loader>
+                </div>
+                <div id="graph-container" v-show="graphDisplayed && !graphLoading">
+                    <div id="graph"></div>
+                </div>
+                <div class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
+                    <div class="issues">
+                        <h3>Issues</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                    </div>
+                    <div class="new-versions">
+                        <h3>New versions</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
                     </div>
                 </div>
+            </div>
             <router-view></router-view>
         </div>
     </div>
@@ -41,9 +53,13 @@
 
 <script>
     import $ from 'jquery'
-    import Graph from "../components/Graph.vue"
     import BounceLoader from 'vue-spinner/src/BounceLoader.vue'
-
+    import {
+        postAsync
+    } from '../helpers/apiHelper.js'
+    import AuthService from '../services/AuthService'
+    import Graph from '../scripts/graph.js'
+    
     export default {
         data: function() {
             return {
@@ -54,12 +70,38 @@
                 versionsDisplayed: false,
                 currentVersion: '',
                 options: [],
+                graphLoading: false,
                 graphDisplayed: false
             }
         },
         methods: {
             addFav: function() {
-                this.fav = !this.fav
+                this.fav = true
+                postAsync("api/package", "fav", AuthService.accessToken, {
+                        packageId: this.packageId
+                    })
+                    .then(function(response) {
+                            if (response == false)
+                                this.fav = false;
+                        }.bind(this),
+                        function(response) {
+                            this.fav = false
+                        }.bind(this)
+                    )
+            },
+            removeFav: function() {
+                this.fav = false
+                postAsync("api/package", "unfav", AuthService.accessToken, {
+                        packageId: this.packageId
+                    })
+                    .then(function(response) {
+                            if (response == false)
+                                this.fav = true;
+                        }.bind(this),
+                        function(response) {
+                            this.fav = true
+                        }.bind(this)
+                    )
             },
             displayVersions: function() {
                 this.versionsDisplayed = !this.versionsDisplayed
@@ -96,6 +138,14 @@
                     this.currentVersion = version;
                     this.loading = false;
                 }, function(response) {}.bind(this));
+            },
+            displayGraph: function() {
+                this.graphLoading = true;
+                this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
+                    this.graphDisplayed = !this.graphDisplayed;
+                    GraphScript.drawGraph(response.body);
+                    this.graphLoading = false;
+                }, function(response) {}.bind(this));
             }
         },
         created: function() {
@@ -112,7 +162,7 @@
                 if (!this.loading) return 'Published on ' + this.request.PublicationDate;
             },
             packageId: function() {
-                return this.$route.params.id
+                return this.$route.params.id;
             },
             packageName: function() {
                 if (!this.loading) return this.packageId;
@@ -121,6 +171,7 @@
         watch: {
             '$route': function() {
                 this.loading = true;
+                this.graphDisplayed = false;
                 this.redirect();
             },
             currentVersion: function(newValue) {
@@ -131,7 +182,6 @@
             }
         },
         components: {
-            'graph': Graph,
             'bounce-loader': BounceLoader
         }
     }
@@ -142,42 +192,66 @@
         width: 100%;
         height: 90%;
     }
-    
-    #loading-div {
-        height: 100%;
-        display: flex;
-        align-items: center;
+    .flex-package {
+        flex: 0 1 auto;
     }
-    
+    #package {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+    }
+    .loading-div {
+        height: 100%;
+    }
+    .flex-loading {
+        width: 100%;
+    }
     #loading-div div {
         margin: auto;
     }
-    
     h1.package-name {
         margin-left: 50px;
     }
-    
     .package-link:link {
         text-decoration: none;
-    }
-    
+    }   
     .package-link:hover {
         text-decoration: underline;
     }
-    
     .flex-bloc {
         display: -webkit-flex;
         display: flex;
         margin-bottom: 30px;
+        flex: 1 1 auto;
+        align-items: center;
+        justify-content: center;
     }
-    
+    .flex-retrieve {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     .flex-info-text {
         display: -webkit-flex;
         display: flex;
         width: 85%;
-        margin-left: 50px;
     }
-    
+    .graph-button {
+        cursor: pointer;
+        height: 30px;
+        font-size: 13px;
+        border-radius: 3px;
+        border: 1px solid black;
+        background-color: lightslategray;
+        color: black;
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .graph-button:hover{
+        background-color: slategray;
+    }
     .flex-info-item {
         margin-left: 40px;
     }
@@ -222,20 +296,130 @@
         margin-left: 50px;
         margin-right: 50px;
     }
-    
+    .spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
     .flex-issues-versions {
         text-align: justify;
         display: -webkit-flex;
         display: flex;
         -webkit-flex-direction: column;
         flex-direction: column;
-        width: 300px;
-        min-height: 600px;
+        flex : 1;
         padding-left: 10px;
         padding-right: 10px;
         margin-left: 20px;
         margin-right: 40px;
         background-color: dimgrey;
         color: white;
+    }
+    #endMarkers{
+        fill:black;
+    }
+    .invisible
+    {
+        display:none;
+    }
+    .clearButton
+    {
+        fill: #333;
+        cursor:pointer;
+    }
+    .textClearButton
+    {
+        cursor:pointer;
+    }
+    .link{
+        fill: none;
+        stroke: black;
+        stroke-width: 1px;
+        cursor: default;
+    }
+    .default{
+        fill: #07A901;
+    }
+    .source{
+        fill: #0000ff
+    }
+    .platform{
+        fill: #FF0DFF
+    }
+    .toUpdate{
+        fill: #ff9b00
+    }
+    .versionConflict{
+        fill: red
+    }
+    #graph-container{
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        border-style: solid;
+        flex: 3;
+        margin-left: 50px;
+        background-color: gray;
+    }
+    #graph{
+        width: 100%;
+        height: 100%;
+        cursor: move;
+    }
+    .node{
+        stroke: black;
+        cursor: help;
+    }
+    text{
+        fill: #fff;
+        text-shadow: 0 2px 0 #000, 2px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
+        stroke:none;
+    }
+
+    /*Display of the tooltip*/
+    .title{
+        text-align:center;
+    }
+    .green{
+        color:green;
+        text-align: center;
+    }
+    .warning{
+        color:orange;
+        text-align: center;
+    }
+    .error{
+        color:red;
+        text-align: center;
+    }
+    .d3-tip{
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+    }
+
+    /* Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+    }
+
+    /* Style northward tooltips differently */
+    .d3-tip.n:after {
+    margin: -5px 0 0 0;
+    top: 100%;
+    left: 0;
     }
 </style>

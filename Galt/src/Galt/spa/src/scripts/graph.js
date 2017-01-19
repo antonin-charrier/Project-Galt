@@ -16,6 +16,8 @@ module.exports = {
             "problemsGraph":{"data":JSON.parse(JSON.stringify(data)), "link":"", "node":""}
         };
 
+        d3.select("#graph").selectAll("svg").remove();
+
         var svg = d3.select("#graph").append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
