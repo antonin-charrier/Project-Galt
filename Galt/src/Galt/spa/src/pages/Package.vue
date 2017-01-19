@@ -17,7 +17,7 @@
                         <span class="flex-info-item">{{ authors }}</span>
                         <span class="flex-info-item">{{ date }}</span>
                     </h4>
-                    <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="addFav"></i>
+                    <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="removeFav"></i>
                     <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
                 </div>
                 <p id="description">{{ description }}<p>
@@ -54,7 +54,10 @@
 <script>
     import $ from 'jquery'
     import BounceLoader from 'vue-spinner/src/BounceLoader.vue'
-    import GraphScript from '../scripts/graph.js'
+    import {
+        postAsync
+    } from '../helpers/apiHelper.js'
+    import AuthService from '../services/AuthService'
     
     export default {
         data: function() {
@@ -72,7 +75,32 @@
         },
         methods: {
             addFav: function() {
-                this.fav = !this.fav
+                this.fav = true
+                postAsync("api/package", "fav", AuthService.accessToken, {
+                        packageId: this.packageId
+                    })
+                    .then(function(response) {
+                            if (response == false)
+                                this.fav = false;
+                        }.bind(this),
+                        function(response) {
+                            this.fav = false
+                        }.bind(this)
+                    )
+            },
+            removeFav: function() {
+                this.fav = false
+                postAsync("api/package", "unfav", AuthService.accessToken, {
+                        packageId: this.packageId
+                    })
+                    .then(function(response) {
+                            if (response == false)
+                                this.fav = true;
+                        }.bind(this),
+                        function(response) {
+                            this.fav = true
+                        }.bind(this)
+                    )
             },
             displayVersions: function() {
                 this.versionsDisplayed = !this.versionsDisplayed

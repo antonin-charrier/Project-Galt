@@ -10,7 +10,10 @@ namespace Galt.AzureManager
     {
         public class UserEntity : TableEntity
         {
-            public UserEntity() { }
+            public UserEntity()
+            {
+                Favorites = "[]";
+            }
 
             public UserEntity( string email )
             {
@@ -18,14 +21,14 @@ namespace Galt.AzureManager
                 RowKey = email;
             }
 
-            public string[] Favorite { get; set; }
+            public string Favorites { get; set; }
 
             public string GitHubToken { get; set; }
         }
 
         public class VPackageEntity : TableEntity
         {
-            public VPackageEntity () { }
+            public VPackageEntity() { }
 
             public VPackageEntity( string packageId, string version )
             {
@@ -39,7 +42,7 @@ namespace Galt.AzureManager
 
         public class PackageEntity : TableEntity
         {
-            public PackageEntity(string packageId)
+            public PackageEntity( string packageId )
             {
                 PartitionKey = packageId;
                 RowKey = "blbl";
