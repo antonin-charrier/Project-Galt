@@ -58,6 +58,7 @@
         postAsync
     } from '../helpers/apiHelper.js'
     import AuthService from '../services/AuthService'
+    import Graph from '../scripts/graph.js'
     
     export default {
         data: function() {
