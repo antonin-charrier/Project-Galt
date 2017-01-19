@@ -204,7 +204,7 @@ module.exports = {
                 // Choose node with any problem to delete
                 for (var i = 0; i <= graph.problemsGraph.data.nodes.length-1; i++)
                 {
-                    if (graph.problemsGraph.data.nodes[i].warning != "toUpdate" && graph.problemsGraph.data.nodes[i].warning != "versionConflict" && graph.problemsGraph.data.nodes[i].entity != "platform")
+                    if ((graph.problemsGraph.data.nodes[i].entity == "platform") || (graph.problemsGraph.data.nodes[i].warning != "toUpdate" && graph.problemsGraph.data.nodes[i].warning != "versionConflict" && graph.problemsGraph.data.nodes[i].entity != "source"))
                     {
                         var j = 0;
                         var isParent = false;

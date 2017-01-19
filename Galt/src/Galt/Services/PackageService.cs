@@ -30,7 +30,7 @@ namespace Galt.Services
 
             if( VpackageEntity == null )
             {
-                VpackageEntity = _nugetDL.GetInfoVPackage( packageId, version );
+                VpackageEntity = await _nugetDL.GetInfoVPackage( packageId, version );
 
                 await _vPackageReq.AddIfNotExists( VpackageEntity );
             }
@@ -53,7 +53,7 @@ namespace Galt.Services
 
             if(packageEntity == null)
             {
-                PackageEntity pEntity = _nugetDL.GetInfoPackage( packageId );
+                PackageEntity pEntity = await _nugetDL.GetInfoPackage( packageId );
                 await _packageReq.AddIfNotExists( pEntity.PartitionKey, pEntity.ListVPackage, pEntity.Description, pEntity.Authors );
                 return pEntity;
             }

@@ -14,24 +14,19 @@ namespace Galt.Crawler.Tests
     [TestFixture]
     public class NuGetDownloadTests
     {
-<<<<<<< HEAD
-        //[Test]
+        /*[Test]
         //public void Test_Package()
         //{
         //    NuGetDownloader n = new NuGetDownloader();
-        //    var p = n.FillVPackage( "Code.Cake", n.GetLatestVersionPackage("Code.Cake"));
-=======
-        /*[Test]
         public void Test_Package()
         {
             NuGetDownloader n = new NuGetDownloader();
             var p = n.FillVPackage( "Code.Cake", n.GetLatestVersionPackage("Code.Cake"));
->>>>>>> 752c1238e18461573c80cd11996234482f257ff2
 
-        //    Assert.AreEqual( p.PackageId, "Code.Cake" );
-        //    //Assert.AreEqual( p.Vpackages.Last().Version.ToString(), "0.14.0.0" );
-        //    //Assert.AreEqual( p.Vpackages.Last().Dependencies.DicDependencies.First().Value.Last().PackageId, "Cake.Common");
-        //}
+            Assert.AreEqual( p.PackageId, "Code.Cake" );
+            //Assert.AreEqual( p.Vpackages.Last().Version.ToString(), "0.14.0.0" );
+            //Assert.AreEqual( p.Vpackages.Last().Dependencies.DicDependencies.First().Value.Last().PackageId, "Cake.Common");
+        }
 
         [Test]
         public void Test_Serializer()
@@ -72,13 +67,13 @@ namespace Galt.Crawler.Tests
             VPackage lol = JsonConvert.DeserializeObject<VPackage>(json);
 
             string truc = s.JsonSerializer(gd.ConvertGraphData(lol));
-
-            
-
-
-            
+<<<<<<< HEAD
 
             // Set a variable to the My Documents path.
+=======
+
+            // Set a variable to the My Documents path.
+>>>>>>> d20cd1fbbf131a65cbc740bcfadf6171666f9761
             string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             // Write the string array to a new file named "WriteLines.txt".

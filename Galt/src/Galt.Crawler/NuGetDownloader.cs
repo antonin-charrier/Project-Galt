@@ -5,6 +5,7 @@ using System.Runtime.Versioning;
 using Galt.Crawler.Util;
 using NuGet;
 using static Galt.AzureManager.Entities;
+using System.Threading.Tasks;
 
 namespace Galt.Crawler
 {
@@ -13,6 +14,7 @@ namespace Galt.Crawler
         IPackageRepository _repo;
         GraphData _graphData;
         JsonSerializerPackage _jsonSeria;
+        private Task<List<IPackage>> vPackage;
 
         public NuGetDownloader()
         {
@@ -21,45 +23,51 @@ namespace Galt.Crawler
             _jsonSeria = new JsonSerializerPackage();
         }
 
-        public VPackageEntity GetInfoVPackage(string packageId, string version )
+        public async Task<VPackageEntity> GetInfoVPackage(string packageId, string version)
         {
             VPackageEntity vPEntity = new VPackageEntity(packageId, version);
 
-            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
-            packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
+            List<IPackage> packages = await Task.Factory.StartNew(() =>
+            {
+                return _repo.FindPackagesById(packageId).ToList();
+            });
+            packages = packages.Where(item => (item.Version.ToString() == version)).ToList();
 
             string dateTime;
 
             // Savage fix for yet another of Thibaut's mistakes
             // This will prevent crashes but cause misbehavior
             // TODO: Find a better fix
-            if ( packages.Count > 0 )
+            if (packages.Count > 0)
             {
                 dateTime = packages.First().Published.ToString();
-                dateTime = dateTime.Remove( 10 );
-                string[] dateTimeSplit = dateTime.Split( '/' );
-                if ( dateTimeSplit.Length >= 2 )
+                dateTime = dateTime.Remove(10);
+                string[] dateTimeSplit = dateTime.Split('/');
+                if (dateTimeSplit.Length >= 2)
                 {
-                    string temp = dateTimeSplit[ 1 ];
-                    dateTimeSplit[ 1 ] = dateTimeSplit[ 0 ];
-                    dateTimeSplit[ 0 ] = temp;
-                    dateTime = string.Join( "/", dateTimeSplit );
+                    string temp = dateTimeSplit[1];
+                    dateTimeSplit[1] = dateTimeSplit[0];
+                    dateTimeSplit[0] = temp;
+                    dateTime = string.Join("/", dateTimeSplit);
                 }
             }
             else dateTime = string.Empty;
 
             vPEntity.PublicationDate = dateTime;
-            VPackage vP = FillVPackage( packageId, version );
-            vPEntity.FullDependencies = _jsonSeria.JsonSerializer( _graphData.ConvertGraphData( vP ) );
+            VPackage vP = await FillVPackage(packageId, version);
+            vPEntity.FullDependencies = _jsonSeria.JsonSerializer(_graphData.ConvertGraphData(vP));
 
             return vPEntity;
         }
 
-        public PackageEntity GetInfoPackage( string packageId )
+        public async Task<PackageEntity> GetInfoPackage( string packageId )
         {
             PackageEntity pEntity = new PackageEntity(packageId);
 
-            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+            List<IPackage> packages = await Task.Factory.StartNew(() => {
+                return _repo.FindPackagesById(packageId).ToList();
+            });
+
             pEntity.Authors = packages.Last().Authors.ToList();
             pEntity.Description = packages.Last().Description;
 
@@ -74,17 +82,22 @@ namespace Galt.Crawler
             return pEntity;
         }
 
-        public string GetLatestVersionPackage( string packageId )
+        public async Task<string> GetLatestVersionPackage(string packageId)
         {
-            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
-            packages = packages.Where( item => (item.IsLatestVersion) ).ToList();
+            List<IPackage> packages = await Task.Factory.StartNew(() =>
+            {
+                return _repo.FindPackagesById(packageId).ToList();
+            });
+            packages = packages.Where(item => (item.IsLatestVersion)).ToList();
 
             return packages.Last().Version.ToString();
         }
 
-        public VPackage FillVPackage( string packageId, string version )
+        public async Task<VPackage> FillVPackage( string packageId, string version )
         {
-            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+            List<IPackage> packages = await Task.Factory.StartNew(() => {
+                return _repo.FindPackagesById(packageId).ToList();
+            });
             packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
 
             VPackage vp = new VPackage( packageId, packages.First().Version.Version );
@@ -101,33 +114,45 @@ namespace Galt.Crawler
             }
 
             vp.PublicationDate = dateTime;
+            await GetDependenciesSpecificVersion(vp);
 
             return vp;
         }
 
-        public void GetDependenciesSpecificVersion( VPackage vPackage )
+        public async Task GetDependenciesSpecificVersion(VPackage vPackage)
         {
-            List<IPackage> packages = _repo.FindPackagesById(vPackage.PackageId).ToList();
-
-            packages = packages.Where( p => (p.Version.Version.ToString() == vPackage.Version.ToString()) ).ToList();
-
-            if( !packages.IsEmpty() )
+            try
             {
-                Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
-                foreach( FrameworkName frameW in packages.First().GetSupportedFrameworks() )
+                //IPackage package = await Task.Factory.StartNew(() =>
+                List<IPackage> packages = await Task.Factory.StartNew(() =>
                 {
-                    List<VPackage> listdep = new List<VPackage>();
-                    foreach( var item in packages.First().GetCompatiblePackageDependencies( frameW ) )
+                    return _repo.FindPackagesById(vPackage.PackageId).ToList();
+                });
+
+                packages = packages.Where(p => (p.Version.Version.ToString() == vPackage.Version.ToString())).ToList();
+
+                if (!packages.IsEmpty())
+                {
+                    Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
+                    foreach (FrameworkName frameW in packages.First().GetSupportedFrameworks())
                     {
-                        VPackage vpackagedep = new VPackage( item.Id, item.VersionSpec.MinVersion.Version );
-                        listdep.Add( vpackagedep );
-                        
-                        Console.WriteLine(item.Id);
-                        GetDependenciesSpecificVersion( vpackagedep );
+                        List<VPackage> listdep = new List<VPackage>();
+                        foreach (var item in packages.First().GetCompatiblePackageDependencies(frameW))
+                        {
+                            VPackage vpackagedep = new VPackage(item.Id, item.VersionSpec.MinVersion.Version);
+                            listdep.Add(vpackagedep);
+
+                            Console.WriteLine(item.Id);
+                            await GetDependenciesSpecificVersion(vpackagedep);
+                        }
+                        dicFrameDep.Add(frameW.FullName, listdep);
                     }
-                    dicFrameDep.Add( frameW.FullName, listdep );
+                    vPackage.Dependencies = dicFrameDep;
                 }
-                vPackage.Dependencies = dicFrameDep;
+            }
+            catch(Exception ex)
+            {
+                throw;
             }
         }
     }

@@ -29,7 +29,7 @@ namespace Galt.Crawler.Util
             {
                 foreach (Dictionary<string, string> otherNode in _graph["nodes"])
                 {
-                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning"))
+                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
                     {
                         currentNode.Add("warning", "versionConflict");
                         otherNode.Add("warning", "versionConflict");
@@ -46,7 +46,7 @@ namespace Galt.Crawler.Util
             foreach (string framework in vPackage.Dependencies.Keys)
             {
                 id = _graph["nodes"].Count.ToString();
-                if (vPackage.Dependencies[framework].Count() != 0)
+                if (vPackage.Dependencies[framework].Count() != 0 && framework != "Unsupported,Version=v0.0")
                 {
                     _graph["nodes"].Add(VPackageToDictionary(framework, id, "platform", vPackage.Version.ToString()));
                     _graph["links"].Add(CreateLink(ParentId, id));
