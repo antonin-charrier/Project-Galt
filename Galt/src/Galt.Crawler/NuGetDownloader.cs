@@ -54,10 +54,14 @@ namespace Galt.Crawler
             else dateTime = string.Empty;
 
             vPEntity.PublicationDate = dateTime;
-            VPackage vP = await FillVPackage(packageId, version);
-            vPEntity.FullDependencies = _jsonSeria.JsonSerializer(_graphData.ConvertGraphData(vP));
 
             return vPEntity;
+        }
+
+        public async Task<string> FillFullDependencies( VPackageEntity vp )
+        {
+            VPackage vP = await FillVPackage(vp.PartitionKey, vp.RowKey);
+            return _jsonSeria.JsonSerializer( _graphData.ConvertGraphData( vP ) );
         }
 
         public async Task<PackageEntity> GetInfoPackage( string packageId )
