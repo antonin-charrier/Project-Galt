@@ -238,7 +238,7 @@
         display: -webkit-flex;
         display: flex;
         margin-bottom: 30px;
-        flex: 1 1 auto;
+        flex: 1;
         align-items: center;
     }
     
@@ -330,6 +330,7 @@
         -webkit-flex-direction: column;
         flex-direction: column;
         flex: 1;
+        height: 100%;
         padding-left: 10px;
         padding-right: 10px;
         margin-left: 20px;
