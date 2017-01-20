@@ -24,13 +24,14 @@
                 </div>
             </div>
             <div class="flex-bloc">
-                <div class="flex-retrieve">
-                    <button class="graph-button" v-on:click="displayGraph" v-if="!graphDisplayed && !graphLoading">
+                <div class="flex-retrieve" v-if="!graphDisplayed && !graphLoading">
+                    <button class="graph-button" v-on:click="displayGraph">
                         Retrieve graph data
                     </button>
                 </div>
-                <div v-show="graphLoading" class="loading-div flex-loading">
+                <div v-if="graphLoading" class="flex-loading">
                     <bounce-loader class="spinner" :loading="graphLoading" :color="color" :size="size"></bounce-loader>
+                    <div class="loading-message">Loading package dependencies. It may take several minutes...</div>
                 </div>
                 <div id="graph-container" v-show="graphDisplayed && !graphLoading">
                     <div id="graph"></div>
@@ -211,6 +212,10 @@
         flex-flow: column;
         height: 100%;
     }
+
+    .package-info {
+        margin-left: 50px;
+    }
     
     .loading-div {
         height: 100%;
@@ -219,7 +224,13 @@
     .flex-loading {
         width: 100%;
     }
-    
+
+    .loading-message {
+        text-align: center;
+        margin-top: 20px;
+        color: #226D71;
+    }
+
     #loading-div div {
         margin: auto;
     }
@@ -240,9 +251,8 @@
         display: -webkit-flex;
         display: flex;
         margin-bottom: 30px;
-        flex: 1 1 auto;
+        flex: 1;
         align-items: center;
-        justify-content: center;
     }
     
     .flex-retrieve {
@@ -316,7 +326,6 @@
         display: -webkit-flex;
         display: flex;
         width: 90%;
-        margin-left: 50px;
         margin-right: 50px;
     }
     
@@ -334,6 +343,7 @@
         -webkit-flex-direction: column;
         flex-direction: column;
         flex: 1;
+        height: 100%;
         padding-left: 10px;
         padding-right: 10px;
         margin-left: 20px;
@@ -393,6 +403,7 @@
         flex-direction: column;
         border-style: solid;
         flex: 3;
+        height: 100%;
         margin-left: 50px;
         background-color: gray;
     }
