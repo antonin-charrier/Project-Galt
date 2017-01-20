@@ -24,5 +24,6 @@ namespace Galt.Crawler.Util
 
         public string PublicationDate { get; set; }
 
+        public bool IsLastVersion { get; set; }
     }
 }
