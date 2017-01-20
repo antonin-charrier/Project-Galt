@@ -17,8 +17,8 @@
                         <span class="flex-info-item">{{ authors }}</span>
                         <span class="flex-info-item">{{ date }}</span>
                     </h4>
-                    <i class="fa fa-star fa-star-orange" v-if="fav && isConnected" v-on:click="removeFav"></i>
-                    <i class="fa fa-star fa-star-grey" v-if="!fav && isConnected" v-on:click="addFav"></i>
+                    <i class="fa fa-star fa-star-orange" v-if="isConnected && fav" v-on:click="removeFav"></i>
+                    <i class="fa fa-star fa-star-grey" v-if="isConnected && !fav" v-on:click="addFav"></i>
                 </div>
                 <p id="description">{{ description }}<p>
                 </div>
@@ -126,7 +126,8 @@
                         this.getInfoPackage(response.body);
                     });
                 }
-                postAsync("api/package", "isFav", AuthService.accessToken, {
+                if (this.isConnected)
+                    postAsync("api/package", "isFav", AuthService.accessToken, {
                         packageId: this.packageId
                     })
                     .then(function(response) {
@@ -216,7 +217,7 @@
         flex-flow: column;
         height: 100%;
     }
-
+    
     .package-info {
         margin-left: 50px;
     }
@@ -228,13 +229,13 @@
     .flex-loading {
         width: 100%;
     }
-
+    
     .loading-message {
         text-align: center;
         margin-top: 20px;
         color: #226D71;
     }
-
+    
     #loading-div div {
         margin: auto;
     }
