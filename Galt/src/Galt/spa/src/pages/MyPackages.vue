@@ -2,6 +2,7 @@
     <div id="mypackages">
         <div class="favorite-packages">
             <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange no-cursor" style="font-size:25px; margin-right:10px"></i>My favorites</h3>
+            <span v-show="favorites.length == 0">No favorites yet.</span>
             <favorite-package v-for="favorite in favorites" :favorite="favorite"></favorite-package>
         </div>
         <div class="recent-packages">
@@ -25,20 +26,24 @@
     export default {
         data: function() {
             return {
-                favorites: [{
-                    packageId: 'Code.Cake',
-                    state: 'ok'
-                }, {
-                    packageId: 'Cake',
-                    state: 'alert'
-                }, {
-                    packageId: 'Cake.Core',
-                    state: 'issue'
-                }]
+                favorites: []
             }
         },
         components: {
             'favorite-package': FavoritePackage
+        },
+        created: function() {
+            getAsync("api/package", "favorites", AuthService.accessToken)
+                .then(function(response) {
+                    this.favorites = response;
+                }.bind(this))
+        },
+        watch: {
+            'AuthService.isConnected': function(newValue) {
+                if (!newValue) this.$router.replace({
+                    route: "/"
+                })
+            }
         }
     }
 </script>

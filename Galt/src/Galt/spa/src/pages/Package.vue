@@ -17,8 +17,8 @@
                         <span class="flex-info-item">{{ authors }}</span>
                         <span class="flex-info-item">{{ date }}</span>
                     </h4>
-                    <i class="fa fa-star fa-star-orange" v-if="fav" v-on:click="removeFav"></i>
-                    <i class="fa fa-star fa-star-grey" v-if="!fav" v-on:click="addFav"></i>
+                    <i class="fa fa-star fa-star-orange" v-if="fav && isConnected" v-on:click="removeFav"></i>
+                    <i class="fa fa-star fa-star-grey" v-if="!fav && isConnected" v-on:click="addFav"></i>
                 </div>
                 <p id="description">{{ description }}<p>
                 </div>
@@ -58,8 +58,8 @@
         postAsync
     } from '../helpers/apiHelper.js'
     import AuthService from '../services/AuthService'
-    import Graph from '../scripts/graph.js'
-    
+    import GraphScript from '../scripts/graph.js'
+
     export default {
         data: function() {
             return {
@@ -166,6 +166,9 @@
             },
             packageName: function() {
                 if (!this.loading) return this.packageId;
+            },
+            isConnected: function() {
+                return AuthService.isConnected;
             }
         },
         watch: {
@@ -192,32 +195,41 @@
         width: 100%;
         height: 90%;
     }
+    
     .flex-package {
         flex: 0 1 auto;
     }
+    
     #package {
         display: flex;
         flex-flow: column;
         height: 100%;
     }
+    
     .loading-div {
         height: 100%;
     }
+    
     .flex-loading {
         width: 100%;
     }
+    
     #loading-div div {
         margin: auto;
     }
+    
     h1.package-name {
         margin-left: 50px;
     }
+    
     .package-link:link {
         text-decoration: none;
-    }   
+    }
+    
     .package-link:hover {
         text-decoration: underline;
     }
+    
     .flex-bloc {
         display: -webkit-flex;
         display: flex;
@@ -226,17 +238,20 @@
         align-items: center;
         justify-content: center;
     }
+    
     .flex-retrieve {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
     }
+    
     .flex-info-text {
         display: -webkit-flex;
         display: flex;
         width: 85%;
     }
+    
     .graph-button {
         cursor: pointer;
         height: 30px;
@@ -249,9 +264,11 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
-    .graph-button:hover{
+    
+    .graph-button:hover {
         background-color: slategray;
     }
+    
     .flex-info-item {
         margin-left: 40px;
     }
@@ -296,19 +313,21 @@
         margin-left: 50px;
         margin-right: 50px;
     }
+    
     .spinner {
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100%;
     }
+    
     .flex-issues-versions {
         text-align: justify;
         display: -webkit-flex;
         display: flex;
         -webkit-flex-direction: column;
         flex-direction: column;
-        flex : 1;
+        flex: 1;
         padding-left: 10px;
         padding-right: 10px;
         margin-left: 20px;
@@ -316,44 +335,52 @@
         background-color: dimgrey;
         color: white;
     }
-    #endMarkers{
-        fill:black;
+    
+    #endMarkers {
+        fill: black;
     }
-    .invisible
-    {
-        display:none;
+    
+    .invisible {
+        display: none;
     }
-    .clearButton
-    {
+    
+    .clearButton {
         fill: #333;
-        cursor:pointer;
+        cursor: pointer;
     }
-    .textClearButton
-    {
-        cursor:pointer;
+    
+    .textClearButton {
+        cursor: pointer;
     }
-    .link{
+    
+    .link {
         fill: none;
         stroke: black;
         stroke-width: 1px;
         cursor: default;
     }
-    .default{
+    
+    .default {
         fill: #07A901;
     }
-    .source{
+    
+    .source {
         fill: #0000ff
     }
-    .platform{
+    
+    .platform {
         fill: #FF0DFF
     }
-    .toUpdate{
+    
+    .toUpdate {
         fill: #ff9b00
     }
-    .versionConflict{
+    
+    .versionConflict {
         fill: red
     }
-    #graph-container{
+    
+    #graph-container {
         display: -webkit-flex;
         display: flex;
         -webkit-flex-direction: column;
@@ -363,63 +390,70 @@
         margin-left: 50px;
         background-color: gray;
     }
-    #graph{
+    
+    #graph {
         width: 100%;
         height: 100%;
         cursor: move;
     }
-    .node{
+    
+    .node {
         stroke: black;
         cursor: help;
     }
-    text{
+    
+    text {
         fill: #fff;
         text-shadow: 0 2px 0 #000, 2px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
-        stroke:none;
+        stroke: none;
     }
-
     /*Display of the tooltip*/
-    .title{
-        text-align:center;
-    }
-    .green{
-        color:green;
+    
+    .title {
         text-align: center;
     }
-    .warning{
-        color:orange;
+    
+    .green {
+        color: green;
         text-align: center;
     }
-    .error{
-        color:red;
+    
+    .warning {
+        color: orange;
         text-align: center;
     }
-    .d3-tip{
-    line-height: 1;
-    font-weight: bold;
-    padding: 12px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    border-radius: 2px;
+    
+    .error {
+        color: red;
+        text-align: center;
     }
-
+    
+    .d3-tip {
+        line-height: 1;
+        font-weight: bold;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        border-radius: 2px;
+    }
     /* Creates a small triangle extender for the tooltip */
+    
     .d3-tip:after {
-    box-sizing: border-box;
-    display: inline;
-    font-size: 10px;
-    width: 100%;
-    line-height: 1;
-    color: rgba(0, 0, 0, 0.8);
-    content: "\25BC";
-    position: absolute;
-    text-align: center;
+        box-sizing: border-box;
+        display: inline;
+        font-size: 10px;
+        width: 100%;
+        line-height: 1;
+        color: rgba(0, 0, 0, 0.8);
+        content: "\25BC";
+        position: absolute;
+        text-align: center;
     }
-
     /* Style northward tooltips differently */
+    
     .d3-tip.n:after {
-    margin: -5px 0 0 0;
-    top: 100%;
-    left: 0;
+        margin: -5px 0 0 0;
+        top: 100%;
+        left: 0;
     }
 </style>
