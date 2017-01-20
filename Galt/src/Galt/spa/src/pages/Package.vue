@@ -25,11 +25,9 @@
             </div>
             <div class="flex-bloc">
                 <div class="flex-retrieve" v-if="!graphDisplayed && !graphLoading">
-                    <button class="graph-button" v-on:click="displayGraph">
-                        Retrieve graph data
-                    </button>
+                    <button class="graph-button" v-on:click="displayGraph">Retrieve graph data</button>
                 </div>
-                <div v-if="graphLoading" class="flex-loading">
+                <div v-if="graphLoading && !graphDisplayed" class="flex-loading">
                     <bounce-loader class="spinner" :loading="graphLoading" :color="color" :size="size"></bounce-loader>
                     <div class="loading-message">Loading package dependencies. It may take several minutes...</div>
                 </div>
@@ -46,6 +44,9 @@
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
                     </div>
                 </div>
+            </div>
+            <div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
+                <button class="graph-button" v-on:click="refreshGraph"><i class="fa fa-refresh refresh"></i>Refresh graph data</button>
             </div>
             <router-view></router-view>
         </div>
@@ -153,6 +154,9 @@
                     GraphScript.drawGraph(response.body);
                     this.graphLoading = false;
                 }, function(response) {}.bind(this));
+            },
+            refreshGraph: function() {
+                console.log("foo");
             }
         },
         created: function() {
@@ -216,7 +220,7 @@
     .package-info {
         margin-left: 50px;
     }
-    
+
     .loading-div {
         height: 100%;
     }
@@ -250,13 +254,19 @@
     .flex-bloc {
         display: -webkit-flex;
         display: flex;
-        margin-bottom: 30px;
+        margin-bottom: 10px;
         flex: 1;
         align-items: center;
     }
     
     .flex-retrieve {
         flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .flex-refresh {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -273,18 +283,25 @@
         height: 30px;
         font-size: 13px;
         border-radius: 3px;
-        border: 1px solid black;
-        background-color: lightslategray;
-        color: black;
+        border: 1px solid #11383a;
+        background-color: #226D71;
+        color: white;
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
     
     .graph-button:hover {
-        background-color: slategray;
+        background-color: #3d7072;
     }
-    
+
+    .refresh {
+        color: white;
+        font-size : 15px;
+        text-align: right;
+        margin-right: 5px;
+    }
+
     .flex-info-item {
         margin-left: 40px;
     }
@@ -348,12 +365,12 @@
         padding-right: 10px;
         margin-left: 20px;
         margin-right: 40px;
-        background-color: dimgrey;
+        background-color: #226D71;
         color: white;
     }
     
     #endMarkers {
-        fill: black;
+        fill: lightgray;
     }
     
     .invisible {
@@ -371,25 +388,25 @@
     
     .link {
         fill: none;
-        stroke: black;
+        stroke: lightgray;
         stroke-width: 1px;
         cursor: default;
     }
     
     .default {
-        fill: #07A901;
+        fill: limegreen;
     }
     
     .source {
-        fill: #0000ff
+        fill: white
     }
     
     .platform {
-        fill: #FF0DFF
+        fill: #323332
     }
     
     .toUpdate {
-        fill: #ff9b00
+        fill: yellow
     }
     
     .versionConflict {
@@ -405,7 +422,7 @@
         flex: 3;
         height: 100%;
         margin-left: 50px;
-        background-color: gray;
+        background-color: #226D71;
     }
     
     #graph {
@@ -415,7 +432,7 @@
     }
     
     .node {
-        stroke: black;
+        stroke: lightgray;
         cursor: help;
     }
     

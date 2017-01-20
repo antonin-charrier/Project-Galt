@@ -6,13 +6,6 @@
             <span v-show="failed">Nothing to show here.</span>
             <favorite-package v-for="favorite in favorites" :favorite="favorite"></favorite-package>
         </div>
-        <div class="recent-packages">
-            <h3 class="my-packages-title">Recently consulted</h3>
-            <div class="recent-packages-items">
-                <div class="recent-packages-info">Code.Cake</div>
-                <router-link to="/package"><button class="view-button">View</button></router-link>
-            </div>
-        </div>
         <router-view></router-view>
     </div>
 </template>
@@ -72,6 +65,7 @@
         -webkit-flex-direction: column;
         flex-direction: column;
         width: 50%;
+        margin-left: 25%;
         height: 100%;
     }
     
@@ -146,6 +140,10 @@
     
     .color-box-issue {
         background-color: red;
+    }    
+    
+    .color-box-notloaded {
+        background-color: grey;
     }
     
     .view-button {

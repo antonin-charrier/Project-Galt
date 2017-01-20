@@ -1,6 +1,6 @@
 <template>
     <div class="color-box color-box-ok tooltip">
-        <span class="tooltiptext">All packages up to date</span>
+        <span class="tooltiptext">All dependencies up to date</span>
     </div>
 </template>
 
