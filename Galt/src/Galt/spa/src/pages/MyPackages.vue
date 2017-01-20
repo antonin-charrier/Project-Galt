@@ -2,8 +2,8 @@
     <div id="mypackages">
         <div class="favorite-packages">
             <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange no-cursor" style="font-size:25px; margin-right:10px"></i>My favorites</h3>
-            <span v-show="favorites.length == 0">No favorites yet.</span>
-            <span v-show="failed">Nothing to show here.</span>
+            <span v-show="!loaded">Loading...</span>
+            <span v-show="failed">No favorite found.</span>
             <favorite-package v-for="favorite in favorites" :favorite="favorite"></favorite-package>
         </div>
         <div class="recent-packages">
