@@ -55,14 +55,20 @@ namespace Galt.AzureManager
             if ( retrieved.Result == null ) return false;
 
             UserEntity u = (UserEntity)retrieved.Result;
-            if ( string.IsNullOrWhiteSpace(u.Favorites) ) u.Favorites = "[]";
-            JArray array = JArray.Parse(u.Favorites);
+            if ( string.IsNullOrWhiteSpace( u.Favorites ) ) u.Favorites = "[]";
+            JArray array = JArray.Parse( u.Favorites );
             if ( array == null ) array = new JArray();
+
+            foreach ( JToken token in array )
+                if ( token.ToObject<string>() == packageId )
+                    return true;
+
             array.Add( (JToken)packageId );
             u.Favorites = array.ToString();
 
             TableOperation modifyOperation = TableOperation.Replace( u );
             await AManager.UsersTable.ExecuteAsync( modifyOperation );
+
             return true;
         }
 
@@ -73,11 +79,19 @@ namespace Galt.AzureManager
             if ( retrieved.Result == null ) return false;
 
             UserEntity u = (UserEntity)retrieved.Result;
-            JArray array = JArray.Parse( u.Favorites );
             if ( string.IsNullOrWhiteSpace( u.Favorites ) ) u.Favorites = "[]";
-            if ( array == null ) return true;
-            while (array.Remove(packageId)); // Using a "while" to keep removing until none are left, in case of dupes
-            u.Favorites = array.ToString();
+            JArray array = JArray.Parse( u.Favorites );
+
+            // Stop there is there's literally nothing
+            if ( array == null || array.Count == 0 ) return true;
+
+            // Manually copy to a new array, except if it's the one we don't want
+            // Should filer dupes away
+            JArray newArray = new JArray();
+            foreach ( JToken token in array )
+                if ( token.ToObject<string>() != packageId )
+                    newArray.Add( token );
+            u.Favorites = newArray.ToString();
 
             TableOperation modifyOperation = TableOperation.Replace( u );
             await AManager.UsersTable.ExecuteAsync( modifyOperation );

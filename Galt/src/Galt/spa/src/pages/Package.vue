@@ -123,8 +123,14 @@
                             path: '/package/' + this.packageId + '/' + this.currentVersion
                         })
                         this.getInfoPackage(response.body);
-                    }, function(response) {}.bind(this));
+                    });
                 }
+                postAsync("api/package", "isFav", AuthService.accessToken, {
+                        packageId: this.packageId
+                    })
+                    .then(function(response) {
+                        this.fav = response;
+                    }.bind(this))
             },
             getInfoPackage: function(version) {
                 this.$http.get('/api/package/infopackage?packageId=' + this.packageId + '&version=' + version).then(function(response) {
