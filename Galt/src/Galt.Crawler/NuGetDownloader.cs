@@ -123,7 +123,6 @@ namespace Galt.Crawler
         {
             try
             {
-                //IPackage package = await Task.Factory.StartNew(() =>
                 List<IPackage> packages = await Task.Factory.StartNew(() =>
                 {
                     return _repo.FindPackagesById(vPackage.PackageId).ToList();
@@ -133,6 +132,7 @@ namespace Galt.Crawler
 
                 if (!packages.IsEmpty())
                 {
+                    vPackage.IsLastVersion = packages.First().IsLatestVersion;
                     Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
                     foreach (FrameworkName frameW in packages.First().GetSupportedFrameworks())
                     {
