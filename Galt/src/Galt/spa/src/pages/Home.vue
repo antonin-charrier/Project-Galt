@@ -19,6 +19,7 @@ export default {
 <style>
 #home-description{
     text-align: center;
+    color: #226D71;
 }
 .home-logo{
     width: 100%;
