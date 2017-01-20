@@ -72,8 +72,8 @@ namespace Galt.Crawler
                 return _repo.FindPackagesById(packageId).ToList();
             });
 
-            pEntity.Authors = packages.Last().Authors.ToList();
-            pEntity.Description = packages.Last().Description;
+            pEntity.Authors = (packages.Count > 0 ? packages.Last().Authors.ToList():new List<string>());
+            pEntity.Description = (packages.Count > 0 ? packages.Last().Description : String.Empty);
 
             List<string> vpackages = new List<string>();
             packages.Reverse();

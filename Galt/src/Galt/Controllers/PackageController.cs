@@ -93,6 +93,23 @@ namespace Galt.Controllers
                 return _userService.GetFavorites( email );
             } );
         }
+
+        [HttpPost("isFav")]
+        [Authorize( ActiveAuthenticationSchemes = JwtBearerAuthentication.AuthenticationScheme )]
+        public async Task<bool> IsFavorite([FromBody] FavPayload payload)
+        {
+            return await Task.Run( () =>
+             {
+                 string email = User.FindFirst( ClaimTypes.Email ).Value;
+                 string[] favorites = _userService.GetFavorites( email );
+
+                 foreach ( string s in favorites )
+                     if ( s == payload.packageId )
+                         return true;
+
+                 return false;
+             } );
+        }
     }
 
     public class FavPayload

@@ -29,8 +29,9 @@
                         Retrieve graph data
                     </button>
                 </div>
-                <div v-if="graphLoading" class="loading-div flex-loading">
+                <div v-if="graphLoading" class="flex-loading">
                     <bounce-loader class="spinner" :loading="graphLoading" :color="color" :size="size"></bounce-loader>
+                    <div class="loading-message">Loading package dependencies. It may take several minutes...</div>
                 </div>
                 <div id="graph-container" v-show="graphDisplayed && !graphLoading">
                     <div id="graph"></div>
@@ -122,8 +123,14 @@
                             path: '/package/' + this.packageId + '/' + this.currentVersion
                         })
                         this.getInfoPackage(response.body);
-                    }, function(response) {}.bind(this));
+                    });
                 }
+                postAsync("api/package", "isFav", AuthService.accessToken, {
+                        packageId: this.packageId
+                    })
+                    .then(function(response) {
+                        this.fav = response;
+                    }.bind(this))
             },
             getInfoPackage: function(version) {
                 this.$http.get('/api/package/infopackage?packageId=' + this.packageId + '&version=' + version).then(function(response) {
@@ -217,7 +224,13 @@
     .flex-loading {
         width: 100%;
     }
-    
+
+    .loading-message {
+        text-align: center;
+        margin-top: 20px;
+        color: #226D71;
+    }
+
     #loading-div div {
         margin: auto;
     }
