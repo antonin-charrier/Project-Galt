@@ -29,8 +29,9 @@
                         Retrieve graph data
                     </button>
                 </div>
-                <div v-if="graphLoading" class="loading-div flex-loading">
+                <div v-if="graphLoading" class="flex-loading">
                     <bounce-loader class="spinner" :loading="graphLoading" :color="color" :size="size"></bounce-loader>
+                    <div class="loading-message">Loading package dependencies. It may take several minutes...</div>
                 </div>
                 <div id="graph-container" v-show="graphDisplayed && !graphLoading">
                     <div id="graph"></div>
@@ -217,7 +218,13 @@
     .flex-loading {
         width: 100%;
     }
-    
+
+    .loading-message {
+        text-align: center;
+        margin-top: 20px;
+        color: #226D71;
+    }
+
     #loading-div div {
         margin: auto;
     }
