@@ -125,7 +125,7 @@
                         this.getInfoPackage(response.body);
                     });
                 }
-                if (isConnected)
+                if (this.isConnected)
                     postAsync("api/package", "isFav", AuthService.accessToken, {
                         packageId: this.packageId
                     })
