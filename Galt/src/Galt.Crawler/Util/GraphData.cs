@@ -11,32 +11,48 @@ namespace Galt.Crawler.Util
 {
     public class GraphData
     {
-
+        Dictionary<string, object> _info;
         Dictionary<string, List<Dictionary<string, string>>> _graph;
 
         // Convert the given VPackage in a JSON object with all the informations needed
-        public Dictionary<string, List<Dictionary<string, string>>> ConvertGraphData(VPackage vPackage)
+        public Dictionary<string, object> ConvertGraphData(VPackage vPackage)
         {
             _graph = new Dictionary<string, List<Dictionary<string, string>>>();
             _graph.Add("nodes", new List<Dictionary<string, string>>());
             _graph.Add("links", new List<Dictionary<string, string>>());
 
-            _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString()));
+            _info = new Dictionary<string, object>();
+            _info.Add("graph", _graph);
+            _info.Add("versionConflict", new Dictionary<string, List<string>>());
+            _info.Add("toUpdate", new Dictionary<string, string>());
+
+            _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString(), vPackage.IsLastVersion));
             AddDependency(vPackage, "0");
 
-            // Add the warnings on nodes withs issues
+            // Add the warnings on nodes withs version conflict
             foreach (Dictionary<string, string> currentNode in _graph["nodes"])
             {
                 foreach (Dictionary<string, string> otherNode in _graph["nodes"])
                 {
-                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
+                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode.ContainsKey("version") && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
                     {
-                        currentNode.Add("warning", "versionConflict");
-                        otherNode.Add("warning", "versionConflict");
+                        if (currentNode["entity"] != "platform")
+                        {
+                            currentNode.Add("warning", "versionConflict");
+                            otherNode.Add("warning", "versionConflict");
+
+                            // Adding all version conflicts in the list of issues
+                            if (!((Dictionary<string, List<string>>)_info["versionConflict"]).ContainsKey(currentNode["name"]))
+                                ((Dictionary<string, List<string>>)_info["versionConflict"]).Add(currentNode["name"], new List<string>());
+                            if (!((Dictionary<string, List<string>>)_info["versionConflict"])[currentNode["name"]].Contains(currentNode["version"]))
+                                ((Dictionary<string, List<string>>)_info["versionConflict"])[currentNode["name"]].Add(currentNode["version"]);
+                            if (!((Dictionary<string, List<string>>)_info["versionConflict"])[otherNode["name"]].Contains(otherNode["version"]))
+                                ((Dictionary<string, List<string>>)_info["versionConflict"])[otherNode["name"]].Add(otherNode["version"]);
+                        }
                     }
                 }
             }
-            return _graph;
+            return _info;
         }
 
         // Add dependencies of the given VPackage in the JSON object
@@ -48,7 +64,7 @@ namespace Galt.Crawler.Util
                 id = _graph["nodes"].Count.ToString();
                 if (vPackage.Dependencies[framework].Count() != 0 && framework != "Unsupported,Version=v0.0")
                 {
-                    _graph["nodes"].Add(VPackageToDictionary(framework, id, "platform", vPackage.Version.ToString()));
+                    _graph["nodes"].Add(VPackageToDictionary(framework, id, "platform", vPackage.Version.ToString(), false));
                     _graph["links"].Add(CreateLink(ParentId, id));
                     ParentId = id;
                 }
@@ -71,7 +87,7 @@ namespace Galt.Crawler.Util
 
                     if (!found)
                     {
-                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, newVPackage.Version.ToString()));
+                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, newVPackage.Version.ToString(), newVPackage.IsLastVersion));
                         _graph["links"].Add(CreateLink(ParentId, id));
                         AddDependency(newVPackage, id);
                     }
@@ -84,15 +100,21 @@ namespace Galt.Crawler.Util
             }
         }
 
-        // Convert a VPackage to a Dictionary
-        private Dictionary<string, string> VPackageToDictionary(string name, string newId, string entity, string version)
+        // Convert create a Dictionary for a node
+        private Dictionary<string, string> VPackageToDictionary(string name, string newId, string entity, string version, bool isLastVersion)
         {
             Dictionary<string, string> dico = new Dictionary<string, string>();
 
             dico.Add("id", newId);
             dico.Add("name", name);
             if (entity != null || entity != "") dico.Add("entity", entity);
-            if (version != null || version != "") dico.Add("version", version);
+            if ((version != null || version != "") && entity != "platform") dico.Add("version", version);
+            if (entity != "platform" && !isLastVersion)
+            {
+                //dico.Add("warning", "toUpdate");
+                if (!((Dictionary<string, string>)_info["toUpdate"]).ContainsKey(name))
+                    ((Dictionary<string, string>)_info["toUpdate"]).Add(name, version);
+            }
 
             return dico;
         }

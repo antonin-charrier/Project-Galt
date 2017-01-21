@@ -4,8 +4,7 @@ module.exports = {
         var height = d3.select("#graph")._groups[0][0].offsetHeight;
         var currentGraph;
 
-        //json file
-        var data = JSON.parse(data);
+        //data = JSON.parse(data);
         var node;
         var link;
         var allNodeDisplayed = true;
