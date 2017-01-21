@@ -64,7 +64,7 @@ namespace Galt.Services
         internal async Task<string> GetFullDependencies( string packageId, string version, bool forced )
         {
             var vp = await _vPackageReq.getVPackage( packageId, version );
-            if(vp.FullDependencies != null || forced == true) {
+            if(vp.FullDependencies == null || forced == true) {
                 vp.FullDependencies = await _nugetDL.FillFullDependencies( vp );
             }
             return vp.FullDependencies;

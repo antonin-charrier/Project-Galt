@@ -62,7 +62,8 @@ namespace Galt.Controllers
         [HttpGet( "graph" )]
         public async Task<string> GetVpackageDependencies( string packageId, string version )
         {
-            return await _packageService.GetFullDependencies( packageId, version, false );
+            var returnValue = await _packageService.GetFullDependencies(packageId, version, true);
+            return returnValue;
         }
 
         [HttpGet( "dependencies" )]
