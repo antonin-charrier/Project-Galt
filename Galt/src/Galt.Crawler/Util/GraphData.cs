@@ -24,7 +24,7 @@ namespace Galt.Crawler.Util
             _info = new Dictionary<string, object>();
             _info.Add("graph", _graph);
             _info.Add("versionConflict", new Dictionary<string, List<string>>());
-            _info.Add("toUpdate", new Dictionary<string, Dictionary<string, string>>());
+            _info.Add("toUpdate", new List<Dictionary<string, string>>());
 
             _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString(), vPackage.LastVersion));
             AddDependency(vPackage, "0");
@@ -121,11 +121,19 @@ namespace Galt.Crawler.Util
             if (entity != "platform" && version != lastVersion)
             {
                 //dico.Add("warning", "toUpdate");
-                if (!((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"]).ContainsKey(name))
+                bool contains = false;
+                foreach (Dictionary<string, string> dic in (List<Dictionary<string, string>>) _info["toUpdate"])
                 {
-                    ((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"]).Add(name, new Dictionary<string, string>());
-                    ((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"])[name].Add("current", version);
-                    ((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"])[name].Add("last", lastVersion);
+                    if (dic["name"] == name) contains = true;
+                }
+
+                if (!contains)
+                {
+                    List<Dictionary<string, string>> toUpdate = (List<Dictionary<string, string>>)_info["toUpdate"];
+                    toUpdate.Add(new Dictionary<string, string>());
+                    toUpdate[toUpdate.Count - 1].Add("name", name);
+                    toUpdate[toUpdate.Count-1].Add("currentVersion", version);
+                    toUpdate[toUpdate.Count-1].Add("lastVersion", lastVersion);
                 }
             }
 
