@@ -37,11 +37,11 @@
                 <div class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
                     <div class="issues">
                         <h3>Issues</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                        <p>{{ issues }}</p>
                     </div>
                     <div class="new-versions">
                         <h3>New versions</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                        <p>{{ availableVersions }}</p>
                     </div>
                 </div>
             </div>
@@ -72,6 +72,8 @@
                 versionsDisplayed: false,
                 currentVersion: '',
                 options: [],
+                issues: '',
+                availableVersions: '',
                 graphLoading: false,
                 graphDisplayed: false
             }
@@ -152,7 +154,6 @@
                 this.graphLoading = true;
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
                     var data = JSON.parse(response.body);
-                    console.log(data.graph);
                     this.graphDisplayed = !this.graphDisplayed;
                     GraphScript.drawGraph(data.graph);
                     this.graphLoading = false;
