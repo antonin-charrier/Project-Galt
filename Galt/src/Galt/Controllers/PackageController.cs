@@ -63,6 +63,7 @@ namespace Galt.Controllers
         public async Task<string> GetVpackageDependencies( string packageId, string version )
         {
             var returnValue = await _packageService.GetFullDependencies(packageId, version, true);
+            if(true)
             return returnValue;
         }
 
