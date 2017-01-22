@@ -151,8 +151,10 @@
             displayGraph: function() {
                 this.graphLoading = true;
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
+                    var data = JSON.parse(response.body);
+                    console.log(data.graph);
                     this.graphDisplayed = !this.graphDisplayed;
-                    GraphScript.drawGraph(response.body);
+                    GraphScript.drawGraph(data.graph);
                     this.graphLoading = false;
                 }, function(response) {}.bind(this));
             },
