@@ -23,7 +23,7 @@ namespace Galt.Crawler.Util
 
             _info = new Dictionary<string, object>();
             _info.Add("graph", _graph);
-            _info.Add("versionConflict", new Dictionary<string, List<string>>());
+            _info.Add("versionConflict", new List<Dictionary<string, string>>());
             _info.Add("toUpdate", new List<Dictionary<string, string>>());
 
             _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString(), vPackage.LastVersion));
@@ -37,23 +37,39 @@ namespace Galt.Crawler.Util
                     if (currentNode["name"] == otherNode["name"]
                         && currentNode["id"] != otherNode["id"]
                         && currentNode.ContainsKey("version")
-                        && currentNode["version"] != otherNode["version"]
-                        && !currentNode.Keys.Contains("warning")
-                        && !otherNode.Keys.Contains("warning")
-                        && currentNode.ContainsKey("entity"))
+                        && currentNode["version"] != otherNode["version"])
                     {
-                        if (currentNode["entity"] != "platform")
+                        if ((currentNode.ContainsKey("entity") && currentNode["entity"] != "platform")||!currentNode.ContainsKey("entity"))
                         {
-                            currentNode.Add("warning", "versionConflict");
-                            otherNode.Add("warning", "versionConflict");
+                            if (!currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
+                            {
+                                currentNode.Add("warning", "versionConflict");
+                                otherNode.Add("warning", "versionConflict");
+                            }
+                            else
+                            {
+                                currentNode["warning"] = "versionConflict";
+                                otherNode["warning"] = "versionConflict";
+                            }
 
                             // Adding all version conflicts in the list of issues
-                            if (!((Dictionary<string, List<string>>)_info["versionConflict"]).ContainsKey(currentNode["name"]))
-                                ((Dictionary<string, List<string>>)_info["versionConflict"]).Add(currentNode["name"], new List<string>());
-                            if (!((Dictionary<string, List<string>>)_info["versionConflict"])[currentNode["name"]].Contains(currentNode["version"]))
-                                ((Dictionary<string, List<string>>)_info["versionConflict"])[currentNode["name"]].Add(currentNode["version"]);
-                            if (!((Dictionary<string, List<string>>)_info["versionConflict"])[otherNode["name"]].Contains(otherNode["version"]))
-                                ((Dictionary<string, List<string>>)_info["versionConflict"])[otherNode["name"]].Add(otherNode["version"]);
+                            bool contains = false;
+                            foreach (Dictionary<string, string> dic in (List<Dictionary<string, string>>)_info["versionConflict"])
+                            {
+                                if (dic["name"] == currentNode["name"])
+                                {
+                                    contains = true;
+                                    string[] list = dic["versions"].Split();
+                                    if (!list.Contains(currentNode["version"])) dic["versions"] = dic["versions"] + ", " + currentNode["version"];
+                                }
+                            }
+                            if (!contains)
+                            {
+                                List<Dictionary<string, string>> toUpdate = (List<Dictionary<string, string>>)_info["versionConflict"];
+                                toUpdate.Add(new Dictionary<string, string>());
+                                toUpdate[toUpdate.Count - 1].Add("name", currentNode["name"]);
+                                toUpdate[toUpdate.Count - 1].Add("versions", currentNode["version"]);
+                            }
                         }
                     }
                 }
