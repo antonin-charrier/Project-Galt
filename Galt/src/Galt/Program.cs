@@ -13,8 +13,7 @@ namespace Galt
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
+                .UseContentRoot( Directory.GetCurrentDirectory() )
                 .UseStartup<Startup>()
                 .Build();
 
