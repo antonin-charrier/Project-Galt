@@ -34,7 +34,13 @@ namespace Galt.Crawler.Util
             {
                 foreach (Dictionary<string, string> otherNode in _graph["nodes"])
                 {
-                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode.ContainsKey("version") && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
+                    if (currentNode["name"] == otherNode["name"]
+                        && currentNode["id"] != otherNode["id"]
+                        && currentNode.ContainsKey("version")
+                        && currentNode["version"] != otherNode["version"]
+                        && !currentNode.Keys.Contains("warning")
+                        && !otherNode.Keys.Contains("warning")
+                        && currentNode.ContainsKey("entity"))
                     {
                         if (currentNode["entity"] != "platform")
                         {

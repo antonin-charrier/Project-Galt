@@ -129,7 +129,8 @@ namespace Galt.Crawler
             {
                 return _repo.FindPackagesById(vPackage.PackageId).ToList();
             });
-            string lastV = packages.Where(p => p.IsLatestVersion).First().Version.ToString();
+            IEnumerable<IPackage> temp = packages.Where( p => p.IsLatestVersion );
+            string lastV = !temp.IsEmpty() ? temp.First().Version.ToString() : String.Empty;
             packages = packages.Where(p => (p.Version.Version.ToString() == vPackage.Version.ToString())).ToList();
 
             if (!packages.IsEmpty())
