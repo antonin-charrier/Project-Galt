@@ -107,12 +107,15 @@ namespace Galt.Crawler.Util
 
             dico.Add("id", newId);
             dico.Add("name", name);
-            if (entity != null || entity != "") dico.Add("entity", entity);
-            if ((version != null || version != "") && entity != "platform") dico.Add("version", version);
+            if (!String.IsNullOrWhiteSpace(entity))
+                dico.Add("entity", entity);
+            if (!String.IsNullOrWhiteSpace(version) && entity != "platform")
+                dico.Add("version", version);
+
             if (entity != "platform" && version != lastVersion)
             {
                 //dico.Add("warning", "toUpdate");
-                if (!((Dictionary<string, string>)_info["toUpdate"]).ContainsKey(name))
+                if (!((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"]).ContainsKey(name))
                 {
                     ((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"]).Add(name, new Dictionary<string, string>());
                     ((Dictionary<string, Dictionary<string, string>>)_info["toUpdate"])[name].Add("current", version);
