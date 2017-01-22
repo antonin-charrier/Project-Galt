@@ -131,12 +131,12 @@ namespace Galt.Crawler
                 {
                     return _repo.FindPackagesById(vPackage.PackageId).ToList();
                 });
-
+                string lastV = packages.Where(p => p.IsLatestVersion).First().Version.ToString();
                 packages = packages.Where(p => (p.Version.Version.ToString() == vPackage.Version.ToString())).ToList();
 
                 if (!packages.IsEmpty())
                 {
-                    vPackage.IsLastVersion = packages.First().IsLatestVersion;
+                    vPackage.LastVersion = lastV;
                     Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
                     foreach (FrameworkName frameW in packages.First().GetSupportedFrameworks())
                     {
