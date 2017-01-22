@@ -34,20 +34,20 @@
                 <div id="graph-container" v-show="graphDisplayed && !graphLoading">
                     <div id="graph"></div>
                 </div>
-                <div class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
+                <div style="overflow: auto" class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
                     <div class="issues">
-                        <h3>Issues</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                        <h3>Conflicts</h3>
+                        <div v-for="conflict in conflicts">{{ conflict }}</div>
                     </div>
                     <div class="new-versions">
                         <h3>New versions</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nibh leo, blandit ac ante eget, mollis ornare dui. Proin nec mollis tellus. Cras fermentum at dui non elementum. Aliquam erat volutpat.</p>
+                        <div v-for="version in toUpdate">{{ version }}</div>
                     </div>
                 </div>
             </div>
-            <div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
+            <!--<div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
                 <button class="graph-button" v-on:click="refreshGraph"><i class="fa fa-refresh refresh"></i>Refresh graph data</button>
-            </div>
+            </div>-->
             <router-view></router-view>
         </div>
     </div>
@@ -72,6 +72,8 @@
                 versionsDisplayed: false,
                 currentVersion: '',
                 options: [],
+                toUpdate: [],
+                conflicts: '',
                 graphLoading: false,
                 graphDisplayed: false
             }
@@ -152,7 +154,19 @@
                 this.graphLoading = true;
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
                     this.graphDisplayed = !this.graphDisplayed;
-                    GraphScript.drawGraph(response.body);
+                    var data = JSON.parse(response.body);
+                    console.log(data);
+                    var toUpdate = "";
+                    for(var i=0; i<data.toUpdate.length; i++) {
+                        toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + "|";
+                    }
+                    var conflicts = "";
+                    for(var i=0; i<data.versionConflict.length; i++){
+                        conflicts = conflicts + data.versionConflict[i].name + " : " + data.versionConflict[i].versions + "|";
+                    }
+                    this.toUpdate = toUpdate.split("|");
+                    this.conflicts = conflicts.split("|");
+                    GraphScript.drawGraph(data.graph);
                     this.graphLoading = false;
                 }, function(response) {}.bind(this));
             },
@@ -355,15 +369,13 @@
     }
     
     .flex-issues-versions {
-        text-align: justify;
         display: -webkit-flex;
         display: flex;
         -webkit-flex-direction: column;
         flex-direction: column;
         flex: 1;
         height: 100%;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 10px;
         margin-left: 20px;
         margin-right: 40px;
         background-color: #226D71;

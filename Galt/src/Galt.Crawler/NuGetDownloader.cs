@@ -125,39 +125,34 @@ namespace Galt.Crawler
 
         public async Task GetDependenciesSpecificVersion(VPackage vPackage)
         {
-            try
+            List<IPackage> packages = await Task.Factory.StartNew(() =>
             {
-                List<IPackage> packages = await Task.Factory.StartNew(() =>
-                {
-                    return _repo.FindPackagesById(vPackage.PackageId).ToList();
-                });
+                return _repo.FindPackagesById(vPackage.PackageId).ToList();
+            });
+            IEnumerable<IPackage> temp = packages.Where( p => p.IsLatestVersion );
+            string lastV = !temp.IsEmpty() ? temp.First().Version.ToString() : String.Empty;
+            packages = packages.Where(p => (p.Version.Version.ToString() == vPackage.Version.ToString())).ToList();
 
-                packages = packages.Where(p => (p.Version.Version.ToString() == vPackage.Version.ToString())).ToList();
-
-                if (!packages.IsEmpty())
+            if (!packages.IsEmpty())
+            {
+                vPackage.LastVersion = lastV;
+                Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
+                foreach (FrameworkName frameW in packages.First().GetSupportedFrameworks())
                 {
-                    vPackage.IsLastVersion = packages.First().IsLatestVersion;
-                    Dictionary<string, IEnumerable<VPackage>> dicFrameDep = new Dictionary<string, IEnumerable<VPackage>>();
-                    foreach (FrameworkName frameW in packages.First().GetSupportedFrameworks())
+                    List<VPackage> listdep = new List<VPackage>();
+                    foreach (var item in packages.First().GetCompatiblePackageDependencies(frameW))
                     {
-                        List<VPackage> listdep = new List<VPackage>();
-                        foreach (var item in packages.First().GetCompatiblePackageDependencies(frameW))
-                        {
-                            VPackage vpackagedep = new VPackage(item.Id, item.VersionSpec.MinVersion.Version);
-                            listdep.Add(vpackagedep);
+                        VPackage vpackagedep = new VPackage(item.Id, item.VersionSpec.MinVersion.Version);
+                        listdep.Add(vpackagedep);
 
-                            Console.WriteLine(item.Id);
-                            await GetDependenciesSpecificVersion(vpackagedep);
-                        }
-                        dicFrameDep.Add(frameW.FullName, listdep);
+                        Console.WriteLine(item.Id);
+                        await GetDependenciesSpecificVersion(vpackagedep);
                     }
-                    vPackage.Dependencies = dicFrameDep;
+                    dicFrameDep.Add(frameW.FullName, listdep);
                 }
+                vPackage.Dependencies = dicFrameDep;
             }
-            catch(Exception ex)
-            {
-                throw;
-            }
+
         }
     }
 }

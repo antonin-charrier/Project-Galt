@@ -11,32 +11,70 @@ namespace Galt.Crawler.Util
 {
     public class GraphData
     {
-
+        Dictionary<string, object> _info;
         Dictionary<string, List<Dictionary<string, string>>> _graph;
 
         // Convert the given VPackage in a JSON object with all the informations needed
-        public Dictionary<string, List<Dictionary<string, string>>> ConvertGraphData(VPackage vPackage)
+        public Dictionary<string, object> ConvertGraphData(VPackage vPackage)
         {
             _graph = new Dictionary<string, List<Dictionary<string, string>>>();
             _graph.Add("nodes", new List<Dictionary<string, string>>());
             _graph.Add("links", new List<Dictionary<string, string>>());
 
-            _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString()));
+            _info = new Dictionary<string, object>();
+            _info.Add("graph", _graph);
+            _info.Add("versionConflict", new List<Dictionary<string, string>>());
+            _info.Add("toUpdate", new List<Dictionary<string, string>>());
+
+            _graph["nodes"].Add(VPackageToDictionary(vPackage.PackageId, _graph["nodes"].Count.ToString(), "source", vPackage.Version.ToString(), vPackage.LastVersion));
             AddDependency(vPackage, "0");
 
-            // Add the warnings on nodes withs issues
+            // Add the warnings on nodes withs version conflict
             foreach (Dictionary<string, string> currentNode in _graph["nodes"])
             {
                 foreach (Dictionary<string, string> otherNode in _graph["nodes"])
                 {
-                    if (currentNode["name"] == otherNode["name"] && currentNode["id"] != otherNode["id"] && currentNode["version"] != otherNode["version"] && !currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
+                    if (currentNode["name"] == otherNode["name"]
+                        && currentNode["id"] != otherNode["id"]
+                        && currentNode.ContainsKey("version")
+                        && currentNode["version"] != otherNode["version"])
                     {
-                        currentNode.Add("warning", "versionConflict");
-                        otherNode.Add("warning", "versionConflict");
+                        if ((currentNode.ContainsKey("entity") && currentNode["entity"] != "platform")||!currentNode.ContainsKey("entity"))
+                        {
+                            if (!currentNode.Keys.Contains("warning") && !otherNode.Keys.Contains("warning"))
+                            {
+                                currentNode.Add("warning", "versionConflict");
+                                otherNode.Add("warning", "versionConflict");
+                            }
+                            else
+                            {
+                                currentNode["warning"] = "versionConflict";
+                                otherNode["warning"] = "versionConflict";
+                            }
+
+                            // Adding all version conflicts in the list of issues
+                            bool contains = false;
+                            foreach (Dictionary<string, string> dic in (List<Dictionary<string, string>>)_info["versionConflict"])
+                            {
+                                if (dic["name"] == currentNode["name"])
+                                {
+                                    contains = true;
+                                    string[] list = dic["versions"].Split();
+                                    if (!list.Contains(currentNode["version"])) dic["versions"] = dic["versions"] + ", " + currentNode["version"];
+                                }
+                            }
+                            if (!contains)
+                            {
+                                List<Dictionary<string, string>> toUpdate = (List<Dictionary<string, string>>)_info["versionConflict"];
+                                toUpdate.Add(new Dictionary<string, string>());
+                                toUpdate[toUpdate.Count - 1].Add("name", currentNode["name"]);
+                                toUpdate[toUpdate.Count - 1].Add("versions", currentNode["version"]);
+                            }
+                        }
                     }
                 }
             }
-            return _graph;
+            return _info;
         }
 
         // Add dependencies of the given VPackage in the JSON object
@@ -48,7 +86,7 @@ namespace Galt.Crawler.Util
                 id = _graph["nodes"].Count.ToString();
                 if (vPackage.Dependencies[framework].Count() != 0 && framework != "Unsupported,Version=v0.0")
                 {
-                    _graph["nodes"].Add(VPackageToDictionary(framework, id, "platform", vPackage.Version.ToString()));
+                    _graph["nodes"].Add(VPackageToDictionary(framework, id, "platform", vPackage.Version.ToString(), null));
                     _graph["links"].Add(CreateLink(ParentId, id));
                     ParentId = id;
                 }
@@ -71,7 +109,7 @@ namespace Galt.Crawler.Util
 
                     if (!found)
                     {
-                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, newVPackage.Version.ToString()));
+                        _graph["nodes"].Add(VPackageToDictionary(newVPackage.PackageId, id, null, newVPackage.Version.ToString(), newVPackage.LastVersion));
                         _graph["links"].Add(CreateLink(ParentId, id));
                         AddDependency(newVPackage, id);
                     }
@@ -84,15 +122,36 @@ namespace Galt.Crawler.Util
             }
         }
 
-        // Convert a VPackage to a Dictionary
-        private Dictionary<string, string> VPackageToDictionary(string name, string newId, string entity, string version)
+        // Convert create a Dictionary for a node
+        private Dictionary<string, string> VPackageToDictionary(string name, string newId, string entity, string version, string lastVersion)
         {
             Dictionary<string, string> dico = new Dictionary<string, string>();
 
             dico.Add("id", newId);
             dico.Add("name", name);
-            if (entity != null || entity != "") dico.Add("entity", entity);
-            if (version != null || version != "") dico.Add("version", version);
+            if (!String.IsNullOrWhiteSpace(entity))
+                dico.Add("entity", entity);
+            if (!String.IsNullOrWhiteSpace(version) && entity != "platform")
+                dico.Add("version", version);
+
+            if (entity != "platform" && version != lastVersion)
+            {
+                //dico.Add("warning", "toUpdate");
+                bool contains = false;
+                foreach (Dictionary<string, string> dic in (List<Dictionary<string, string>>) _info["toUpdate"])
+                {
+                    if (dic["name"] == name) contains = true;
+                }
+
+                if (!contains)
+                {
+                    List<Dictionary<string, string>> toUpdate = (List<Dictionary<string, string>>)_info["toUpdate"];
+                    toUpdate.Add(new Dictionary<string, string>());
+                    toUpdate[toUpdate.Count - 1].Add("name", name);
+                    toUpdate[toUpdate.Count-1].Add("currentVersion", version);
+                    toUpdate[toUpdate.Count-1].Add("lastVersion", lastVersion);
+                }
+            }
 
             return dico;
         }
