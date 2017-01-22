@@ -36,8 +36,8 @@
                 </div>
                 <div style="overflow: auto" class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
                     <div class="issues">
-                        <h3>Issues</h3>
-                        <div>{{ issues }}</div>
+                        <h3>Conflicts</h3>
+                        <div v-for="conflict in conflicts">{{ conflict }}</div>
                     </div>
                     <div class="new-versions">
                         <h3>New versions</h3>
@@ -45,9 +45,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
+            <!--<div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
                 <button class="graph-button" v-on:click="refreshGraph"><i class="fa fa-refresh refresh"></i>Refresh graph data</button>
-            </div>
+            </div>-->
             <router-view></router-view>
         </div>
     </div>
@@ -73,7 +73,7 @@
                 currentVersion: '',
                 options: [],
                 toUpdate: [],
-                issues: '',
+                conflicts: '',
                 graphLoading: false,
                 graphDisplayed: false
             }
@@ -155,11 +155,17 @@
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
                     this.graphDisplayed = !this.graphDisplayed;
                     var data = JSON.parse(response.body);
+                    console.log(data);
                     var toUpdate = "";
                     for(var i=0; i<data.toUpdate.length; i++) {
-                        toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + ",";
+                        toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + "|";
                     }
-                    this.toUpdate = toUpdate.split(",");
+                    var conflicts = "";
+                    for(var i=0; i<data.versionConflict.length; i++){
+                        conflicts = conflicts + data.versionConflict[i].name + " : " + data.versionConflict[i].versions + "|";
+                    }
+                    this.toUpdate = toUpdate.split("|");
+                    this.conflicts = conflicts.split("|");
                     GraphScript.drawGraph(data.graph);
                     this.graphLoading = false;
                 }, function(response) {}.bind(this));
@@ -363,7 +369,6 @@
     }
     
     .flex-issues-versions {
-        text-align: justify;
         display: -webkit-flex;
         display: flex;
         -webkit-flex-direction: column;
