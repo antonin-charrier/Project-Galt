@@ -34,14 +34,14 @@
                 <div id="graph-container" v-show="graphDisplayed && !graphLoading">
                     <div id="graph"></div>
                 </div>
-                <div class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
+                <div style="overflow: auto" class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
                     <div class="issues">
                         <h3>Issues</h3>
-                        <p>{{ issues }}</p>
+                        <div>{{ issues }}</div>
                     </div>
                     <div class="new-versions">
                         <h3>New versions</h3>
-                        <p>{{ availableVersions }}</p>
+                        <div v-for="version in toUpdate">{{ version }}</div>
                     </div>
                 </div>
             </div>
@@ -72,8 +72,8 @@
                 versionsDisplayed: false,
                 currentVersion: '',
                 options: [],
+                toUpdate: [],
                 issues: '',
-                availableVersions: '',
                 graphLoading: false,
                 graphDisplayed: false
             }
@@ -153,8 +153,13 @@
             displayGraph: function() {
                 this.graphLoading = true;
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
-                    var data = JSON.parse(response.body);
                     this.graphDisplayed = !this.graphDisplayed;
+                    var data = JSON.parse(response.body);
+                    var toUpdate = "";
+                    for(var i=0; i<data.toUpdate.length; i++) {
+                        toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + ",";
+                    }
+                    this.toUpdate = toUpdate.split(",");
                     GraphScript.drawGraph(data.graph);
                     this.graphLoading = false;
                 }, function(response) {}.bind(this));
@@ -365,8 +370,7 @@
         flex-direction: column;
         flex: 1;
         height: 100%;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 10px;
         margin-left: 20px;
         margin-right: 40px;
         background-color: #226D71;
