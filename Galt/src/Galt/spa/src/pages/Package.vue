@@ -386,8 +386,11 @@
         color: white;
     }
     
-    #endMarkers {
+    #endMarkersNormal {
         fill: lightgray;
+    }
+    #endMarkersVersionConflict {
+        fill: red;
     }
     
     .invisible {
@@ -405,9 +408,18 @@
     
     .link {
         fill: none;
-        stroke: lightgray;
         stroke-width: 1px;
         cursor: default;
+    }
+
+    .versionConflictLink
+    {
+        stroke: red;
+    }
+
+    .normalLink
+    {
+        stroke: lightgray;
     }
     
     .default {
