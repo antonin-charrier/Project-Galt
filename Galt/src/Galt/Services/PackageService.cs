@@ -66,6 +66,7 @@ namespace Galt.Services
             var vp = await _vPackageReq.getVPackage( packageId, version );
             if(vp.FullDependencies == null || forced == true) {
                 vp.FullDependencies = await _nugetDL.FillFullDependencies( vp );
+                await _vPackageReq.AddDependenciesIfNotExist(vp, vp.FullDependencies);
             }
             return vp.FullDependencies;
         }

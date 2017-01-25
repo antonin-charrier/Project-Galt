@@ -195,7 +195,10 @@ module.exports = {
                 .data(graph[graphName].data.nodes)
                 .enter()
                 .append("circle")
-                .attr("r", 10)
+                .attr("r", function (d){
+                    if (d.entity == "source") return 20;
+                    return 10;
+                })
                 .call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
