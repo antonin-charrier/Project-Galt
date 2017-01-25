@@ -45,9 +45,6 @@
                     </div>
                 </div>
             </div>
-            <!--<div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
-                <button class="graph-button" v-on:click="refreshGraph"><i class="fa fa-refresh refresh"></i>Refresh graph data</button>
-            </div>-->
             <router-view></router-view>
         </div>
     </div>
@@ -114,7 +111,7 @@
                 this.$router.push({
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
-                this.getInfoPackage();
+                this.getInfoPackage(this.currentVersion);
             },
             redirect: function() {
                 if (this.$route.params.version) {
@@ -155,13 +152,12 @@
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
                     this.graphDisplayed = !this.graphDisplayed;
                     var data = JSON.parse(response.body);
-                    console.log(data);
                     var toUpdate = "";
-                    for(var i=0; i<data.toUpdate.length; i++) {
+                    for (var i = 0; i < data.toUpdate.length; i++) {
                         toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + "|";
                     }
                     var conflicts = "";
-                    for(var i=0; i<data.versionConflict.length; i++){
+                    for (var i = 0; i < data.versionConflict.length; i++) {
                         conflicts = conflicts + data.versionConflict[i].name + " : " + data.versionConflict[i].versions + "|";
                     }
                     this.toUpdate = toUpdate.split("|");
@@ -198,16 +194,19 @@
             }
         },
         watch: {
-            '$route': function() {
+            packageId: function() {
+                console.trace()
+                console.log(this.currentVersion)
                 this.loading = true;
                 this.graphDisplayed = false;
                 this.redirect();
             },
             currentVersion: function(newValue) {
-                this.$router.push({
-                    path: '/package/' + this.packageId + '/' + newValue
-                })
-                this.redirect();
+                this.graphDisplayed = false;
+                if (newValue !== undefined) {
+                    this.loading = true;
+                    this.changeVersion();
+                }
             }
         },
         components: {
@@ -235,7 +234,7 @@
     .package-info {
         margin-left: 50px;
     }
-
+    
     .loading-div {
         height: 100%;
     }
@@ -280,7 +279,7 @@
         align-items: center;
         justify-content: center;
     }
-
+    
     .flex-refresh {
         display: flex;
         align-items: center;
@@ -309,14 +308,14 @@
     .graph-button:hover {
         background-color: #3d7072;
     }
-
+    
     .refresh {
         color: white;
-        font-size : 15px;
+        font-size: 15px;
         text-align: right;
         margin-right: 5px;
     }
-
+    
     .flex-info-item {
         margin-left: 40px;
     }
@@ -382,8 +381,11 @@
         color: white;
     }
     
-    #endMarkers {
+    #endMarkersNormal {
         fill: lightgray;
+    }
+    #endMarkersVersionConflict {
+        fill: red;
     }
     
     .invisible {
@@ -401,9 +403,18 @@
     
     .link {
         fill: none;
-        stroke: lightgray;
         stroke-width: 1px;
         cursor: default;
+    }
+
+    .versionConflictLink
+    {
+        stroke: red;
+    }
+
+    .normalLink
+    {
+        stroke: lightgray;
     }
     
     .default {
