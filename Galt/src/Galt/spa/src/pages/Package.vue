@@ -45,9 +45,6 @@
                     </div>
                 </div>
             </div>
-            <!--<div class="flex-refresh" v-if="graphDisplayed && !graphLoading">
-                <button class="graph-button" v-on:click="refreshGraph"><i class="fa fa-refresh refresh"></i>Refresh graph data</button>
-            </div>-->
             <router-view></router-view>
         </div>
     </div>
@@ -156,7 +153,6 @@
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
                     this.graphDisplayed = !this.graphDisplayed;
                     var data = JSON.parse(response.body);
-                    console.log(data);
                     var toUpdate = "";
                     for (var i = 0; i < data.toUpdate.length; i++) {
                         toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + "|";
