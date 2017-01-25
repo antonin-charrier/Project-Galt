@@ -7,6 +7,8 @@ using static Galt.AzureManager.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Galt.Authentication;
 using System.Security.Claims;
+using System.Collections.Generic;
+using Galt.Crawler.Util;
 
 namespace Galt.Controllers
 {
@@ -15,20 +17,20 @@ namespace Galt.Controllers
     {
         readonly PackageService _packageService;
         readonly UserService _userService;
-        readonly JsonSerializerPackage JsonSeria;
+        readonly JsonSerializerPackage _jsonSeria;
 
         public PackageController( PackageService packageService, UserService userService )
         {
             _packageService = packageService;
             _userService = userService;
-            JsonSeria = new JsonSerializerPackage();
+            _jsonSeria = new JsonSerializerPackage();
         }
 
         [HttpGet( "infoPackage" )]
         public async Task<string> GetPackageInfo( string packageId, string version = null )
         {
             PackageEntity p = await _packageService.GetPackage( packageId );
-            string packageInfo = JsonSeria.JsonSerializer( p );
+            string packageInfo = _jsonSeria.JsonSerializer( p );
 
             VPackageEntity vP;
             if ( version != null )
@@ -93,12 +95,29 @@ namespace Galt.Controllers
 
         [HttpGet( "favorites" )]
         [Authorize( ActiveAuthenticationSchemes = JwtBearerAuthentication.AuthenticationScheme )]
-        public async Task<string[]> ListFavorites()
+        public async Task<string> ListFavorites()
         {
             return await Task.Run( () =>
             {
                 string email = User.FindFirst( ClaimTypes.Email ).Value;
-                return _userService.GetFavorites( email );
+                string[] favorites = _userService.GetFavorites( email );
+
+                Dictionary<string, string> favAndStat = new Dictionary<string, string>();
+                foreach( string fav in favorites )
+                {
+                    string stat = "Error";
+                    if(!_packageService.IsVPackageSaved(fav))
+                    {
+                        stat = "NotLoaded";
+                    } else if(true)
+                    {
+                        var vPE = _packageService.GetLastVPackage( fav );
+                        var vP = _jsonSeria.JsonDeSeria( vPE.Result.VPackageJson );
+                        stat = ((VPackage)vP).Stat;
+                    }
+                    favAndStat.Add(fav, stat);
+                }
+                return _jsonSeria.JsonSerializer( favAndStat );
             } );
         }
 

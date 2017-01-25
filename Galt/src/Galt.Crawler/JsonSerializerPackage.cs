@@ -11,17 +11,19 @@ namespace Galt.Crawler
 {
     public class JsonSerializerPackage
     {
+        JsonSerializer _seria;
+
         public string JsonSerializer(object p)
         {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            _seria = new JsonSerializer();
+            _seria.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
             using( Stream s = new MemoryStream() )
             {
                 using( StreamWriter sw = new StreamWriter( s, Encoding.UTF8, 2048, true ) )
                 using( JsonWriter writer = new JsonTextWriter( sw ) )
                 {
-                    serializer.Serialize( writer, p );
+                    _seria.Serialize( writer, p );
                 }
 
                 using( StreamReader sr = new StreamReader( s, Encoding.UTF8 ) )
@@ -30,6 +32,11 @@ namespace Galt.Crawler
                     return sr.ReadToEnd();
                 }
             }
+        }
+
+        public object JsonDeSeria(string s)
+        {
+            return JsonConvert.DeserializeObject( s );
         }
     }
 }

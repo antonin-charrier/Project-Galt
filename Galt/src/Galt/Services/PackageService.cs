@@ -30,7 +30,7 @@ namespace Galt.Services
 
             if( VpackageEntity == null )
             {
-                VpackageEntity = await _nugetDL.GetInfoVPackage( packageId, version );
+                VpackageEntity = _nugetDL.GetInfoVPackage( packageId, version );
 
                 await _vPackageReq.AddIfNotExists( VpackageEntity );
             }
@@ -65,9 +65,14 @@ namespace Galt.Services
         {
             var vp = await _vPackageReq.getVPackage( packageId, version );
             if(vp.FullDependencies == null || forced == true) {
-                vp.FullDependencies = await _nugetDL.FillFullDependencies( vp );
+                vp.FullDependencies = _nugetDL.FillFullDependencies( vp );
             }
             return vp.FullDependencies;
+        }
+
+        internal bool IsVPackageSaved( string fav )
+        {
+            throw new NotImplementedException();
         }
     }
 }
