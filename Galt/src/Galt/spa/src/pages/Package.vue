@@ -108,7 +108,6 @@
                 this.versionsDisplayed = !this.versionsDisplayed
             },
             changeVersion: function() {
-                console.log(`changeVersion to ${this.currentVersion}`)
                 this.$router.push({
                     path: '/package/' + this.packageId + '/' + this.currentVersion
                 });
