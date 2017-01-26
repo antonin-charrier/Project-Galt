@@ -44,7 +44,7 @@ namespace Galt.Services
             string[] ArrayVersions = pEntity.ListVPackage.ToArray();
             string lastVersion = ArrayVersions[0];
 
-            return await GetVPackage( packageId, lastVersion ); ;
+            return await GetVPackage( packageId, lastVersion );
         }
 
         internal async Task<PackageEntity> GetPackage(string packageId)
@@ -53,7 +53,7 @@ namespace Galt.Services
 
             if(packageEntity == null)
             {
-                PackageEntity pEntity = await _nugetDL.GetInfoPackage( packageId );
+                PackageEntity pEntity = _nugetDL.GetInfoPackage( packageId );
                 await _packageReq.AddIfNotExists( pEntity.PartitionKey, pEntity.ListVPackage, pEntity.Description, pEntity.Authors );
                 return pEntity;
             }
@@ -66,13 +66,21 @@ namespace Galt.Services
             var vp = await _vPackageReq.getVPackage( packageId, version );
             if(vp.FullDependencies == null || forced == true) {
                 vp.FullDependencies = _nugetDL.FillFullDependencies( vp );
+                await _vPackageReq.AddDependenciesIfNotExist( vp );
+                await _vPackageReq.AddJsonVPackageIfNotExist( vp );
             }
             return vp.FullDependencies;
         }
 
-        internal bool IsVPackageSaved( string fav )
+        internal async Task<bool> IsVPackageSaved( string fav )
         {
-            throw new NotImplementedException();
+            PackageEntity pEntity = await GetPackage( fav );
+            string[] ArrayVersions = pEntity.ListVPackage.ToArray();
+            string lastVersion = ArrayVersions[0];
+
+            VPackageEntity vPEntity = await _vPackageReq.getVPackage( fav, lastVersion );
+
+            return (vPEntity.FullDependencies != null);
         }
     }
 }

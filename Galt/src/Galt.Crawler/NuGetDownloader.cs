@@ -56,9 +56,9 @@ namespace Galt.Crawler
             return vPEntity;
         }
 
-        public string FillFullDependencies( VPackageEntity vp )
+        public string FillFullDependencies( VPackageEntity vpe )
         {
-            VPackage vP = FillVPackage(vp.PartitionKey, vp.RowKey);
+            VPackage vP = FillVPackage(vpe.PartitionKey, vpe.RowKey);
             Dictionary<string, object> graphInfo = _graphData.ConvertGraphData( vP );
 
             if( !((List<Dictionary<string, string>>)graphInfo["versionConflict"]).IsEmpty() )
@@ -72,6 +72,7 @@ namespace Galt.Crawler
                 vP.Stat = "Ok";
             }
 
+            vpe.VPackageJson = _jsonSeria.JsonSerializer( vP );
             return _jsonSeria.JsonSerializer( graphInfo );
         }
 
