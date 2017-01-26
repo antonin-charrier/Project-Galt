@@ -23,7 +23,7 @@ namespace Galt.Crawler.Util
 
             _info = new Dictionary<string, object>();
             _info.Add("graph", _graph);
-            _info.Add("versionConflict", new List<Dictionary<string, string>>());
+            _info.Add("versionConflict", new List<Dictionary<string, object>>());
             _info.Add("toUpdate", new List<Dictionary<string, string>>());
 
             string version = vPackage.Version.Major + "." + vPackage.Version.Minor + "." + vPackage.Version.Revision;
@@ -63,28 +63,61 @@ namespace Galt.Crawler.Util
                             }
 
                             // Adding all version conflicts in the list of issues
+                            List<Dictionary<string, object>> versionConflicts = (List<Dictionary<string, object>>)_info["versionConflict"];
                             bool contains = false;
-                            foreach (Dictionary<string, string> dic in (List<Dictionary<string, string>>)_info["versionConflict"])
+                            foreach (Dictionary<string, object> conflict in versionConflicts)
                             {
-                                if (dic["name"] == currentNode["name"])
-                                {
-                                    contains = true;
-                                    string[] list = dic["versions"].Split();
-                                    if (!list.Contains(currentNode["version"])) dic["versions"] = dic["versions"] + ", " + currentNode["version"];
-                                }
+                                if ((string)conflict["name"] == currentNode["name"]) contains = true;
                             }
                             if (!contains)
                             {
-                                List<Dictionary<string, string>> toUpdate = (List<Dictionary<string, string>>)_info["versionConflict"];
-                                toUpdate.Add(new Dictionary<string, string>());
-                                toUpdate[toUpdate.Count - 1].Add("name", currentNode["name"]);
-                                toUpdate[toUpdate.Count - 1].Add("versions", currentNode["version"]);
+                                versionConflicts.Add(new Dictionary<string, object>());
+                                versionConflicts[versionConflicts.Count - 1].Add("name", currentNode["name"]);
+                                versionConflicts[versionConflicts.Count - 1].Add("versions", new List<string>());
+
+                                versionConflicts[versionConflicts.Count - 1].Add("origine", new Dictionary<string, List<string>>());
+                                if (!((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).ContainsKey(currentNode["version"]))
+                                    ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(currentNode["version"], getDirectParents(currentNode["id"]));
+                                if (!((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).ContainsKey(otherNode["version"]))
+                                    ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(otherNode["version"], getDirectParents(otherNode["id"]));
                             }
                         }
                     }
                 }
             }
             return _info;
+        }
+
+        private List<string> getDirectParents (string id)
+        {
+            List<string> list = new List<string>();
+
+            foreach (Dictionary<string, string> link in _graph["links"])
+            {
+                if (link["target"] == id)
+                {
+                    foreach (Dictionary<string, string> node in _graph["nodes"])
+                    {
+                        if (node["id"] == link["source"])
+                        {
+                            if (node.ContainsKey("entity") && node["entity"] == "platform")
+                            {
+                                List<string> newResearch = getDirectParents(link["source"]);
+                                foreach (string newEntry in newResearch)
+                                {
+                                    if (!list.Contains(newEntry)) list.Add(newEntry);
+                                }
+                            }
+                            else
+                            {
+                                if(!list.Contains(node["name"])) list.Add(node["name"]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return list;
         }
 
         // Add dependencies of the given VPackage in the JSON object
