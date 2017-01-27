@@ -61,10 +61,13 @@ namespace Galt.Crawler
             VPackage vP = FillVPackage(vp.PartitionKey, vp.RowKey);
             Dictionary<string, object> graphInfo = _graphData.ConvertGraphData( vP );
 
-            if( !((List<Dictionary<string, string>>)graphInfo["versionConflict"]).IsEmpty() )
+            var ConflictDictionnary = (List<Dictionary<string, object>>)graphInfo[ "versionConflict" ];
+            var UpdateDictionnary = (List<Dictionary<string, string>>)graphInfo[ "toUpdate" ];
+
+            if ( !ConflictDictionnary.IsEmpty() )
             {
                 vP.Stat = "Alert";
-            } else if( !((List<Dictionary<string, string>>)graphInfo["toUpdate"]).IsEmpty() )
+            } else if( !UpdateDictionnary.IsEmpty() )
             {
                 vP.Stat = "Issue";
             } else
