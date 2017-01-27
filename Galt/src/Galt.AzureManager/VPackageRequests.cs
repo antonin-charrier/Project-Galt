@@ -58,14 +58,14 @@ namespace Galt.AzureManager
             return true;
         }
 
-        public async Task<bool> AddJsonVPackageIfNotExist( VPackageEntity vPE )
+        public async Task<bool> AddStatIfNotExist( VPackageEntity vPE )
         {
             TableOperation retrieveOperation = TableOperation.Retrieve<VPackageEntity>( vPE.PartitionKey, vPE.RowKey );
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
             VPackageEntity p = (VPackageEntity)retrieved.Result;
-            p.VPackageJson = vPE.VPackageJson;
+            p.StatOfDependencies = vPE.StatOfDependencies;
             TableOperation modifyOperation = TableOperation.Replace(p);
             await AManager.VPackagesTable.ExecuteAsync( modifyOperation );
             return true;

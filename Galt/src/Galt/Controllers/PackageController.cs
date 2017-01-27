@@ -111,10 +111,9 @@ namespace Galt.Controllers
                 else
                 {
                     var vPE = _packageService.GetLastVPackage( fav );
-                    if( vPE.Result.VPackageJson != null )
+                    if( vPE.Result.StatOfDependencies != null )
                     {
-                        var vP = _jsonSeria.JsonDeseriaInVPackage( vPE.Result.VPackageJson );
-                        stat = ((VPackage)vP).Stat;
+                        stat = vPE.Result.StatOfDependencies;
                     } else
                     {
                         stat = "Ok";

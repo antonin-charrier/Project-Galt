@@ -39,7 +39,7 @@ namespace Galt.AzureManager
 
             public string FullDependencies { get; set; }
 
-            public string VPackageJson { get; set; }
+            public string StatOfDependencies { get; set; }
         }
 
         public class PackageEntity : TableEntity

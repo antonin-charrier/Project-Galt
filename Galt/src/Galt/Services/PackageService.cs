@@ -67,7 +67,7 @@ namespace Galt.Services
             if(vp.FullDependencies == null || forced == true) {
                 vp.FullDependencies = _nugetDL.FillFullDependencies( vp );
                 await _vPackageReq.AddDependenciesIfNotExist( vp );
-                await _vPackageReq.AddJsonVPackageIfNotExist( vp );
+                await _vPackageReq.AddStatIfNotExist( vp );
             }
             return vp.FullDependencies;
         }
@@ -80,7 +80,7 @@ namespace Galt.Services
 
             VPackageEntity vPEntity = await _vPackageReq.getVPackage( fav, lastVersion );
 
-            return (vPEntity.FullDependencies != null);
+            return (vPEntity.StatOfDependencies != null);
         }
     }
 }
