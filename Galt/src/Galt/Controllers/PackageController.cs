@@ -121,7 +121,8 @@ namespace Galt.Controllers
                 }
                 favAndStat.Add( fav, stat );
             }
-            return _jsonSeria.JsonSerializer( favAndStat );
+            string returnValue = (favAndStat.Count > 0 ? _jsonSeria.JsonSerializer( favAndStat ) : "[]");
+            return returnValue;
         }
 
         [HttpPost("isFav")]
