@@ -34,9 +34,9 @@ namespace Galt.Crawler
             }
         }
 
-        public object JsonDeSeria(string s)
+        public object JsonDeseriaInVPackage(string s)
         {
-            return JsonConvert.DeserializeObject( s );
+            return JsonConvert.DeserializeObject<VPackage>( s );
         }
     }
 }

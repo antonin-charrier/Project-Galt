@@ -1,11 +1,11 @@
 <template>
     <div class="favorite-packages-items">
-        <div class="favorite-packages-info">{{ favorite }}</div>
-        <color-box-ok v-if="state === 'ok'"></color-box-ok>
-        <color-box-alert v-if="state === 'alert'"></color-box-alert>
-        <color-box-issue v-if="state === 'issue'"></color-box-issue>
-        <color-box-notloaded v-if="state === 'notloaded'"></color-box-notloaded>
-        <router-link :to="'/package/'+favorite"><button class="view-button">View</button></router-link>
+        <div class="favorite-packages-info">{{ name }}</div>
+        <color-box-ok v-if="status === 'Ok'"></color-box-ok>
+        <color-box-alert v-if="status === 'Alert'"></color-box-alert>
+        <color-box-issue v-if="status === 'Issue'"></color-box-issue>
+        <color-box-notloaded v-if="status === 'NotLoaded'"></color-box-notloaded>
+        <router-link :to="'/package/'+name"><button class="view-button">View</button></router-link>
     </div>
 </template>
 
@@ -16,7 +16,7 @@
     import ColorBoxNotLoaded from '../components/colorbox/ColorBoxNotLoaded.vue'
 
     export default {
-        props: ['favorite'],
+        props: ['state', 'name'],
         components: {
             'color-box-ok': ColorBoxOK,
             'color-box-alert': ColorBoxAlert,
@@ -24,8 +24,8 @@
             'color-box-notloaded': ColorBoxNotLoaded
         },
         computed: {
-            state: function() {
-                return this.favorite.state || 'notloaded';
+            status: function() {
+                return this.state || 'NotLoaded';
             }
         }
     }

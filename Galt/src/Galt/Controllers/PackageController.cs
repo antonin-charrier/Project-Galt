@@ -65,7 +65,6 @@ namespace Galt.Controllers
         public async Task<string> GetVpackageDependencies( string packageId, string version )
         {
             var returnValue = await _packageService.GetFullDependencies(packageId, version, false);
-            if(true)
             return returnValue;
         }
 
@@ -97,28 +96,32 @@ namespace Galt.Controllers
         [Authorize( ActiveAuthenticationSchemes = JwtBearerAuthentication.AuthenticationScheme )]
         public async Task<string> ListFavorites()
         {
-            return await Task.Run( () =>
-            {
-                string email = User.FindFirst( ClaimTypes.Email ).Value;
-                string[] favorites = _userService.GetFavorites( email );
+            string email = User.FindFirst( ClaimTypes.Email ).Value;
+            string[] favorites = _userService.GetFavorites( email );
 
-                Dictionary<string, string> favAndStat = new Dictionary<string, string>();
-                foreach( string fav in favorites )
+            Dictionary<string, string> favAndStat = new Dictionary<string, string>();
+            foreach( string fav in favorites )
+            {
+                string stat = "Error";
+                bool IsSaved = await _packageService.IsVPackageSaved( fav );
+                if( !IsSaved )
                 {
-                    string stat = "Error";
-                    if(!_packageService.IsVPackageSaved(fav))
-                    {
-                        stat = "NotLoaded";
-                    } else if(true)
-                    {
-                        var vPE = _packageService.GetLastVPackage( fav );
-                        var vP = _jsonSeria.JsonDeSeria( vPE.Result.VPackageJson );
-                        stat = ((VPackage)vP).Stat;
-                    }
-                    favAndStat.Add(fav, stat);
+                    stat = "NotLoaded";
                 }
-                return _jsonSeria.JsonSerializer( favAndStat );
-            } );
+                else
+                {
+                    var vPE = _packageService.GetLastVPackage( fav );
+                    if( vPE.Result.StatOfDependencies != null )
+                    {
+                        stat = vPE.Result.StatOfDependencies;
+                    } else
+                    {
+                        stat = "Ok";
+                    }
+                }
+                favAndStat.Add( fav, stat );
+            }
+            return _jsonSeria.JsonSerializer( favAndStat );
         }
 
         [HttpPost("isFav")]

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Table;
 using static Galt.AzureManager.Entities;
 
@@ -32,14 +33,14 @@ namespace Galt.AzureManager
             return (VPackageEntity)retrieved.Result;
         }
 
-        public async Task<bool> AddDependenciesIfNotExist( VPackageEntity vPE, string fullDependencies )
+        public async Task<bool> AddDependenciesIfNotExist( VPackageEntity vPE )
         {
             TableOperation retrieveOperation = TableOperation.Retrieve<VPackageEntity>( vPE.PartitionKey, vPE.RowKey );
             TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync( retrieveOperation );
             if( retrieved.Result == null ) return false;
 
             VPackageEntity p = (VPackageEntity)retrieved.Result;
-            p.FullDependencies = fullDependencies;
+            p.FullDependencies = vPE.FullDependencies;
             TableOperation modifyOperation = TableOperation.Replace(p);
             await AManager.VPackagesTable.ExecuteAsync( modifyOperation );
             return true;
@@ -54,6 +55,19 @@ namespace Galt.AzureManager
             VPackageEntity p = (VPackageEntity)retrieved.Result;
             TableOperation removeOperation = TableOperation.Delete(p);
             await AManager.VPackagesTable.ExecuteAsync( removeOperation );
+            return true;
+        }
+
+        public async Task<bool> AddStatIfNotExist( VPackageEntity vPE )
+        {
+            TableOperation retrieveOperation = TableOperation.Retrieve<VPackageEntity>( vPE.PartitionKey, vPE.RowKey );
+            TableResult retrieved = await AManager.VPackagesTable.ExecuteAsync( retrieveOperation );
+            if( retrieved.Result == null ) return false;
+
+            VPackageEntity p = (VPackageEntity)retrieved.Result;
+            p.StatOfDependencies = vPE.StatOfDependencies;
+            TableOperation modifyOperation = TableOperation.Replace(p);
+            await AManager.VPackagesTable.ExecuteAsync( modifyOperation );
             return true;
         }
     }
