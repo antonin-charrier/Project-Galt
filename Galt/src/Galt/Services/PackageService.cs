@@ -80,7 +80,7 @@ namespace Galt.Services
 
             VPackageEntity vPEntity = await _vPackageReq.getVPackage( fav, lastVersion );
 
-            return (vPEntity.StatOfDependencies != null);
+            return (vPEntity != null && vPEntity.StatOfDependencies != null);
         }
     }
 }
