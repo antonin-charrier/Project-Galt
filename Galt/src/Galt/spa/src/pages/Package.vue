@@ -37,11 +37,39 @@
                 <div style="overflow: auto" class="flex-issues-versions" v-if="graphDisplayed && !graphLoading">
                     <div class="issues">
                         <h3>Conflicts</h3>
-                        <div v-for="conflict in conflicts">{{ conflict }}</div>
+                        <div v-if="graphData.versionConflict.length == 0">
+                            No dependencies conflict
+                        </div>
+                        <div v-else v-for="conflict in graphData.versionConflict">
+                            <b>{{ conflict.name }}</b>
+                            <ul>
+                                <li v-for="(value, key) in conflict.origine">
+                                    <b>Version {{ key }}</b> → Packages depending on this version :
+                                    <ul>
+                                        <li v-for="dependency in value">
+                                            {{ dependency }}
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="new-versions">
                         <h3>New versions</h3>
-                        <div v-for="version in toUpdate">{{ version }}</div>
+                        <div v-if="graphData.toUpdate.length == 0">
+                            No packages to update
+                        </div>
+                        <div v-else v-for="package in graphData.toUpdate">
+                            <b>{{ package.name }}<b>
+                            <ul>
+                                <li>
+                                    Current version : {{ package.currentVersion }}
+                                </li>
+                                <li>
+                                    Last version : {{ package.lastVersion}}
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,8 +97,7 @@
                 versionsDisplayed: false,
                 currentVersion: '',
                 options: [],
-                toUpdate: [],
-                conflicts: '',
+                graphData: [],
                 graphLoading: false,
                 graphDisplayed: false
             }
@@ -151,23 +178,11 @@
                 this.graphLoading = true;
                 this.$http.get('/api/package/graph?packageId=' + this.packageId + '&version=' + this.currentVersion).then(function(response) {
                     this.graphDisplayed = !this.graphDisplayed;
-                    var data = JSON.parse(response.body);
-                    var toUpdate = "";
-                    for (var i = 0; i < data.toUpdate.length; i++) {
-                        toUpdate = toUpdate + data.toUpdate[i].name + " (" + data.toUpdate[i].currentVersion + ") → " + data.toUpdate[i].lastVersion + "|";
-                    }
-                    var conflicts = "";
-                    for (var i = 0; i < data.versionConflict.length; i++) {
-                        conflicts = conflicts + data.versionConflict[i].name + " : " + data.versionConflict[i].versions + "|";
-                    }
-                    this.toUpdate = toUpdate.split("|");
-                    this.conflicts = conflicts.split("|");
-                    GraphScript.drawGraph(data.graph);
+                    this.graphData = JSON.parse(response.body);
+                    console.log(this.graphData);
+                    GraphScript.drawGraph(this.graphData.graph);
                     this.graphLoading = false;
                 }, function(response) {}.bind(this));
-            },
-            refreshGraph: function() {
-                console.log("foo");
             }
         },
         created: function() {
@@ -195,8 +210,6 @@
         },
         watch: {
             packageId: function() {
-                console.trace()
-                console.log(this.currentVersion)
                 this.loading = true;
                 this.graphDisplayed = false;
                 this.redirect();
@@ -443,7 +456,7 @@
         -webkit-flex-direction: column;
         flex-direction: column;
         border-style: solid;
-        flex: 3;
+        flex: 2;
         height: 100%;
         margin-left: 50px;
         background-color: #226D71;

@@ -14,7 +14,6 @@ namespace Galt.Crawler
         IPackageRepository _repo;
         GraphData _graphData;
         JsonSerializerPackage _jsonSeria;
-        private Task<List<IPackage>> vPackage;
 
         public NuGetDownloader()
         {
@@ -56,20 +55,23 @@ namespace Galt.Crawler
             return vPEntity;
         }
 
-        public string FillFullDependencies( VPackageEntity vp )
+        public string FillFullDependencies( VPackageEntity vpe )
         {
-            VPackage vP = FillVPackage(vp.PartitionKey, vp.RowKey);
+            VPackage vP = FillVPackage(vpe.PartitionKey, vpe.RowKey);
             Dictionary<string, object> graphInfo = _graphData.ConvertGraphData( vP );
 
-            if( !((List<Dictionary<string, string>>)graphInfo["versionConflict"]).IsEmpty() )
+            var ConflictDictionnary = (List<Dictionary<string, object>>)graphInfo[ "versionConflict" ];
+            var UpdateDictionnary = (List<Dictionary<string, string>>)graphInfo[ "toUpdate" ];
+
+            if ( !ConflictDictionnary.IsEmpty() )
             {
-                vP.Stat = "Alert";
+                vpe.StatOfDependencies = "Alert";
             } else if( !((List<Dictionary<string, string>>)graphInfo["toUpdate"]).IsEmpty() )
             {
-                vP.Stat = "Issue";
+                vpe.StatOfDependencies = "Issue";
             } else
             {
-                vP.Stat = "Ok";
+                vpe.StatOfDependencies = "Ok";
             }
 
             return _jsonSeria.JsonSerializer( graphInfo );
