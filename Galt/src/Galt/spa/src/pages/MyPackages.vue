@@ -2,9 +2,13 @@
     <div id="mypackages">
         <div class="favorite-packages">
             <h3 class="my-packages-title"><i class="fa fa-star fa-star-orange no-cursor" style="font-size:25px; margin-right:10px"></i>My favorites</h3>
-            <span v-show="!loaded">Loading...</span>
-            <span v-show="failed">No favorite found.</span>
-            <favorite-package v-for="(state, name) in favorites" :state="state" :name="name"></favorite-package>
+                <div v-show="loading" class="loading-div packages-loading">
+                    <bounce-loader class="spinner" :loading="loading" :color="color" :size="size"></bounce-loader>
+                </div>
+                <div class="no-fav">
+                    <span v-show="failed">No favorites yet</span>
+                </div>
+                <favorite-package v-for="(state, name) in favorites" :state="state" :name="name"></favorite-package>
         </div>
         <router-view></router-view>
     </div>
@@ -15,32 +19,34 @@
     import {
         getAsync
     } from '../helpers/apiHelper.js'
+    import BounceLoader from 'vue-spinner/src/BounceLoader.vue'
     import AuthService from '../services/AuthService'
 
     export default {
         data: function() {
             return {
                 favorites: [],
-                loaded: false
+                loading: true
             }
         },
         computed: {
             failed: function() {
-                return this.loaded && this.favorites.length == 0
+                return !this.loading && this.favorites.length == 0
             }
         },
         components: {
-            'favorite-package': FavoritePackage
+            'favorite-package': FavoritePackage,
+            'bounce-loader' : BounceLoader
         },
         created: function() {
             getAsync("api/package", "favorites", AuthService.accessToken)
                 .then(function(response) {
                         this.favorites = response;
                         console.log(this.favorites);
-                        this.loaded = true;
+                        this.loading = false;
                     }.bind(this),
                     function(response) {
-                        this.loaded = true;
+                        this.loading = false;
                     })
         },
         watch: {
@@ -84,6 +90,17 @@
         margin-bottom: 20px;
     }
     
+    .packages-loading
+    {
+        margin-top: 50%;
+    }
+
+    .no-fav
+    {
+        margin-top: 5%;
+        text-align: center;
+    }
+
     .favorite-packages-items {
         display: -webkit-flex;
         display: flex;
