@@ -75,9 +75,9 @@ namespace Galt.Crawler.Util
                                 versionConflicts[versionConflicts.Count - 1].Add("name", currentNode["name"]);
                                 versionConflicts[versionConflicts.Count - 1].Add("origine", new Dictionary<string, List<string>>());
                                 if (!((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).ContainsKey(currentNode["version"]))
-                                    ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(currentNode["version"], getDirectParents(currentNode["id"]));
+                                    ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(currentNode["version"], getDirectParents(currentNode["id"], false));
                                 if (!((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).ContainsKey(otherNode["version"]))
-                                    ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(otherNode["version"], getDirectParents(otherNode["id"]));
+                                    ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(otherNode["version"], getDirectParents(otherNode["id"], false));
                             }
                         }
                     }
@@ -90,18 +90,18 @@ namespace Galt.Crawler.Util
         {
             bool hasConflict = false;
 
-            List<string> parents = getDirectParents(id);
+            List<string> parents = getDirectParents(id, true);
 
             foreach (string parentId in parents)
             {
-                if (_graph["nodes"][int.Parse(parentId)]["entity"] == "source") hasConflict = false;
+                if (_graph["nodes"][int.Parse(parentId)].ContainsKey("entity") && _graph["nodes"][int.Parse(parentId)]["entity"] == "source") hasConflict = false;
                 else if (!HasConflictAsParent(parentId)) hasConflict = false;
             }
 
             return hasConflict;
         }
 
-        private List<string> getDirectParents (string id)
+        private List<string> getDirectParents (string id, bool withId)
         {
             List<string> list = new List<string>();
 
@@ -115,7 +115,7 @@ namespace Galt.Crawler.Util
                         {
                             if (node.ContainsKey("entity") && node["entity"] == "platform")
                             {
-                                List<string> newResearch = getDirectParents(link["source"]);
+                                List<string> newResearch = getDirectParents(link["source"], withId);
                                 foreach (string newEntry in newResearch)
                                 {
                                     if (!list.Contains(newEntry)) list.Add(newEntry);
@@ -123,7 +123,8 @@ namespace Galt.Crawler.Util
                             }
                             else
                             {
-                                if(!list.Contains(node["name"])) list.Add(node["name"]);
+                                if(!list.Contains(node["name"]) && !withId) list.Add(node["name"]);
+                                else if (!list.Contains(node["id"]) && withId) list.Add(node["id"]);
                             }
                         }
                     }

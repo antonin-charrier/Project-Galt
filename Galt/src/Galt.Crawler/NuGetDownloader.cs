@@ -65,10 +65,10 @@ namespace Galt.Crawler
 
             if ( !ConflictDictionnary.IsEmpty() )
             {
-                vpe.StatOfDependencies = "Alert";
+                vpe.StatOfDependencies = "Issue";
             } else if( !((List<Dictionary<string, string>>)graphInfo["toUpdate"]).IsEmpty() )
             {
-                vpe.StatOfDependencies = "Issue";
+                vpe.StatOfDependencies = "Alert";
             } else
             {
                 vpe.StatOfDependencies = "Ok";
