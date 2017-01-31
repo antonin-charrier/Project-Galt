@@ -55,7 +55,7 @@ namespace Galt.Crawler.Util
 
                             foreach (Dictionary<string,string> link in _graph["links"])
                             {
-                                if (currentNode["id"] == link["target"] || otherNode["id"] == link["target"])
+                                if ((currentNode["id"] == link["target"] || otherNode["id"] == link["target"]) && (!HasConflictAsParent(currentNode["id"])|| !HasConflictAsParent(otherNode["id"])))
                                 {
                                     if (link.ContainsKey("warning")) link["warning"] = "versionConflict";
                                     else link.Add("warning", "versionConflict");
@@ -73,8 +73,6 @@ namespace Galt.Crawler.Util
                             {
                                 versionConflicts.Add(new Dictionary<string, object>());
                                 versionConflicts[versionConflicts.Count - 1].Add("name", currentNode["name"]);
-                                versionConflicts[versionConflicts.Count - 1].Add("versions", new List<string>());
-
                                 versionConflicts[versionConflicts.Count - 1].Add("origine", new Dictionary<string, List<string>>());
                                 if (!((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).ContainsKey(currentNode["version"]))
                                     ((Dictionary<string, List<string>>)versionConflicts[versionConflicts.Count - 1]["origine"]).Add(currentNode["version"], getDirectParents(currentNode["id"]));
@@ -86,6 +84,21 @@ namespace Galt.Crawler.Util
                 }
             }
             return _info;
+        }
+
+        private bool HasConflictAsParent (string id)
+        {
+            bool hasConflict = false;
+
+            List<string> parents = getDirectParents(id);
+
+            foreach (string parentId in parents)
+            {
+                if (_graph["nodes"][int.Parse(parentId)]["entity"] == "source") hasConflict = false;
+                else if (!HasConflictAsParent(parentId)) hasConflict = false;
+            }
+
+            return hasConflict;
         }
 
         private List<string> getDirectParents (string id)
