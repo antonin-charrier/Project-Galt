@@ -2,7 +2,7 @@
     <div id="connected">
         <li class="w3-right">
             <a href="/#/" @click="logout" class="w3-padding-16 w3-hover-gray w3-hover-text-white">
-                <span id="icon-package"><i class="fa fa-sign-out"></i></span><span>Disconnect from GitHub</span></router-link>
+                <span id="icon-package"><i class="fa fa-github"></i></span><span>Disconnect from GitHub</span></router-link>
             </a>
         </li>
         <li class="w3-right"><router-link to="/mypackages" class="w3-padding-16 w3-hover-gray w3-hover-text-white">

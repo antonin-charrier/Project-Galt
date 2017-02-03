@@ -23,21 +23,22 @@ namespace Galt.Crawler.Tests
         }
 
         [Test]
-        public async Task Test_FillVPackage()
+        public void Test_FillVPackage()
         {
             NuGetDownloader n = new NuGetDownloader();
-            var p = await n.FillVPackage( "Newtonsoft.Json", await n.GetLatestVersionPackage("Newtonsoft.Json"));
+            string lastV = n.GetLatestVersionPackage("Newtonsoft.Json");
+            var p = n.FillVPackage( "Newtonsoft.Json", lastV);
 
             Assert.AreEqual( p.PackageId, "Newtonsoft.Json" );
             Assert.IsFalse( p.Dependencies.IsEmpty() );
         }
 
         [Test]
-        public async Task Test_JsonSerializer()
+        public void Test_JsonSerializer()
         {
             JsonSerializerPackage s = new JsonSerializerPackage();
             NuGetDownloader n = new NuGetDownloader();
-            VPackage vp = await n.FillVPackage( "Newtonsoft.Json", await n.GetLatestVersionPackage( "Newtonsoft.Json" ));
+            VPackage vp = n.FillVPackage( "Newtonsoft.Json", n.GetLatestVersionPackage( "Newtonsoft.Json" ));
             string result = s.JsonSerializer( vp );
 
             JObject rss = JObject.Parse( result );
@@ -46,32 +47,32 @@ namespace Galt.Crawler.Tests
             Assert.Pass();
         }
 
-       //[Test]
-       // public void Test_Serializer()
-       // {
-       //     JsonSerializerPackage s = new JsonSerializerPackage();
-            
-       //     //StreamReader sr = new StreamReader("C:\\Users\\Léo\\Desktop\\WriteLines.txt");
-       //     //string truc = sr.ReadLine();
+        //[Test]
+        // public void Test_Serializer()
+        // {
+        //     JsonSerializerPackage s = new JsonSerializerPackage();
 
-       //     NuGetDownloader n = new NuGetDownloader();
-       //     //VPackage vp = n.FillVPackage("Code.Cake", n.GetLatestVersionPackage("Code.Cake"));
-       //     //n.GetDependenciesSpecificVersion(vp);
-       //     GraphData gd = new GraphData();
+        //     //StreamReader sr = new StreamReader("C:\\Users\\Léo\\Desktop\\WriteLines.txt");
+        //     //string truc = sr.ReadLine();
 
-       //     string json = File.ReadAllText(@"C:\Users\Léo\Desktop\WriteLines.txt");
-       //     VPackage lol = JsonConvert.DeserializeObject<VPackage>(json);
+        //     NuGetDownloader n = new NuGetDownloader();
+        //     //VPackage vp = n.FillVPackage("Code.Cake", n.GetLatestVersionPackage("Code.Cake"));
+        //     //n.GetDependenciesSpecificVersion(vp);
+        //     GraphData gd = new GraphData();
 
-       //     string truc = s.JsonSerializer(gd.ConvertGraphData(lol));
+        //     string json = File.ReadAllText(@"C:\Users\Léo\Desktop\WriteLines.txt");
+        //     VPackage lol = JsonConvert.DeserializeObject<VPackage>(json);
 
-       //     // Set a variable to the My Documents path.
-       //     string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        //     string truc = s.JsonSerializer(gd.ConvertGraphData(lol));
 
-       //     // Write the string array to a new file named "WriteLines.txt".
-       //     using (StreamWriter outputFile = new StreamWriter(mydocpath + @"\WriteLines.json"))
-       //     {
-       //         outputFile.WriteLine(truc);
-       //     }
-       // }
+        //     // Set a variable to the My Documents path.
+        //     string mydocpath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+        //     // Write the string array to a new file named "WriteLines.txt".
+        //     using (StreamWriter outputFile = new StreamWriter(mydocpath + @"\WriteLines.json"))
+        //     {
+        //         outputFile.WriteLine(truc);
+        //     }
+        // }
     }
 }

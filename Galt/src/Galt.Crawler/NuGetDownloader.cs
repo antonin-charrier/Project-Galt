@@ -14,7 +14,6 @@ namespace Galt.Crawler
         IPackageRepository _repo;
         GraphData _graphData;
         JsonSerializerPackage _jsonSeria;
-        private Task<List<IPackage>> vPackage;
 
         public NuGetDownloader()
         {
@@ -23,14 +22,12 @@ namespace Galt.Crawler
             _jsonSeria = new JsonSerializerPackage();
         }
 
-        public async Task<VPackageEntity> GetInfoVPackage(string packageId, string version)
+        public VPackageEntity GetInfoVPackage(string packageId, string version)
         {
             VPackageEntity vPEntity = new VPackageEntity(packageId, version);
 
-            List<IPackage> packages = await Task.Factory.StartNew(() =>
-            {
-                return _repo.FindPackagesById(packageId).ToList();
-            });
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+
             packages = packages.Where(item => (item.Version.ToString() == version)).ToList();
 
             string dateTime;
@@ -58,19 +55,33 @@ namespace Galt.Crawler
             return vPEntity;
         }
 
-        public async Task<string> FillFullDependencies( VPackageEntity vp )
+        public string FillFullDependencies( VPackageEntity vpe )
         {
-            VPackage vP = await FillVPackage(vp.PartitionKey, vp.RowKey);
-            return _jsonSeria.JsonSerializer( _graphData.ConvertGraphData( vP ) );
+            VPackage vP = FillVPackage(vpe.PartitionKey, vpe.RowKey);
+            Dictionary<string, object> graphInfo = _graphData.ConvertGraphData( vP );
+
+            var ConflictDictionnary = (List<Dictionary<string, object>>)graphInfo[ "versionConflict" ];
+            var UpdateDictionnary = (List<Dictionary<string, string>>)graphInfo[ "toUpdate" ];
+
+            if ( !ConflictDictionnary.IsEmpty() )
+            {
+                vpe.StatOfDependencies = "Issue";
+            } else if( !((List<Dictionary<string, string>>)graphInfo["toUpdate"]).IsEmpty() )
+            {
+                vpe.StatOfDependencies = "Alert";
+            } else
+            {
+                vpe.StatOfDependencies = "Ok";
+            }
+
+            return _jsonSeria.JsonSerializer( graphInfo );
         }
 
-        public async Task<PackageEntity> GetInfoPackage( string packageId )
+        public PackageEntity GetInfoPackage( string packageId )
         {
             PackageEntity pEntity = new PackageEntity(packageId);
 
-            List<IPackage> packages = await Task.Factory.StartNew(() => {
-                return _repo.FindPackagesById(packageId).ToList();
-            });
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
 
             pEntity.Authors = (packages.Count > 0 ? packages.Last().Authors.ToList():new List<string>());
             pEntity.Description = (packages.Count > 0 ? packages.Last().Description : String.Empty);
@@ -86,22 +97,18 @@ namespace Galt.Crawler
             return pEntity;
         }
 
-        public async Task<string> GetLatestVersionPackage(string packageId)
+        public string GetLatestVersionPackage(string packageId)
         {
-            List<IPackage> packages = await Task.Factory.StartNew(() =>
-            {
-                return _repo.FindPackagesById(packageId).ToList();
-            });
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
             packages = packages.Where(item => (item.IsLatestVersion)).ToList();
 
             return packages.Last().Version.ToString();
         }
 
-        public async Task<VPackage> FillVPackage( string packageId, string version )
+        public VPackage FillVPackage( string packageId, string version )
         {
-            List<IPackage> packages = await Task.Factory.StartNew(() => {
-                return _repo.FindPackagesById(packageId).ToList();
-            });
+            List<IPackage> packages = _repo.FindPackagesById(packageId).ToList();
+
             packages = packages.Where( item => (item.Version.ToString() == version) ).ToList();
 
             VPackage vp = new VPackage( packageId, packages.First().Version.Version );
@@ -118,17 +125,15 @@ namespace Galt.Crawler
             }
 
             vp.PublicationDate = dateTime;
-            await GetDependenciesSpecificVersion(vp);
+            GetDependenciesSpecificVersion(vp);
 
             return vp;
         }
 
-        public async Task GetDependenciesSpecificVersion(VPackage vPackage)
+        public void GetDependenciesSpecificVersion(VPackage vPackage)
         {
-            List<IPackage> packages = await Task.Factory.StartNew(() =>
-            {
-                return _repo.FindPackagesById(vPackage.PackageId).ToList();
-            });
+            List<IPackage> packages = _repo.FindPackagesById(vPackage.PackageId).ToList();
+
             IEnumerable<IPackage> temp = packages.Where( p => p.IsLatestVersion );
             string lastV = !temp.IsEmpty() ? temp.First().Version.ToString() : String.Empty;
             packages = packages.Where(p => (p.Version.Version.ToString() == vPackage.Version.ToString())).ToList();
@@ -146,7 +151,7 @@ namespace Galt.Crawler
                         listdep.Add(vpackagedep);
 
                         Console.WriteLine(item.Id);
-                        await GetDependenciesSpecificVersion(vpackagedep);
+                        GetDependenciesSpecificVersion(vpackagedep);
                     }
                     dicFrameDep.Add(frameW.FullName, listdep);
                 }
