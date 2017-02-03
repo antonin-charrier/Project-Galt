@@ -145,6 +145,10 @@ module.exports = {
             currentGraph.node
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
+
+                width = d3.select("#graph")._groups[0][0].offsetWidth;
+                height = d3.select("#graph")._groups[0][0].offsetHeight;
+                graph.simulation.force("center", d3.forceCenter(width / 2, height / 2));
         }
 
         function clearButtonClick()
