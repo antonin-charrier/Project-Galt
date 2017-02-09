@@ -88,7 +88,7 @@ namespace Galt.Crawler.Util
 
         private bool HasConflictAsParent (string id)
         {
-            bool hasConflict = false;
+            bool hasConflict = true;
 
             List<string> parents = getDirectParents(id, true);
 
@@ -99,6 +99,24 @@ namespace Galt.Crawler.Util
             }
 
             return hasConflict;
+        }
+
+        private bool HasBadVersionAsParent(string id)
+        {
+            bool hasBadVersion = true;
+
+            List<string> parents = getDirectParents(id, true);
+
+            foreach (string parentId in parents)
+            {
+                bool parentHas = HasBadVersionAsParent(parentId);
+
+                if (_graph["nodes"][int.Parse(parentId)].ContainsKey("entity") && _graph["nodes"][int.Parse(parentId)]["entity"] == "source") hasBadVersion = false;
+                else if (!parentHas) hasBadVersion = false;
+                else if (parentHas) return true;
+            }
+
+            return hasBadVersion;
         }
 
         private List<string> getDirectParents (string id, bool withId)
@@ -196,6 +214,7 @@ namespace Galt.Crawler.Util
             if (!String.IsNullOrWhiteSpace(version) && entity != "platform")
                 dico.Add("version", version);
 
+            // Adding of warning ToUpdate
             if (entity != "platform" && version != lastVersion)
             {
                 dico.Add("warning", "toUpdate");
