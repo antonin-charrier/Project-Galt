@@ -2,7 +2,7 @@
     <div id="disconnected">
         <li class="w3-right">
             <a href="/#/" @click="login" class="w3-padding-16 w3-hover-gray w3-hover-text-white">
-                <span id="icon-package"><i class="fa fa-sign-in"></i></span><span>Connect with GitHub</span>
+                <span id="icon-package"><i class="fa fa-github"></i></span><span>Connect with GitHub</span>
             </a>
         </li>
     </div>

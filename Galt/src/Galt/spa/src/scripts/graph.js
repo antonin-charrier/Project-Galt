@@ -41,13 +41,22 @@ module.exports = {
             .on("click", clearButtonClick);
 
         svg.append("defs").append("marker")
-            .attr("id", "endMarkers")
-            .attr("markerWidth", "6")
-            .attr("markerHeight", "4")
-            .attr("refX", "12")
-            .attr("refY", "2")
+            .attr("id", "endMarkersNormal")
+            .attr("markerWidth", "12")
+            .attr("markerHeight", "8")
+            .attr("refX", "18.5")
+            .attr("refY", "4")
             .attr("orient", "auto")
-            .append("polyline").attr("points", "0,0 6,2 0,4");
+            .append("polyline").attr("points", "0,0 12,4 0,8");
+
+        svg.append("defs").append("marker")
+            .attr("id", "endMarkersVersionConflict")
+            .attr("markerWidth", "12")
+            .attr("markerHeight", "8")
+            .attr("refX", "18.5")
+            .attr("refY", "4")
+            .attr("orient", "auto")
+            .append("polyline").attr("points", "0,0 12,4 0,8");
 
         //Declaration of tooltip to display informations in nodes
         var tip = d3.tip()
@@ -164,14 +173,20 @@ module.exports = {
             var currentG = d3.selectAll(".movable").append("g").attr("class", graphName);
 
             currentGraph.link = currentG.append("g")
-                .attr("class", "link")
+                .attr("class", "links")
                 .selectAll("line")
                 .data(graph[graphName].data.links)
                 .enter()
                 .append("line")
-                .attr("class", "zoomable")
+                .attr("class", function (d){
+                    if(d.warning === "versionConflict") return "versionConflictLink";
+                    else return "normalLink";
+                })
                 .attr("stroke-width", function(d) { return Math.sqrt(2); })
-                .attr("marker-end", 'url("#endMarkers")');
+                .attr("marker-end", function (d){
+                    if(d.warning === "versionConflict") return 'url("#endMarkersVersionConflict")';
+                    else return 'url("#endMarkersNormal")';
+                });
 
             currentGraph.node = currentG.append("g")
                 .attr("class", "nodes")
@@ -180,7 +195,10 @@ module.exports = {
                 .data(graph[graphName].data.nodes)
                 .enter()
                 .append("circle")
-                .attr("r", 10)
+                .attr("r", function (d){
+                    if (d.entity == "source") return 20;
+                    return 10;
+                })
                 .call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
@@ -205,7 +223,7 @@ module.exports = {
                 // Choose node with any problem to delete
                 for (var i = 0; i <= graph.problemsGraph.data.nodes.length-1; i++)
                 {
-                    if ((graph.problemsGraph.data.nodes[i].entity == "platform") || (graph.problemsGraph.data.nodes[i].warning != "toUpdate" && graph.problemsGraph.data.nodes[i].warning != "versionConflict" && graph.problemsGraph.data.nodes[i].entity != "source"))
+                    if ((graph.problemsGraph.data.nodes[i].entity == "platform") || (graph.problemsGraph.data.nodes[i].warning != "versionConflict" && graph.problemsGraph.data.nodes[i].entity != "source"))
                     {
                         var j = 0;
                         var isParent = false;
